@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import heroImg from "../assets/hero-img.png";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import SuccessModal from "../components/SuccessModal";
 
 const HomePage = () => {
-
   const [openIndex, setOpenIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedHospital, setSelectedHospital] = useState("xyz Hospital");
 
   const faqs = [
     {
@@ -62,10 +64,20 @@ const HomePage = () => {
         <h2 className="mb-12 text-[40px] md:text-[40px] leading-tight font-bold text-gray-900 tracking-[0.64px]">
           See If You Qualify
         </h2>
-        <form className="grid gap-6 md:grid-cols-2 max-w-5xl mx-auto text-left px-6">
+        <form 
+          className="grid gap-6 md:grid-cols-2 max-w-5xl mx-auto text-left px-6"
+          onSubmit={(e) => {
+            e.preventDefault();
+            setIsModalOpen(true);
+          }}
+        >
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-gray-900">Hospital Name</label>
-            <select className="h-12 w-full rounded-[40px] border border-purple-300/50 bg-white px-6 text-base text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat" defaultValue="">
+            <select 
+              className="h-12 w-full rounded-[40px] border border-purple-300/50 bg-white px-6 text-base text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat" 
+              defaultValue=""
+              onChange={(e) => setSelectedHospital(e.target.value || "xyz Hospital")}
+            >
               <option value="" disabled>Select</option>
             </select>
           </div>
@@ -111,11 +123,23 @@ const HomePage = () => {
               placeholder="Enter total members"
             />
           </div>
+          <div className="md:col-span-2 flex justify-center">
+            <button 
+              type="submit"
+              className="mt-4 inline-flex items-center gap-2 rounded-full border-2 border-purple-700 bg-white px-8 py-2 text-base font-bold text-purple-800 hover:bg-purple-50 transition"
+            >
+              Get Results <span className="text-purple-800">→</span>
+            </button>
+          </div>
         </form>
-        <button className="mt-10 inline-flex items-center gap-2 rounded-full border-2 border-purple-700 bg-white px-8 py-2 text-base font-bold text-purple-800 hover:bg-purple-50 transition">
-          Get Results <span className="text-purple-800">→</span>
-        </button>
       </section>
+
+      {/* Success Modal */}
+      <SuccessModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)}
+        hospitalName={selectedHospital}
+      />
 
       {/* How It Works */}
       <section className="py-24 bg-gradient-to-b from-white to-[#EFEAFE]">
