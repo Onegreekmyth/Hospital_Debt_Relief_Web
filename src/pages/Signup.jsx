@@ -3,7 +3,7 @@ import React from "react";
 const Signup = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-[#F7F5FF] flex items-center justify-center px-6 py-12">
-      <div className="w-full max-w-lg bg-white rounded-3xl border-2 border-purple-200/60 shadow-xl p-10 md:p-12">
+      <div className="w-full max-w-xl bg-white rounded-3xl border-2 border-purple-200/60 shadow-xl p-10 md:p-12">
         {/* Heading */}
         <h1 className="text-[40px] md:text-[40px] font-extrabold text-[#6B46C1] mb-10 text-center tracking-[0.64px]">
           Welcome to LOGO
@@ -71,8 +71,8 @@ const Signup = () => {
         </form>
 
         {/* Legal Text */}
-        <p className="mt-8 text-center text-sm text-gray-600">
-          By continuing, you agree to our{" "}
+        <p className="mt-8 text-center text-xs text-gray-600">
+          By continuing, you agree to{" "}
           <a href="#" className="text-purple-700 hover:text-purple-800 font-medium">
             Terms of Service
           </a>{" "}
