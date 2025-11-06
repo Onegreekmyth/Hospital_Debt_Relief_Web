@@ -3,9 +3,9 @@ import React from "react";
 const Signup = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-[#F7F5FF] flex items-center justify-center px-6 py-12">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-lg bg-white rounded-3xl border-2 border-purple-200/60 shadow-xl p-10 md:p-12">
         {/* Heading */}
-        <h1 className="text-[48px] md:text-[46px] font-extrabold text-[#6B46C1] mb-12 text-center tracking-[0.64px]">
+        <h1 className="text-[40px] md:text-[40px] font-extrabold text-[#6B46C1] mb-10 text-center tracking-[0.64px]">
           Welcome to LOGO
         </h1>
 
@@ -13,7 +13,7 @@ const Signup = () => {
         <form className="space-y-6">
           {/* Email Field */}
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">Email</label>
+            <label className="text-[14px] font-medium text-gray-700">Email</label>
             <div className="relative">
               <svg
                 className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400"
@@ -38,7 +38,7 @@ const Signup = () => {
 
           {/* Phone Number Field */}
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">Phone Number</label>
+            <label className="text-[14px] font-medium text-gray-700">Phone Number</label>
             <div className="relative">
               <svg
                 className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400"
@@ -96,4 +96,3 @@ const Signup = () => {
 };
 
 export default Signup;
-
