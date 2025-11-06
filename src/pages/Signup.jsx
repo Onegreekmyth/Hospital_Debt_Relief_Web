@@ -5,7 +5,7 @@ const Signup = () => {
     <div className="min-h-screen bg-gradient-to-b from-white to-[#F7F5FF] flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-xl bg-white rounded-3xl border-2 border-purple-200/60 shadow-xl p-10 md:p-12">
         {/* Heading */}
-        <h1 className="text-[40px] md:text-[40px] font-extrabold text-[#6B46C1] mb-10 text-center tracking-[0.64px]">
+        <h1 className="text-[40px] md:text-[40px] font-extrabold text-[#5225cd]  mb-10 text-center tracking-[0.64px]">
           Welcome to LOGO
         </h1>
 
@@ -64,7 +64,7 @@ const Signup = () => {
           {/* Continue Button */}
           <button
             type="submit"
-            className="w-full h-14 rounded-full bg-gradient-to-r from-purple-600 to-indigo-700 text-white text-base font-semibold hover:from-purple-700 hover:to-indigo-800 transition shadow-lg mt-8"
+            className="w-full h-14 rounded-full bg-gradient-to-r from-[#5225cd] to-[#2e156f] text-white text-base font-semibold hover:from-purple-700 hover:to-indigo-800 transition shadow-lg mt-8"
           >
             Continue
           </button>
