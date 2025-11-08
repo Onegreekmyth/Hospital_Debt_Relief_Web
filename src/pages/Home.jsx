@@ -4,7 +4,9 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import SuccessModal from "../components/SuccessModal";
 
+
 const HomePage = () => {
+
   const [openIndex, setOpenIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedHospital, setSelectedHospital] = useState("xyz Hospital");
@@ -281,7 +283,7 @@ const HomePage = () => {
       </section>
 
       {/* CTA Footer */}
-      <footer className="py-24 text-center bg-gradient-to-b from-white to-[#F7F5FF]">
+      <footer className="py-24 text-center bg-[#F7F5FF]">
         <h2 className="mx-auto max-w-5xl text-[36px] md:text-[38px] leading-tight font-bold tracking-[0.64px] text-gray-800">
           It has never been easier to
           <br />
@@ -297,5 +299,6 @@ const HomePage = () => {
     </div>
   );
 };
+
 
 export default HomePage;

@@ -5,7 +5,7 @@ const Footer = () => {
     <footer className="bg-gradient-to-b from-white to-[#ECE7FF] border-t border-purple-200/40">
       {/* Top row: logo + social icons */}
       <div className="w-full px-6 md:px-10 py-8 flex items-center justify-between">
-        <div className="text-[40px] font-extrabold tracking-[0.64px] text-[#3D0BBE]">LOGO</div>
+        <div className="text-[40px] font-bold tracking-[0.64px] text-[#3D0BBE]">LOGO</div>
         <div className="flex items-center gap-4">
           <a href="#" aria-label="Call" className="w-10 h-10 rounded-full border-2 border-[#3D0BBE] text-[#3D0BBE] flex items-center justify-center hover:bg-[#F4F0FF] transition">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
