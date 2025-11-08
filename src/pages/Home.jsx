@@ -241,7 +241,7 @@ const HomePage = () => {
       {/* FAQ */}
       <section className="py-24 bg-gradient-to-b from-[#F7F5FF] to-white">
         <div className="text-center mb-12">
-          <h2 className="text-[40px] md:text-[56px] font-bold text-gray-900 tracking-[0.64px] leading-tight">
+          <h2 className="text-[40px] md:text-[56px] font-semibold text-gray-900 tracking-[0.64px] leading-tight">
             Frequently Asked <br /> Questions
           </h2>
         </div>
@@ -283,8 +283,8 @@ const HomePage = () => {
       </section>
 
       {/* CTA Footer */}
-      <footer className="py-24 text-center bg-[#F7F5FF]">
-        <h2 className="mx-auto max-w-5xl text-[36px] md:text-[38px] leading-tight font-bold tracking-[0.64px] text-gray-800">
+      <footer className="py-12 text-center bg-[#F7F5FF]">
+        <h2 className="mx-auto max-w-5xl text-[36px] md:text-[38px] leading-tight font-semibold tracking-[0.64px] text-gray-800">
           It has never been easier to
           <br />
           save money on your hospital bill.

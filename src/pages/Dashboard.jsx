@@ -7,7 +7,7 @@ const Dashboard = () => {
   const [isBillModalOpen, setIsBillModalOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
       
       <div className="w-[92%] md:w-[92%] mx-auto px-6 md:px-10 py-8 pt-24 mt-16">
