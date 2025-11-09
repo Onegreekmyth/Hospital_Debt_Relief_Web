@@ -377,7 +377,7 @@ const Dashboard = () => {
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
-                  <select className="w-full h-12 rounded-full border border-purple-300 bg-white pl-12 pr-10 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%239C88FF%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1rem_center] bg-no-repeat">
+                  <select className="w-full h-12 rounded-full border border-gray-300 bg-white pl-12 pr-10 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-100 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%239C88FF%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1rem_center] bg-no-repeat">
                     <option value="">Select</option>
                   </select>
                 </div>
@@ -386,7 +386,7 @@ const Dashboard = () => {
               {/* Hospital Name */}
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium text-gray-700">Hospital Name</label>
-                <select className="w-full h-12 rounded-full border border-purple-300 bg-white px-4 pr-10 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%239C88FF%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1rem_center] bg-no-repeat">
+                <select className="w-full h-12 rounded-full border border-gray-300 bg-white px-4 pr-10 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-100 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%239C88FF%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1rem_center] bg-no-repeat">
                   <option value="">Select hospital name</option>
                 </select>
               </div>
@@ -397,17 +397,9 @@ const Dashboard = () => {
                 <div className="relative">
                   <input
                     type="date"
-                    className="w-full h-12 rounded-full border border-purple-300 bg-white px-4 pr-10 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                    className="w-full h-12 rounded-full border border-gray-300 bg-white px-4 pr-4 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-100"
                     placeholder="Select Date"
                   />
-                  <svg
-                    className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400 pointer-events-none"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
                 </div>
               </div>
 
@@ -423,7 +415,7 @@ const Dashboard = () => {
                   />
                   <label
                     htmlFor="bill-upload"
-                    className="w-full h-12 rounded-full border border-purple-300 bg-white px-4 pr-12 flex items-center text-base text-gray-500 cursor-pointer hover:bg-purple-50 transition relative"
+                    className="w-full h-12 rounded-full border border-gray-300 bg-white px-4 pr-12 flex items-center text-base text-gray-500 cursor-pointer hover:bg-purple-50 transition relative"
                   >
                     <span className="flex-1">Upload</span>
                     <svg
