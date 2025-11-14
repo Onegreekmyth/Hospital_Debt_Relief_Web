@@ -1,10 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
+import SubmissionModal from "../components/SubmissionModal";
 
 const Dashboard = () => {
   const [isContactInfoOpen, setIsContactInfoOpen] = useState(false);
   const [isFamilyMembersOpen, setIsFamilyMembersOpen] = useState(true);
   const [isBillModalOpen, setIsBillModalOpen] = useState(false);
+  const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
+
+  // Disable scrolling when any modal is open
+  useEffect(() => {
+    if (isBillModalOpen || isSubmissionModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    // Cleanup function to restore scrolling
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isBillModalOpen, isSubmissionModalOpen]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -363,6 +379,7 @@ const Dashboard = () => {
               onSubmit={(e) => {
                 e.preventDefault();
                 setIsBillModalOpen(false);
+                setIsSubmissionModalOpen(true);
               }}
             >
               {/* Name of Patient */}
@@ -446,6 +463,12 @@ const Dashboard = () => {
           </div>
         </div>
       )}
+
+      {/* Submission Success Modal */}
+        <SubmissionModal
+        isOpen={isSubmissionModalOpen}
+        onClose={() => setIsSubmissionModalOpen(false)}
+      />
     </div>
   );
 };
