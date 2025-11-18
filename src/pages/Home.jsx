@@ -281,19 +281,7 @@ const HomePage = () => {
           </div>
         </div>
       </section>
-
-      {/* CTA Footer */}
-      <footer className="py-12 text-center bg-[#F7F5FF]">
-        <h2 className="mx-auto max-w-5xl text-[36px] md:text-[38px] leading-tight font-semibold tracking-[0.64px] text-gray-800">
-          It has never been easier to
-          <br />
-          save money on your hospital bill.
-        </h2>
-        <button className="mt-8 inline-flex items-center gap-3 rounded-full border-2 border-purple-700 px-8 py-2 text-[18px] font-semibold text-purple-700 hover:bg-purple-50 transition">
-          Get Started Here
-          <span className="-mr-1">→</span>
-        </button>
-      </footer>
+    
 
       <Footer />
     </div>

@@ -51,5 +51,6 @@ const SubmissionModal = ({ isOpen, onClose }) => {
   );
 };
 
-export default SubmissionModal;
 
+
+export default SubmissionModal;

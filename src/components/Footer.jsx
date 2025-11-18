@@ -1,11 +1,26 @@
 import React from "react";
+import primaryLogo from "../assets/primary-logo.png";
 
 const Footer = () => {
   return (
+    <>
+    <footer className="py-8 text-center bg-[#F7F5FF]">
+    <h2 className="mx-auto max-w-5xl text-[36px] md:text-[38px] leading-tight font-bold tracking-[0.64px] text-gray-800">
+      It has never been easier to know how
+      <br />
+     much you can save on your hospital bill.
+    </h2>
+    <button className="mt-8 inline-flex items-center gap-3 rounded-full border-2 border-purple-700 px-8 py-2 text-[18px] font-semibold text-purple-700 hover:bg-purple-50 transition">
+      Get Started Here
+      <span className="-mr-1">→</span>
+    </button>
+  </footer>
     <footer className="bg-gradient-to-b from-white to-[#ECE7FF] border-t border-purple-200/40">
       {/* Top row: logo + social icons */}
-      <div className="w-full px-6 md:px-10 py-8 flex items-center justify-between">
-        <div className="text-[40px] font-bold tracking-[0.64px] text-[#3D0BBE]">LOGO</div>
+      <div className="w-full px-6 md:px-10 h-20 md:h-24 flex items-center justify-between overflow-hidden">
+        <div className="flex items-center h-full">
+          <img src={primaryLogo} alt="Logo" className="h-40 w-auto object-contain object-left" />
+        </div>
         <div className="flex items-center gap-4">
           <a href="#" aria-label="Call" className="w-10 h-10 rounded-full border-2 border-[#3D0BBE] text-[#3D0BBE] flex items-center justify-center hover:bg-[#F4F0FF] transition">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -45,6 +60,7 @@ const Footer = () => {
         </div>
       </div>
     </footer>
+    </>
   );
 };
 
