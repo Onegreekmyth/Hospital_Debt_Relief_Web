@@ -74,7 +74,7 @@ const MonthlyPlansPage = () => {
       {/* Sign Up Button */}
       <section className="py-4 bg-white mb-20">
         <div className="max-w-6xl mx-auto px-6 md:px-10 flex justify-center">
-          <button className="inline-flex items-center gap-2 rounded-full border-2 border-purple-700 bg-white px-8 py-3 text-[16px] md:text-[18px] font-semibold text-purple-700 hover:bg-purple-50 transition">
+          <button onClick={() => window.location.href = '/signup'} className="inline-flex items-center gap-2 rounded-full border-2 border-purple-700 bg-white px-8 py-3 text-[16px] md:text-[18px] font-semibold text-purple-700 hover:bg-purple-50 transition">
             Sign Up
             <span>→</span>
           </button>

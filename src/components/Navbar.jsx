@@ -25,8 +25,8 @@ const Navbar = () => {
       <div className={`flex items-center justify-between rounded-full border border-purple-300 backdrop-blur-xl px-5 md:px-8 h-20 md:h-16 shadow-lg transition-colors overflow-hidden ${
         isScrolled ? "bg-gray-100/90" : "bg-white/90"
       }`}>
-        <div className="flex items-center h-full overflow-hidden">
-          <img src={primaryLogo} alt="Logo" className="h-20 md:h-28 md:w-32 object-contain object-left" />
+        <div className="flex items-center h-full overflow-hidden flex-shrink-0">
+          <img src={primaryLogo} alt="Logo" className="h-20 md:h-28 mb-2 md:w-32 object-contain object-left" />
         </div>
         <div className="flex items-center gap-6">
           {isDashboard ? (
