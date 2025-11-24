@@ -26,17 +26,17 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       
-      <div className="w-[92%] md:w-[92%] mx-auto px-6 md:px-10 py-8 pt-24 mt-16">
-        <div className="grid grid-cols-1 lg:grid-cols-[0.8fr_0.6fr] gap-32">
+      <div className="w-[92%] md:w-[92%] mx-auto px-4 md:px-6 lg:px-10 py-6 md:py-8 pt-20 md:pt-24 mt-12 md:mt-16">
+        <div className="grid grid-cols-1 lg:grid-cols-[0.8fr_0.6fr] gap-8 md:gap-16 lg:gap-32">
           {/* Left Column */}
           <div className="space-y-6">
             {/* Contact Info Section */}
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
               <button
                 onClick={() => setIsContactInfoOpen(!isContactInfoOpen)}
-                className="w-full flex items-center justify-between px-6 py-5 text-left"
+                className="w-full flex items-center justify-between px-4 md:px-6 py-4 md:py-5 text-left"
               >
-                <h2 className="text-xl md:text-2xl font-bold text-gray-900">Contact Info</h2>
+                <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900">Contact Info</h2>
                 <svg
                   className={`w-5 h-5 text-gray-600 transition-transform ${isContactInfoOpen ? '' : 'rotate-180'}`}
                   fill="none"
@@ -48,9 +48,9 @@ const Dashboard = () => {
               </button>
               
               {isContactInfoOpen && (
-                <div className="px-6 pb-6 space-y-4">
+                <div className="px-4 md:px-6 pb-4 md:pb-6 space-y-3 md:space-y-4">
                   {/* First Name and Second Name in a row */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                     {/* First Name */}
                     <div className="flex flex-col gap-2">
                       <label className="text-xs font-medium text-gray-500">
@@ -58,7 +58,7 @@ const Dashboard = () => {
                       </label>
                       <div className="relative">
                         <svg
-                          className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                          className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -80,7 +80,7 @@ const Dashboard = () => {
                       </label>
                       <div className="relative">
                         <svg
-                          className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                          className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -89,7 +89,7 @@ const Dashboard = () => {
                         </svg>
                         <input
                           type="text"
-                          className="w-full h-12 rounded-full border border-gray-300 bg-white pl-12 pr-4 text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                          className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
                           placeholder="Thomas"
                         />
                       </div>
@@ -103,7 +103,7 @@ const Dashboard = () => {
                     </label>
                     <div className="relative">
                       <svg
-                        className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                        className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -112,7 +112,7 @@ const Dashboard = () => {
                       </svg>
                       <input
                         type="email"
-                        className="w-full h-12 rounded-full border border-gray-300 bg-white pl-12 pr-4 text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                        className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
                         placeholder="email@gmail.com"
                       />
                     </div>
@@ -125,7 +125,7 @@ const Dashboard = () => {
                     </label>
                     <div className="relative">
                       <svg
-                        className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                        className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -134,7 +134,7 @@ const Dashboard = () => {
                       </svg>
                       <input
                         type="tel"
-                        className="w-full h-12 rounded-full border border-gray-300 bg-white pl-12 pr-4 text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                        className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
                         placeholder="+92************"
                       />
                     </div>
@@ -146,10 +146,10 @@ const Dashboard = () => {
                       Annual Household Income
                     </label>
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-base">$</span>
+                      <span className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm md:text-base">$</span>
                       <input
                         type="number"
-                        className="w-full h-12 rounded-full border border-gray-300 bg-white pl-10 pr-4 text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                        className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-8 md:pl-10 pr-3 md:pr-4 text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
                         placeholder="Enter amount"
                       />
                     </div>
@@ -162,9 +162,9 @@ const Dashboard = () => {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
               <button
                 onClick={() => setIsFamilyMembersOpen(!isFamilyMembersOpen)}
-                className="w-full flex items-center justify-between px-6 py-5 text-left"
+                className="w-full flex items-center justify-between px-4 md:px-6 py-4 md:py-5 text-left"
               >
-                <h2 className="text-xl md:text-2xl font-bold text-gray-900">Add Family Members</h2>
+                <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900">Add Family Members</h2>
                 <svg
                   className={`w-5 h-5 text-gray-600 transition-transform ${isFamilyMembersOpen ? '' : 'rotate-180'}`}
                   fill="none"
@@ -176,9 +176,9 @@ const Dashboard = () => {
               </button>
               
               {isFamilyMembersOpen && (
-                <div className="px-6 pb-6 space-y-4">
+                <div className="px-4 md:px-6 pb-4 md:pb-6 space-y-3 md:space-y-4">
                   {/* First Name and Second Name in a row */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                     {/* First Name */}
                     <div className="flex flex-col gap-2">
                       <label className="text-xs font-medium text-gray-500">
@@ -186,7 +186,7 @@ const Dashboard = () => {
                       </label>
                       <div className="relative">
                         <svg
-                          className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                          className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -208,7 +208,7 @@ const Dashboard = () => {
                       </label>
                       <div className="relative">
                         <svg
-                          className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                          className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -217,7 +217,7 @@ const Dashboard = () => {
                         </svg>
                         <input
                           type="text"
-                          className="w-full h-12 rounded-full border border-gray-300 bg-white pl-12 pr-4 text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                          className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
                           placeholder="Thomas"
                         />
                       </div>
@@ -229,7 +229,7 @@ const Dashboard = () => {
                     <label className="text-xs font-medium text-gray-500">
                       Relationship with Patient
                     </label>
-                    <select className="w-full h-12 rounded-full border border-gray-300 bg-white px-4 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1rem_center] bg-no-repeat">
+                    <select className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white px-3 md:px-4 pr-16 md:pr-20 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:10px] md:bg-[length:12px] bg-[right_1.5rem_center] md:bg-[right_2rem_center] bg-no-repeat">
                       <option value="" disabled>Select</option>
                     </select>
                   </div>
@@ -239,7 +239,7 @@ const Dashboard = () => {
                     <label className="text-xs font-medium text-gray-500">
                       Date of Birth
                     </label>
-                    <select className="w-full h-12 rounded-full border border-gray-300 bg-white px-4 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1rem_center] bg-no-repeat">
+                    <select className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white px-3 md:px-4 pr-16 md:pr-20 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:10px] md:bg-[length:12px] bg-[right_1.5rem_center] md:bg-[right_2rem_center] bg-no-repeat">
                       <option value="" disabled>Select</option>
                     </select>
                   </div>
@@ -251,7 +251,7 @@ const Dashboard = () => {
                     </label>
                     <div className="relative">
                       <svg
-                        className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                        className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -260,7 +260,7 @@ const Dashboard = () => {
                       </svg>
                       <input
                         type="email"
-                        className="w-full h-12 rounded-full border border-gray-300 bg-white pl-12 pr-4 text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                        className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
                         placeholder="email@gmail.com"
                       />
                     </div>
@@ -273,7 +273,7 @@ const Dashboard = () => {
                     </label>
                     <div className="relative">
                       <svg
-                        className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                        className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -282,7 +282,7 @@ const Dashboard = () => {
                       </svg>
                       <input
                         type="tel"
-                        className="w-full h-12 rounded-full border border-gray-300 bg-white pl-12 pr-4 text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                        className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
                         placeholder="+92************"
                       />
                     </div>
@@ -307,9 +307,9 @@ const Dashboard = () => {
           {/* Right Column */}
           <div className="space-y-6">
             {/* Hospital Information Card */}
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
               {/* Map Component - No padding */}
-              <div className="relative bg-gray-100 overflow-hidden" style={{ height: '180px' }}>
+              <div className="relative bg-gray-100 overflow-hidden" style={{ height: '150px' }}>
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.184132576782!2d-73.98784468459418!3d40.75889597932681!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25855c6480299%3A0x55194ec5a1ae4e8!2sTimes%20Square!5e0!3m2!1sen!2sus!4v1234567890123!5m2!1sen!2sus"
                   width="100%"
@@ -323,28 +323,28 @@ const Dashboard = () => {
               </div>
 
               {/* Content with padding */}
-              <div className="p-4">
+              <div className="p-3 md:p-4">
                 {/* Clover Icon and Hospital Info */}
-                <div className="text-center mb-4">
+                <div className="text-center mb-3 md:mb-4">
                   <div className="mb-2">
-                    <span className="text-4xl">🍀</span>
+                    <span className="text-3xl md:text-4xl">🍀</span>
                   </div>
-                  <div className="flex items-center justify-center gap-2 mb-1">
-                    <h3 className="text-lg font-bold text-gray-900">Hospital Name</h3>
-                    <span className="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-2 mb-1">
+                    <h3 className="text-base md:text-lg font-bold text-gray-900">Hospital Name</h3>
+                    <span className="px-2 py-1 rounded-full bg-green-100 text-green-700 text-[10px] md:text-xs font-medium">
                       Available
                     </span>
                   </div>
-                  <p className="text-gray-500 text-xs text-center">1 mile away</p>
+                  <p className="text-gray-500 text-[10px] md:text-xs text-center">1 mile away</p>
                 </div>
 
                 {/* Nearby Hospitals Section */}
-                <div className=" pt-4">
-                  <h3 className="text-base text-xl font-bold text-gray-900 mb-1">Nearby Hospitals</h3>
-                  <p className="text-sm text-gray-800 mb-3">Based on your location and household info.</p>
+                <div className="pt-3 md:pt-4">
+                  <h3 className="text-sm md:text-base lg:text-xl font-bold text-gray-900 mb-1">Nearby Hospitals</h3>
+                  <p className="text-xs md:text-sm text-gray-800 mb-2 md:mb-3">Based on your location and household info.</p>
                   <button 
                     onClick={() => setIsBillModalOpen(true)}
-                    className="w-half mt-5 flex items-center justify-center gap-2 rounded-full border-2 border-purple-300 bg-white text-purple-700 px-4 py-2 text-sm font-medium hover:bg-purple-50 transition"
+                    className="w-full md:w-auto mt-3 md:mt-5 flex items-center justify-center gap-2 rounded-full border-2 border-purple-300 bg-white text-purple-700 px-4 py-2 text-xs md:text-sm font-medium hover:bg-purple-50 transition"
                   >
                     Upload bills to save money
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -365,17 +365,17 @@ const Dashboard = () => {
           onClick={() => setIsBillModalOpen(false)}
         >
           <div 
-            className="bg-white rounded-3xl shadow-xl p-6"
+            className="bg-white rounded-2xl md:rounded-3xl shadow-xl p-4 md:p-6"
             onClick={(e) => e.stopPropagation()}
             style={{ 
-              width: '520px',
-              maxWidth: '90vw'
+              width: '100%',
+              maxWidth: '520px'
             }}
           >
-            <h2 className="text-2xl font-bold text-gray-900 text-center mb-4">Bill Information</h2>
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900 text-center mb-3 md:mb-4">Bill Information</h2>
             
             <form 
-              className="space-y-4"
+              className="space-y-3 md:space-y-4"
               onSubmit={(e) => {
                 e.preventDefault();
                 setIsBillModalOpen(false);
@@ -384,17 +384,17 @@ const Dashboard = () => {
             >
               {/* Name of Patient */}
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium text-gray-700">Name of Patient</label>
+                <label className="text-xs md:text-sm font-medium text-gray-700">Name of Patient</label>
                 <div className="relative">
                   <svg
-                    className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400"
+                    className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-purple-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
-                  <select className="w-full h-12 rounded-full border border-gray-300 bg-white pl-12 pr-10 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-100 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%239C88FF%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1rem_center] bg-no-repeat">
+                  <select className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-10 md:pl-12 pr-16 md:pr-20 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-100 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%239C88FF%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:10px] md:bg-[length:12px] bg-[right_1.5rem_center] md:bg-[right_2rem_center] bg-no-repeat">
                     <option value="">Select</option>
                   </select>
                 </div>
@@ -402,19 +402,19 @@ const Dashboard = () => {
 
               {/* Hospital Name */}
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium text-gray-700">Hospital Name</label>
-                <select className="w-full h-12 rounded-full border border-gray-300 bg-white px-4 pr-10 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-100 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%239C88FF%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1rem_center] bg-no-repeat">
+                <label className="text-xs md:text-sm font-medium text-gray-700">Hospital Name</label>
+                <select className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white px-3 md:px-4 pr-16 md:pr-20 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-100 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%239C88FF%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:10px] md:bg-[length:12px] bg-[right_1.5rem_center] md:bg-[right_2rem_center] bg-no-repeat">
                   <option value="">Select hospital name</option>
                 </select>
               </div>
 
               {/* Date of Services */}
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium text-gray-700">Date of Services</label>
+                <label className="text-xs md:text-sm font-medium text-gray-700">Date of Services</label>
                 <div className="relative">
                   <input
                     type="date"
-                    className="w-full h-12 rounded-full border border-gray-300 bg-white px-4 pr-4 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-100"
+                    className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white px-3 md:px-4 pr-3 md:pr-4 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-100"
                     placeholder="Select Date"
                   />
                 </div>
@@ -422,7 +422,7 @@ const Dashboard = () => {
 
               {/* Upload Bill */}
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium text-gray-700">Upload Bill</label>
+                <label className="text-xs md:text-sm font-medium text-gray-700">Upload Bill</label>
                 <div className="relative">
                   <input
                     type="file"
@@ -432,11 +432,11 @@ const Dashboard = () => {
                   />
                   <label
                     htmlFor="bill-upload"
-                    className="w-full h-12 rounded-full border border-gray-300 bg-white px-4 pr-12 flex items-center text-base text-gray-500 cursor-pointer hover:bg-purple-50 transition relative"
+                    className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white px-3 md:px-4 pr-10 md:pr-12 flex items-center text-sm md:text-base text-gray-500 cursor-pointer hover:bg-purple-50 transition relative"
                   >
                     <span className="flex-1">Upload</span>
                     <svg
-                      className="w-5 h-5 text-purple-400 absolute right-4"
+                      className="w-4 h-4 md:w-5 md:h-5 text-purple-400 absolute right-3 md:right-4"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -450,13 +450,13 @@ const Dashboard = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full h-12 rounded-full bg-gradient-to-r from-purple-900 to-blue-800 text-white font-bold text-base hover:from-purple-600 hover:to-purple-800 transition-all shadow-lg mt-6"
+                className="w-full h-11 md:h-12 rounded-full bg-gradient-to-r from-purple-900 to-blue-800 text-white font-bold text-sm md:text-base hover:from-purple-600 hover:to-purple-800 transition-all shadow-lg mt-4 md:mt-6"
               >
                 Submit
               </button>
 
               {/* Supporting Documents Text */}
-              <p className="text-sm text-purple-900 text-left mt-4">
+              <p className="text-xs md:text-sm text-purple-900 text-left mt-3 md:mt-4">
                 Supporting Documents may be Needed
               </p>
             </form>

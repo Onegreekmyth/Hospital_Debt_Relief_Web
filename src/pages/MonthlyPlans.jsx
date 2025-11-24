@@ -29,40 +29,40 @@ const MonthlyPlansPage = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 bg-white">
-        <div className="max-w-6xl mx-auto px-6 md:px-10">
-          <h1 className="text-[36px] md:text-[48px] leading-tight font-bold text-gray-900 text-center pt-5 mt-5">
-            Plans that could save you<br /> thousands of dollars on future<br /> hospital bills.
+      <section className="pt-24 md:pt-32 pb-12 md:pb-16 bg-white">
+        <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-10">
+          <h1 className="text-[24px] md:text-[36px] lg:text-[48px] leading-tight font-bold text-gray-900 text-center pt-5 mt-5">
+            Plans that could save you<span className="hidden md:inline"><br /></span> thousands of dollars on future<span className="hidden md:inline"><br /></span> hospital bills.
           </h1>
         </div>
       </section>
 
       {/* Pricing Plans Section */}
-      <section className="py-8 bg-white">
-        <div className="max-w-6xl mx-auto px-6 md:px-10">
-          <div className="grid md:grid-cols-3 gap-8">
+      <section className="py-6 md:py-8 bg-white">
+        <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-10">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {plans.map((plan, index) => (
               <div
                 key={index}
-                className={`relative border-2 border-purple-800 rounded-3xl p-12 ${
+                className={`relative border-2 border-purple-800 rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-12 ${
                   plan.popular ? "bg-[#d3c9f2]" : "bg-white"
                 }`}
               >
                 {plan.popular && (
-                  <div className="absolute -top-3 right-6 bg-[#3D0BBE] text-white text-xs font-semibold px-3 py-1 rounded-full">
+                  <div className="absolute -top-2 md:-top-3 right-4 md:right-6 bg-[#3D0BBE] text-white text-[10px] md:text-xs font-semibold px-2 md:px-3 py-0.5 md:py-1 rounded-full">
                     Popular
                   </div>
                 )}
-                <h3 className="text-[20px] md:text-[22px] font-bold text-gray-900 mb-4">
+                <h3 className="text-[18px] md:text-[20px] lg:text-[22px] font-bold text-gray-900 mb-3 md:mb-4">
                   {plan.name}
                 </h3>
-                <div className="mb-4">
-                  <span className="text-[36px] md:text-[48px] font-bold text-[#3D0BBE]">
+                <div className="mb-3 md:mb-4">
+                  <span className="text-[32px] md:text-[36px] lg:text-[48px] font-bold text-[#3D0BBE]">
                     ${plan.price}
                   </span>
-                  <span className="text-[14px] text-gray-600 ml-2">/ per month</span>
+                  <span className="text-[12px] md:text-[14px] text-gray-600 ml-2">/ per month</span>
                 </div>
-                <p className="text-[14px] md:text-[16px] text-gray-900 leading-relaxed">
+                <p className="text-[13px] md:text-[14px] lg:text-[16px] text-gray-900 leading-relaxed">
                   {plan.description}
                 </p>
               </div>

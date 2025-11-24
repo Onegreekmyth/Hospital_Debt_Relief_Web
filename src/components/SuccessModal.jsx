@@ -13,9 +13,9 @@ const SuccessModal = ({ isOpen, onClose, hospitalName = "xyz Hospital" }) => {
       />
       
       {/* Modal */}
-      <div className="relative bg-white rounded-2xl border-2 border-purple-200/60 shadow-2xl max-w-lg w-full p-8 md:p-10">
+      <div className="relative bg-white rounded-2xl border-2 border-purple-200/60 shadow-2xl max-w-lg w-full p-6 md:p-8 lg:p-10 mx-4">
         {/* Party Popper Icon */}
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-4 md:mb-6">
           <img 
             src={partyPopperImg} 
             alt="Party popper" 
@@ -24,24 +24,24 @@ const SuccessModal = ({ isOpen, onClose, hospitalName = "xyz Hospital" }) => {
         </div>
 
         {/* Heading */}
-        <h2 className="text-center text-[32px] md:text-[36px] font-extrabold text-gray-900 mb-4 tracking-[0.64px]">
+        <h2 className="text-center text-[24px] md:text-[32px] lg:text-[36px] font-extrabold text-gray-900 mb-3 md:mb-4 tracking-[0.64px]">
           Congratulations
         </h2>
 
         {/* Message */}
-        <p className="text-center text-[16px] text-gray-800 mb-6 leading-relaxed">
+        <p className="text-center text-[14px] md:text-[16px] text-gray-800 mb-4 md:mb-6 leading-relaxed px-2">
           Your Current or any future bill through {hospitalName} is eligible to be discounted.
         </p>
 
         {/* Call to Action Link */}
-        <p className="text-center text-[14px] text-purple-700 mb-8">
+        <p className="text-center text-[12px] md:text-[14px] text-purple-700 mb-6 md:mb-8 px-2">
             Create an account to upload your current hospital bill.
         </p>
 
         {/* Create Button */}
         <button
           onClick={() => window.location.href = "/signup"}
-          className="w-full h-12 rounded-full border-2 border-purple-700 bg-white text-purple-700 text-base font-medium hover:bg-purple-50 transition flex items-center justify-center gap-2"
+          className="w-full h-11 md:h-12 rounded-full border-2 border-purple-700 bg-white text-purple-700 text-sm md:text-base font-medium hover:bg-purple-50 transition flex items-center justify-center gap-2"
         >
           Create
           <svg

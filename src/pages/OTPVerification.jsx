@@ -2,13 +2,13 @@ import React from "react";
 
 const OTPVerification = () => {
   return (
-    <div className="min-h-screen bg-[#F8F8FC] flex items-center justify-center px-6 py-12">
-      <div className="w-full max-w-xl bg-white rounded-3xl border-2 border-purple-200/60 shadow-xl p-10 md:p-12">
+    <div className="min-h-screen bg-[#F8F8FC] flex items-center justify-center px-4 md:px-6 py-8 md:py-12">
+      <div className="w-full max-w-xl bg-white rounded-2xl md:rounded-3xl border-2 border-purple-200/60 shadow-xl p-6 md:p-8 lg:p-12">
         {/* Email Icon */}
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-6 md:mb-8">
           <div className="relative">
             {/* Envelope */}
-            <svg width="120" height="100" viewBox="0 0 120 100" className="drop-shadow-lg">
+            <svg width="100" height="80" viewBox="0 0 120 100" className="drop-shadow-lg md:w-[120px] md:h-[100px]">
               {/* Envelope body - orange */}
               <path
                 d="M10 30 L60 60 L110 30 L110 80 L10 80 Z"
@@ -41,15 +41,15 @@ const OTPVerification = () => {
         </div>
 
         {/* Label */}
-        <p className="text-center text-[16px] md:text-[18px] text-gray-800 mb-6 font-medium">
+        <p className="text-center text-[14px] md:text-[16px] lg:text-[18px] text-gray-800 mb-4 md:mb-6 font-medium px-2">
           Enter code sent to your email
         </p>
 
         {/* OTP Input Field */}
-        <div className="mb-8">
+        <div className="mb-6 md:mb-8">
           <div className="relative">
             <svg
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+              className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -64,7 +64,7 @@ const OTPVerification = () => {
             <input
               type="text"
               maxLength="4"
-              className="w-full h-14 rounded-full border border-gray-200 bg-white pl-12 pr-6 text-center text-2xl font-semibold tracking-widest text-gray-400 placeholder:text-left placeholder:text-sm placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-300"
+              className="w-full h-12 md:h-14 rounded-full border border-gray-200 bg-white pl-10 md:pl-12 pr-4 md:pr-6 text-center text-xl md:text-2xl font-semibold tracking-widest text-gray-400 placeholder:text-left placeholder:text-xs md:placeholder:text-sm placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-300"
               placeholder="****"
             />
           </div>
@@ -73,7 +73,7 @@ const OTPVerification = () => {
         {/* Create Account Button */}
         <button
           type="submit"
-          className="w-full h-14 rounded-full bg-gradient-to-r from-[#5225cd] to-[#2e156f] text-white text-[18px] font-bold hover:from-[#7B2CAA] hover:to-[#5A1F9C] transition shadow-lg"
+          className="w-full h-12 md:h-14 rounded-full bg-gradient-to-r from-[#5225cd] to-[#2e156f] text-white text-[16px] md:text-[18px] font-bold hover:from-[#7B2CAA] hover:to-[#5A1F9C] transition shadow-lg"
         >
           Create Account
         </button>

@@ -2,21 +2,21 @@ import React from "react";
 
 const Signup = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-[#F7F5FF] flex items-center justify-center px-6 py-12">
-      <div className="w-full max-w-xl bg-white rounded-3xl border-2 border-purple-200/60 shadow-xl p-10 md:p-12">
+    <div className="min-h-screen bg-gradient-to-b from-white to-[#F7F5FF] flex items-center justify-center px-4 md:px-6 py-8 md:py-12">
+      <div className="w-full max-w-xl bg-white rounded-2xl md:rounded-3xl border-2 border-purple-200/60 shadow-xl p-6 md:p-8 lg:p-12">
         {/* Heading */}
-        <h1 className="text-[40px] md:text-[40px] font-extrabold text-[#5225cd]  mb-10 text-center tracking-[0.64px]">
+        <h1 className="text-[28px] md:text-[36px] lg:text-[40px] font-extrabold text-[#5225cd] mb-6 md:mb-10 text-center tracking-[0.64px]">
           Welcome to LOGO
         </h1>
 
         {/* Form */}
-        <form className="space-y-6">
+        <form className="space-y-4 md:space-y-6">
           {/* Email Field */}
           <div className="flex flex-col gap-2">
             <label className="text-[14px] font-medium text-gray-700">Email</label>
             <div className="relative">
               <svg
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400"
+                className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-purple-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -30,7 +30,7 @@ const Signup = () => {
               </svg>
               <input
                 type="email"
-                className="w-full h-14 rounded-full border border-purple-300/50 bg-white pl-12 pr-6 text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                className="w-full h-12 md:h-14 rounded-full border border-purple-300/50 bg-white pl-10 md:pl-12 pr-4 md:pr-6 text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
                 placeholder="email@gmail.com"
               />
             </div>
@@ -41,7 +41,7 @@ const Signup = () => {
             <label className="text-[14px] font-medium text-gray-700">Phone Number</label>
             <div className="relative">
               <svg
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400"
+                className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-purple-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -55,7 +55,7 @@ const Signup = () => {
               </svg>
               <input
                 type="tel"
-                className="w-full h-14 rounded-full border border-purple-300/50 bg-white pl-12 pr-6 text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                className="w-full h-12 md:h-14 rounded-full border border-purple-300/50 bg-white pl-10 md:pl-12 pr-4 md:pr-6 text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
                 placeholder="+92**********"
               />
             </div>
@@ -64,14 +64,14 @@ const Signup = () => {
           {/* Continue Button */}
           <button
             type="submit"
-            className="w-full h-14 rounded-full bg-gradient-to-r from-[#5225cd] to-[#2e156f] text-white text-base font-semibold hover:from-purple-700 hover:to-indigo-800 transition shadow-lg mt-8"
+            className="w-full h-12 md:h-14 rounded-full bg-gradient-to-r from-[#5225cd] to-[#2e156f] text-white text-sm md:text-base font-semibold hover:from-purple-700 hover:to-indigo-800 transition shadow-lg mt-6 md:mt-8"
           >
             Continue
           </button>
         </form>
 
         {/* Legal Text */}
-        <p className="mt-8 text-center text-xs text-gray-600">
+        <p className="mt-6 md:mt-8 text-center text-[10px] md:text-xs text-gray-600 px-2">
           By continuing, you agree to{" "}
           <a href="#" className="text-purple-700 hover:text-purple-800 font-medium">
             Terms of Service
@@ -84,7 +84,7 @@ const Signup = () => {
         </p>
 
         {/* Login Link */}
-        <p className="mt-6 text-center text-base text-[#6B46C1]">
+        <p className="mt-4 md:mt-6 text-center text-sm md:text-base text-[#6B46C1]">
           Already have an account?{" "}
           <a href="#" className="font-semibold hover:underline">
             Login

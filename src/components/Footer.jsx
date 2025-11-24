@@ -4,22 +4,20 @@ import primaryLogo from "../assets/primary-logo.png";
 const Footer = () => {
   return (
     <>
-    <footer className="py-8 text-center bg-[#F7F5FF]">
-    <h2 className="mx-auto max-w-5xl text-[36px] md:text-[38px] leading-tight font-bold tracking-[0.64px] text-gray-800">
-      It has never been easier to know how
-      <br />
-     much you can save on your hospital bill.
+    <footer className="py-6 md:py-8 text-center bg-[#F7F5FF] px-4">
+    <h2 className="mx-auto max-w-5xl text-[20px] md:text-[32px] lg:text-[38px] leading-tight font-bold tracking-[0.64px] text-gray-800">
+      It has never been easier to know how<span className="hidden md:inline"><br /></span> much you can save on your hospital bill.
     </h2>
-    <button className="mt-8 inline-flex items-center gap-3 rounded-full border-2 border-purple-700 px-8 py-2 text-[18px] font-semibold text-purple-700 hover:bg-purple-50 transition">
+    <button className="mt-6 md:mt-8 inline-flex items-center gap-2 md:gap-3 rounded-full border-2 border-purple-700 px-6 md:px-8 py-2 text-[14px] md:text-[18px] font-semibold text-purple-700 hover:bg-purple-50 transition">
       Get Started Here
       <span className="-mr-1">→</span>
     </button>
   </footer>
     <footer className="bg-gradient-to-b from-white to-[#ECE7FF] border-t border-purple-200/40">
       {/* Top row: logo + social icons */}
-      <div className="w-full px-6 md:px-10 h-20 md:h-24 flex items-center justify-between overflow-hidden">
+      <div className="w-full px-6 md:px-10 py-6 md:py-0 md:h-20 md:h-24 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0 overflow-hidden">
         <div className="flex items-center h-full">
-          <img src={primaryLogo} alt="Logo" className="h-40 w-auto object-contain object-left" />
+          <img src={primaryLogo} alt="Logo" className="h-16 md:h-24 w-auto object-contain object-left" />
         </div>
         <div className="flex items-center gap-4">
           <a href="#" aria-label="Call" className="w-10 h-10 rounded-full border-2 border-[#3D0BBE] text-[#3D0BBE] flex items-center justify-center hover:bg-[#F4F0FF] transition">
@@ -49,13 +47,13 @@ const Footer = () => {
       <div className="border-t border-purple-200/60" />
 
       {/* Bottom row: copyright + links */}
-      <div className="w-full px-6 md:px-10 py-6 flex items-center justify-between text-[14px]">
-        <p className="text-gray-800">
+      <div className="w-full px-6 md:px-10 py-6 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0 text-[12px] md:text-[14px]">
+        <p className="text-gray-800 text-center md:text-left">
           © 2025 Medical Financial Freedom. All Rights Reserved.
         </p>
-        <div className="flex items-center gap-6 text-gray-800">
+        <div className="flex items-center gap-4 md:gap-6 text-gray-800">
           <a href="#" className="hover:text-[#3D0BBE]">Privacy Policy</a>
-          <span className="text-gray-400">|</span>
+          <span className="text-gray-400 hidden md:inline">|</span>
           <a href="#" className="hover:text-[#3D0BBE]">Terms & Conditions</a>
         </div>
       </div>

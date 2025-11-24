@@ -12,21 +12,21 @@ const FailureModal = ({ isOpen, onClose, hospitalName = "xyz Hospital" }) => {
       />
       
       {/* Modal Container */}
-      <div className="relative bg-white rounded-2xl shadow-xl max-w-lg w-full p-10 md:p-12">
+      <div className="relative bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 md:p-8 lg:p-12 mx-4">
         {/* Red Error Icon */}
-        <div className="flex justify-center mb-8">
-          <div className="w-20 h-20 rounded-full bg-[#E53935] flex items-center justify-center">
-            <span className="text-white text-5xl font-bold">!</span>
+        <div className="flex justify-center mb-6 md:mb-8">
+          <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-[#E53935] flex items-center justify-center">
+            <span className="text-white text-4xl md:text-5xl font-bold">!</span>
           </div>
         </div>
 
         {/* "Sorry" Heading */}
-        <h2 className="text-center text-[36px] md:text-[40px] font-bold text-[#212121] mb-8">
+        <h2 className="text-center text-[28px] md:text-[36px] lg:text-[40px] font-bold text-[#212121] mb-6 md:mb-8">
           Sorry
         </h2>
 
         {/* Descriptive Message */}
-        <p className="text-center text-[17px] md:text-[18px] text-[#212121] leading-relaxed px-4">
+        <p className="text-center text-[14px] md:text-[17px] lg:text-[18px] text-[#212121] leading-relaxed px-2 md:px-4">
           Your Current or any future bill through {hospitalName} is eligible to be discounted.
         </p>
       </div>
