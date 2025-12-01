@@ -1,6 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-[#F7F5FF] flex items-center justify-center px-4 md:px-6 py-4 md:py-6">
       <div className="w-full max-w-xl bg-white rounded-[36px] border border-purple-200/70 shadow-[0_18px_60px_rgba(82,37,205,0.08)] px-6 md:px-8 lg:px-10 py-6 md:py-8">
@@ -10,7 +12,13 @@ const Signup = () => {
         </h1>
 
         {/* Form */}
-        <form className="space-y-3 md:space-y-4">
+        <form
+          className="space-y-3 md:space-y-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            navigate("/otp-verification", { state: { from: "signup" } });
+          }}
+        >
           {/* Name Field */}
           <div className="flex flex-col gap-1">
             <span className="text-sm md:text-[15px] font-medium text-gray-900">
