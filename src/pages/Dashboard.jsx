@@ -5,6 +5,7 @@ import SubmissionModal from "../components/SubmissionModal";
 const Dashboard = () => {
   const [isContactInfoOpen, setIsContactInfoOpen] = useState(false);
   const [isFamilyMembersOpen, setIsFamilyMembersOpen] = useState(true);
+  const [isFamilyListOpen, setIsFamilyListOpen] = useState(true);
   const [isBillModalOpen, setIsBillModalOpen] = useState(false);
   const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
 
@@ -22,6 +23,14 @@ const Dashboard = () => {
     };
   }, [isBillModalOpen, isSubmissionModalOpen]);
 
+  const familyMembersListed = [
+    { id: 1, label: "Account Holder", value: "John Doe" },
+    { id: 2, label: "Family Member", value: "Spouse" },
+    { id: 3, label: "Family Member", value: "Child" },
+    { id: 4, label: "Family Member", value: "Child" },
+    { id: 5, label: "Family Member", value: "Child" },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -36,7 +45,7 @@ const Dashboard = () => {
                 onClick={() => setIsContactInfoOpen(!isContactInfoOpen)}
                 className="w-full flex items-center justify-between px-4 md:px-6 py-4 md:py-5 text-left"
               >
-                <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900">Contact Info</h2>
+                <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900">Account Profile</h2>
                 <svg
                   className={`w-5 h-5 text-gray-600 transition-transform ${isContactInfoOpen ? '' : 'rotate-180'}`}
                   fill="none"
@@ -76,7 +85,7 @@ const Dashboard = () => {
                     {/* Second Name */}
                     <div className="flex flex-col gap-2">
                       <label className="text-xs font-medium text-gray-500">
-                        Second Name
+                        Last Name
                       </label>
                       <div className="relative">
                         <svg
@@ -93,6 +102,27 @@ const Dashboard = () => {
                           placeholder="Thomas"
                         />
                       </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <label className="text-xs font-medium text-gray-500">
+                      Mailing Address
+                    </label>
+                    <div className="relative">
+                      <svg
+                        className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      <input
+                        type="text"
+                        className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                        placeholder="address"
+                      />
                     </div>
                   </div>
 
@@ -121,7 +151,7 @@ const Dashboard = () => {
                   {/* Phone */}
                   <div className="flex flex-col gap-2">
                     <label className="text-xs font-medium text-gray-500">
-                      Phone
+                      Phone Number
                     </label>
                     <div className="relative">
                       <svg
@@ -154,6 +184,79 @@ const Dashboard = () => {
                       />
                     </div>
                   </div>
+                </div>
+              )}
+            </div>
+
+            {/* Family Members Listed Section */}
+            <div className="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+              <button
+                onClick={() => setIsFamilyListOpen(!isFamilyListOpen)}
+                className="w-full flex items-center justify-between px-4 md:px-6 py-4 md:py-5 text-left"
+              >
+                <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900">
+                  Family Members Listed
+                </h2>
+                <svg
+                  className={`w-5 h-5 text-gray-600 transition-transform ${
+                    isFamilyListOpen ? "" : "rotate-180"
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 15l7-7 7 7"
+                  />
+                </svg>
+              </button>
+
+              {isFamilyListOpen && (
+                <div className="px-4 md:px-6 pb-4 md:pb-6 space-y-3 md:space-y-4">
+                  {familyMembersListed.map((member, index) => (
+                    <div
+                      key={member.id || index}
+                      className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4"
+                    >
+                      <div className="flex-1 flex items-center gap-4 rounded-full border border-purple-200 bg-white px-4 md:px-5 py-2 md:py-3">
+                        <div className="flex items-center justify-center text-gray-300">
+                          <svg
+                            className="w-5 h-5 md:w-6 md:h-6"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                            />
+                          </svg>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-xs md:text-sm font-medium text-purple-900">
+                            {member.label}
+                          </span>
+                          <span className="text-sm md:text-base text-gray-600">
+                            {member.value}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-3 self-start md:self-center">
+                        <button className="px-4 md:px-5 py-1.5 md:py-2 rounded-full border border-purple-500 text-purple-700 text-xs md:text-sm font-medium bg-white hover:bg-purple-50 transition">
+                          Edit
+                        </button>
+                        <button className="px-4 md:px-5 py-1.5 md:py-2 rounded-full border border-purple-500 text-purple-700 text-xs md:text-sm font-medium bg-white hover:bg-purple-50 transition">
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -244,60 +347,27 @@ const Dashboard = () => {
                     </select>
                   </div>
 
-                  {/* Email */}
-                  <div className="flex flex-col gap-2">
-                    <label className="text-xs font-medium text-gray-500">
-                      Email
-                    </label>
-                    <div className="relative">
-                      <svg
-                        className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                      </svg>
+                  {/* Checkbox + Save */}
+                  <div className="flex items-center justify-between pt-2 gap-4">
+                    <div className="flex items-start gap-3">
                       <input
-                        type="email"
-                        className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
-                        placeholder="email@gmail.com"
+                        type="checkbox"
+                        id="email-agreement"
+                        className="mt-1 w-5 h-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                       />
-                    </div>
-                  </div>
-
-                  {/* Phone Number */}
-                  <div className="flex flex-col gap-2">
-                    <label className="text-xs font-medium text-gray-500">
-                      Phone Number
-                    </label>
-                    <div className="relative">
-                      <svg
-                        className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                      <label
+                        htmlFor="email-agreement"
+                        className="text-sm text-gray-700"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                      </svg>
-                      <input
-                        type="tel"
-                        className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
-                        placeholder="+92************"
-                      />
+                        I'm only providing household family members
+                      </label>
                     </div>
-                  </div>
-
-                  {/* Checkbox */}
-                  <div className="flex items-start gap-3 pt-2">
-                    <input
-                      type="checkbox"
-                      id="email-agreement"
-                      className="mt-1 w-5 h-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                    />
-                    <label htmlFor="email-agreement" className="text-sm text-gray-700">
-                      I agree to receive emails to get help about this case
-                    </label>
+                    <button
+                      type="button"
+                      className="px-5 py-2 rounded-full border border-purple-500 text-purple-700 text-xs md:text-sm font-medium bg-white hover:bg-purple-50 transition"
+                    >
+                      Save
+                    </button>
                   </div>
                 </div>
               )}
@@ -344,9 +414,27 @@ const Dashboard = () => {
                   <p className="text-xs md:text-sm text-gray-800 mb-2 md:mb-3">Based on your location and household info.</p>
                   <button 
                     onClick={() => setIsBillModalOpen(true)}
-                    className="w-full md:w-auto mt-3 md:mt-5 flex items-center justify-center gap-2 rounded-full border-2 border-purple-300 bg-white text-purple-700 px-4 py-2 text-xs md:text-sm font-medium hover:bg-purple-50 transition"
+                    className="w-full md:w-auto mt-3 md:mt-5 flex items-center justify-center gap-2 rounded-full border-2 border-[#5d31d4] bg-white text-[#5d31d4] px-4 py-2 text-xs md:text-sm font-medium hover:bg-purple-50 transition"
                   >
-                    Upload bills to save money
+                    Upload Hospital Bill
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+
+                  <button 
+                    className="w-full md:w-auto mt-3 md:mt-5 flex items-center justify-center gap-2 rounded-full border-2 border-[#5d31d4] bg-white text-[#5d31d4] px-4 py-2 text-xs md:text-sm font-medium hover:bg-purple-50 transition"
+                  >
+                    Signup: Monthly Subcription
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+
+                  <button 
+                    className="w-full md:w-auto mt-3 md:mt-5 flex items-center justify-center gap-2 rounded-full border-2 border-[#5d31d4] bg-white text-[#5d31d4] px-4 py-2 text-xs md:text-sm font-medium hover:bg-purple-50 transition"
+                  >
+                    Subcription Status: Active/Inactive
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
@@ -400,17 +488,11 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              {/* Hospital Name */}
-              <div className="flex flex-col gap-2">
-                <label className="text-xs md:text-sm font-medium text-gray-700">Hospital Name</label>
-                <select className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white px-3 md:px-4 pr-16 md:pr-20 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-100 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%239C88FF%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:10px] md:bg-[length:12px] bg-[right_1.5rem_center] md:bg-[right_2rem_center] bg-no-repeat">
-                  <option value="">Select hospital name</option>
-                </select>
-              </div>
+
 
               {/* Date of Services */}
               <div className="flex flex-col gap-2">
-                <label className="text-xs md:text-sm font-medium text-gray-700">Date of Services</label>
+                <label className="text-xs md:text-sm font-medium text-gray-700">Service Date</label>
                 <div className="relative">
                   <input
                     type="date"
