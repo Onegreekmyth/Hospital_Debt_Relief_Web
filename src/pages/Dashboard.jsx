@@ -394,24 +394,26 @@ const Dashboard = () => {
 
               {/* Content with padding */}
               <div className="p-3 md:p-4">
-                {/* Clover Icon and Hospital Info */}
-                <div className="text-center mb-3 md:mb-4">
-                  <div className="mb-2">
-                    <span className="text-3xl md:text-4xl">🍀</span>
-                  </div>
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-2 mb-1">
-                    <h3 className="text-base md:text-lg font-bold text-gray-900">Hospital Name</h3>
+                {/* Hospital Info */}
+                <div className="mb-1 md:mb-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <h3 className="text-base md:text-lg font-bold text-gray-900">
+                      Hospital Name
+                    </h3>
                     <span className="px-2 py-1 rounded-full bg-green-100 text-green-700 text-[10px] md:text-xs font-medium">
                       Available
                     </span>
                   </div>
-                  <p className="text-gray-500 text-[10px] md:text-xs text-center">1 mile away</p>
+                  <h4 className="text-gray-900 text-[13px]">
+                    Address
+                  </h4>
+                  <h4 className="text-gray-900 text-[13px]">
+                    Website
+                  </h4>
                 </div>
 
                 {/* Nearby Hospitals Section */}
-                <div className="pt-3 md:pt-4">
-                  <h3 className="text-sm md:text-base lg:text-xl font-bold text-gray-900 mb-1">Nearby Hospitals</h3>
-                  <p className="text-xs md:text-sm text-gray-800 mb-2 md:mb-3">Based on your location and household info.</p>
+                <div className="pt-3 md:pt-1">
                   <button 
                     onClick={() => setIsBillModalOpen(true)}
                     className="w-full md:w-auto mt-3 md:mt-5 flex items-center justify-center gap-2 rounded-full border-2 border-[#5d31d4] bg-white text-[#5d31d4] px-4 py-2 text-xs md:text-sm font-medium hover:bg-purple-50 transition"
