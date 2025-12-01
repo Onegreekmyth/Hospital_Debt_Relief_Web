@@ -12,7 +12,7 @@ const ResourcesPage = () => {
 
       {/* Hero Section */}
       <section
-        className="relative flex flex-col items-center justify-center text-center px-4 md:px-6 pt-32 md:pt-40 pb-20 md:pb-28 bg-cover bg-center"
+        className="relative flex flex-col items-center justify-center text-center px-4 md:px-6 pt-32 md:pt-40 pb-20 md:pb-28 bg-cover bg-center min-h-[90vh] md:min-h-[90vh]"
         style={{
           backgroundImage: `linear-gradient(rgba(22, 10, 41, 0.55), rgba(22, 10, 41, 0.55)), url(${heroImg})`,
         }}

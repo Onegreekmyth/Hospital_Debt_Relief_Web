@@ -7,7 +7,7 @@ import Dashboard from './pages/Dashboard';
 import AboutPage from './pages/About';
 import ResourcesPage from './pages/Resources';
 import MonthlyPlansPage from './pages/MonthlyPlans';
-
+import Login from './pages/Login';
 
 function App() {
   return (
@@ -19,6 +19,7 @@ function App() {
       <Route path="/signup" element={<Signup />} />
       <Route path="/otp-verification" element={<OTPVerification />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/login" element={<Login />} />
     </Routes>
   )
 }

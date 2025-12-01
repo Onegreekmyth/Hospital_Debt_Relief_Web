@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import heroImg from "../assets/hero-img.png";
+import heroImg from "../assets/hero-img.jpg";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import SuccessModal from "../components/SuccessModal";
@@ -40,20 +40,17 @@ const HomePage = () => {
 
       {/* Hero Section */}
       <section
-        className="relative flex flex-col items-center justify-center text-center px-4 md:px-6 pt-32 md:pt-40 pb-20 md:pb-28 bg-cover bg-center"
+        className="relative flex flex-col items-center justify-center text-center px-4 md:px-6 pt-32 md:pt-40 pb-20 md:pb-28 min-h-[90vh] md:min-h-[90vh] bg-cover bg-no-repeat bg-top"
         style={{
-          backgroundImage: `linear-gradient(rgba(22, 10, 41, 0.55), rgba(22, 10, 41, 0.55)), url(${heroImg})`,
+          backgroundImage: `linear-gradient(rgba(136, 126, 156, 0.55), rgba(191, 184, 207, 0.55)), url(${heroImg})`,
         }}
       >
-        <div className="max-w-3xl text-white">
-          <h1 className="text-[24px] md:text-[28px] leading-[1.2] md:leading-tight lg:text-[40px] font-bold">
-            Have an existing hospital bill? <br />
-            We work on those too!
-          </h1>
-          <p className="mt-4 text-white/90 text-[12px] md:text-[14px] leading-relaxed px-2">
-            Receive up to a 100% reduction on your current or future hospital bills, whether you have insurance or not.
-            Explore our incredible monthly subscription plans starting at just $7/month or use our One-Time payment option
-            of $399. Backed by our money back guarantee.
+        <div className="max-w-3xl text-black">
+          <h6 className="text-[20px] md:text-[22px] leading-[1.2] md:leading-tight lg:text-[26px]">
+            Receive up to a 100% reduction on your current hospital bills,<br /> whether you have insurance or not. You can also explore our<br /> low monthly subscription plans starting at just $7/month to<br /> be prepared for future hospital bills.
+          </h6>
+          <p className="mt-4 text-black/90 text-[12px] md:text-[14px] leading-relaxed px-2">
+            All backed by our money back Guarantee
           </p>
           <button className="mt-6 md:mt-7 inline-flex items-center rounded-full bg-white text-purple-800 hover:bg-purple-50 px-5 md:px-6 py-2.5 md:py-3 text-xs md:text-sm font-semibold shadow">
             Check qualification
@@ -62,73 +59,105 @@ const HomePage = () => {
       </section>
 
       {/* Qualification Form */}
-      <section className="py-12 md:py-20 bg-[#F7F5FF] text-center">
-        <h2 className="mb-8 md:mb-12 text-[28px] md:text-[40px] leading-tight font-bold text-gray-900 tracking-[0.64px] px-4">
-          See If You Qualify
+      <section className="py-16 md:py-24 bg-[#F7F5FF] text-center">
+        <h2 className="mb-10 md:mb-14 text-[32px] md:text-[44px] leading-tight font-semibold text-gray-900 tracking-[0.04em] px-4">
+          Savings Calculator
         </h2>
-        <form 
-          className="grid gap-4 md:gap-6 md:grid-cols-2 max-w-5xl mx-auto text-left px-4 md:px-6"
+        <form
+          className="max-w-6xl mx-auto text-left px-4 md:px-6 space-y-8"
           onSubmit={(e) => {
             e.preventDefault();
             setIsModalOpen(true);
           }}
         >
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-900">Hospital Name</label>
-            <select 
-              className="h-12 w-full rounded-[40px] border border-purple-300/50 bg-white px-6 text-base text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat" 
-              defaultValue=""
-              onChange={(e) => setSelectedHospital(e.target.value || "xyz Hospital")}
-            >
-              <option value="" disabled>Select</option>
-            </select>
+          {/* Row 1 */}
+          <div className="grid gap-4 md:gap-6 md:grid-cols-3">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm md:text-base font-medium text-gray-900">
+                Existing Hospital Bill?
+              </label>
+              <select
+                className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat"
+                defaultValue="no"
+              >
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+              </select>
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm md:text-base font-medium text-gray-900">
+                State
+              </label>
+              <select className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat" defaultValue="">
+                <option value="" disabled>
+                  Select
+                </option>
+              </select>
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm md:text-base font-medium text-gray-900">
+                City
+              </label>
+              <select className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat" defaultValue="">
+                <option value="" disabled>
+                  Select
+                </option>
+              </select>
+            </div>
           </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-900">Hospital City</label>
-            <select className="h-12 w-full rounded-[40px] border border-purple-300/50 bg-white px-6 text-base text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat" defaultValue="">
-              <option value="" disabled>Select</option>
-            </select>
+
+          {/* Row 2 */}
+          <div className="grid gap-4 md:gap-6 md:grid-cols-3">
+            <div className="flex flex-col gap-2 col-span-3 md:col-span-1 w-full">
+              <label className="text-sm md:text-base font-medium text-gray-900">
+                Local Hospital
+              </label>
+              <select
+                className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat"
+                defaultValue=""
+                onChange={(e) => setSelectedHospital(e.target.value || "xyz Hospital")}
+              >
+                <option value="" disabled>
+                  Select
+                </option>
+              </select>
+            </div>
           </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-900">Original Bill Date</label>
-            <select className="h-12 w-full rounded-[40px] border border-purple-300/50 bg-white px-6 text-base text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat" defaultValue="">
-              <option value="" disabled>Select</option>
-            </select>
-          </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-900">Total Owned to Hospital</label>
-            <div className="relative">
-              <span className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 text-base">$</span>
+
+          {/* Row 3 */}
+          <div className="grid gap-4 md:gap-6 md:grid-cols-2">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm md:text-base font-medium text-gray-900">
+                Annual Household Income
+              </label>
+              <div className="relative">
+                <span className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 text-base">
+                  $
+                </span>
+                <input
+                  type="number"
+                  className="h-14 w-full rounded-full border border-purple-200 bg-white pl-10 pr-6 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                  placeholder=""
+                />
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm md:text-base font-medium text-gray-900">
+                Household Family Size
+              </label>
               <input
-                type="number"
-                className="h-12 w-full rounded-[40px] border border-purple-300/50 bg-white pl-10 pr-6 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300"
-                placeholder=""
+                type="text"
+                className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                placeholder="Enter total members"
               />
             </div>
           </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-900">Household Annual Income</label>
-            <div className="relative">
-              <span className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 text-base">$</span>
-              <input
-                type="number"
-                className="h-12 w-full rounded-[40px] border border-purple-300/50 bg-white pl-10 pr-6 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300"
-                placeholder=""
-              />
-            </div>
-          </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-900">Size of Household</label>
-            <input
-              type="text"
-              className="h-12 w-full rounded-[40px] border border-purple-300/50 bg-white px-6 text-base text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
-              placeholder="Enter total members"
-            />
-          </div>
-          <div className="md:col-span-2 flex justify-center">
-            <button 
+
+          {/* Button */}
+          <div className="flex justify-center pt-2">
+            <button
               type="submit"
-              className="mt-4 inline-flex items-center gap-2 rounded-full border-2 border-purple-700 bg-white px-8 py-2 text-base font-bold text-purple-800 hover:bg-purple-50 transition"
+              className="inline-flex items-center gap-2 rounded-full border-2 border-purple-700 bg-transparent px-10 py-3 text-sm md:text-base font-semibold text-purple-800 hover:bg-purple-50 transition"
             >
               Get Results <span className="text-purple-800">→</span>
             </button>
@@ -137,8 +166,8 @@ const HomePage = () => {
       </section>
 
       {/* Success Modal */}
-      <SuccessModal 
-        isOpen={isModalOpen} 
+      <SuccessModal
+        isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         hospitalName={selectedHospital}
       />
@@ -281,7 +310,7 @@ const HomePage = () => {
           </div>
         </div>
       </section>
-    
+
 
       <Footer />
     </div>

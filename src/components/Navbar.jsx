@@ -56,9 +56,12 @@ const Navbar = () => {
                   <a href="#faq" className="hover:text-purple-700">FAQ</a>
                   <Link to="/plans" className="hover:text-purple-700">Monthly Plans</Link>
                 </nav>
-                <button className="hidden md:inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-900 to-blue-800 px-5 py-2 text-white text-sm font-medium hover:from-purple-800 hover:to-blue-700 transition">
+                <Link
+                  to="/login"
+                  className="hidden md:inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-900 to-blue-800 px-5 py-2 text-white text-sm font-medium hover:from-purple-800 hover:to-blue-700 transition"
+                >
                   Login
-                </button>
+                </Link>
                 <button 
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                   className="md:hidden inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-900 to-blue-800 px-3 py-2 text-white text-xs font-medium"
@@ -99,9 +102,13 @@ const Navbar = () => {
             >
               Monthly Plans
             </Link>
-            <button className="mt-4 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-900 to-blue-800 px-5 py-2 text-white text-sm font-medium">
+            <Link 
+              to="/login"
+              className="mt-4 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-900 to-blue-800 px-5 py-2 text-white text-sm font-medium"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               Login
-            </button>
+            </Link>
           </nav>
         </div>
       )}
