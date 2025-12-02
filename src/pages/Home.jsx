@@ -107,20 +107,32 @@ const HomePage = () => {
           </div>
 
           {/* Row 2 */}
-          <div className="grid gap-4 md:gap-6 md:grid-cols-3">
-            <div className="flex flex-col gap-2 col-span-3 md:col-span-1 w-full">
+          <div className="grid gap-4 md:gap-6 md:grid-cols-2">
+            <div className="flex flex-col gap-2 w-full">
               <label className="text-sm md:text-base font-medium text-gray-900">
-                Local Hospital
+                Hospital Name
               </label>
-              <select
-                className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat"
-                defaultValue=""
+              <input
+                type="text"
+                className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                placeholder="Enter hospital name"
                 onChange={(e) => setSelectedHospital(e.target.value || "xyz Hospital")}
-              >
-                <option value="" disabled>
-                  Select
-                </option>
-              </select>
+              />
+            </div>
+            <div className="flex flex-col gap-2 w-full">
+              <label className="text-sm md:text-base font-medium text-gray-900">
+                Total Owned to Hospital
+              </label>
+              <div className="relative">
+                <span className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 text-base">
+                  $
+                </span>
+                <input
+                  type="number"
+                  className="h-14 w-full rounded-full border border-purple-200 bg-white pl-10 pr-6 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                  placeholder=""
+                />
+              </div>
             </div>
           </div>
 
@@ -153,8 +165,19 @@ const HomePage = () => {
             </div>
           </div>
 
-          {/* Button */}
-          <div className="flex justify-center pt-2">
+          {/* Checkbox Row */}
+          <div className="flex justify-start pt-2">
+            <label className="inline-flex items-center text-xs md:text-sm text-gray-700">
+              <input
+                type="checkbox"
+                className="h-4 w-4 text-purple-600 rounded border-gray-300 focus:ring-purple-500"
+              />
+              <span className="ml-2">My hospital bill is not in collections</span>
+            </label>
+          </div>
+
+          {/* Button Row */}
+          <div className="flex justify-center pt-4">
             <button
               type="submit"
               className="inline-flex items-center gap-2 rounded-full border-2 border-purple-700 bg-transparent px-10 py-3 text-sm md:text-base font-semibold text-purple-800 hover:bg-purple-50 transition"

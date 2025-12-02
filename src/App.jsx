@@ -8,6 +8,7 @@ import AboutPage from './pages/About';
 import ResourcesPage from './pages/Resources';
 import MonthlyPlansPage from './pages/MonthlyPlans';
 import Login from './pages/Login';
+import BillHistory from './pages/BillHistory';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
       <Route path="/otp-verification" element={<OTPVerification />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/bill-history" element={<BillHistory />} />
     </Routes>
   )
 }
