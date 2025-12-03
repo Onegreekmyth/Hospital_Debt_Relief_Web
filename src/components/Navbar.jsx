@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import primaryLogo from "../assets/primary-logo.png";
 
-const Navbar = () => {
+const Navbar = ({ onOpenAddFamilyMembers }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { pathname, hash } = location;
   const isDashboard = pathname === "/dashboard" || pathname === "/bill-history";
 
@@ -34,15 +35,47 @@ const Navbar = () => {
           isScrolled ? "bg-gray-100/90" : "bg-white/90"
         }`}>
           <div className="flex items-center h-full overflow-hidden flex-shrink-0">
-            <img src={primaryLogo} alt="Logo" className="h-20 md:h-16 md:w-32 object-contain object-left" />
+            <img
+              src={primaryLogo}
+              alt="Logo"
+              onClick={() => navigate("/")}
+              className="h-10 md:h-14  object-contain object-left cursor-pointer"
+            />
           </div>
           <div className="flex items-center gap-2 md:gap-6">
             {isDashboard ? (
               <>
                 <nav className="hidden md:flex items-center space-x-6 text-sm font-medium text-black-800">
-                  <a href="#" className="hover:text-purple-700">Bills</a>
-                  <a href="#" className="hover:text-purple-700">Help</a>
-                  <a href="#" className="hover:text-purple-700">Logout</a>
+                  <button
+                    type="button"
+                    className="hover:text-purple-700"
+                  >
+                    Bills
+                  </button>
+                  <button
+                    type="button"
+                    className="hover:text-purple-700"
+                  >
+                    Help
+                  </button>
+                 
+                  <button
+                    type="button"
+                    className="hover:text-purple-700"
+                  >
+                    Logout
+                  </button>
+
+                  {onOpenAddFamilyMembers && (
+                    <button
+                      type="button"
+                      onClick={onOpenAddFamilyMembers}
+                      className="hover:text-purple-700 text-[#4720b1] border border-[#4720b1] px-4 py-2 rounded-full"
+                    >
+                     <span className="text-sm font-medium">+</span> Add Family Member
+                    </button>
+                  )}
+
                 </nav>
                 <Link
                   to="/bill-history"
@@ -150,7 +183,7 @@ const Navbar = () => {
         <div className="fixed top-24 left-1/2 -translate-x-1/2 z-40 w-[92%] md:hidden bg-white rounded-2xl border border-purple-300 shadow-lg p-6">
           <nav className="flex flex-col space-y-4">
             <a 
-              href="#" 
+              href="#"
               className="text-sm font-medium text-gray-800 hover:text-purple-700 py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
@@ -163,6 +196,18 @@ const Navbar = () => {
             >
               Help
             </a>
+            {onOpenAddFamilyMembers && (
+              <button
+                type="button"
+                className="text-left text-sm font-medium text-gray-800 hover:text-purple-700 py-2"
+                onClick={() => {
+                  onOpenAddFamilyMembers();
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                Family Members Listed
+              </button>
+            )}
             <a 
               href="#" 
               className="text-sm font-medium text-gray-800 hover:text-purple-700 py-2"

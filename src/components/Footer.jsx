@@ -17,7 +17,7 @@ const Footer = () => {
       {/* Top row: logo + social icons */}
       <div className="w-full px-6 md:px-10 py-6 md:py-0 md:h-20 md:h-24 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0 overflow-hidden">
         <div className="flex items-center h-full">
-          <img src={primaryLogo} alt="Logo" className="h-16 md:h-24 w-auto object-contain object-left" />
+          <img src={primaryLogo} alt="Logo" className="h-16 w-auto object-contain object-left" />
         </div>
         <div className="flex items-center gap-4">
           <a href="#" aria-label="Call" className="w-10 h-10 rounded-full border-2 border-[#3D0BBE] text-[#3D0BBE] flex items-center justify-center hover:bg-[#F4F0FF] transition">

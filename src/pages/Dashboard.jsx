@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import SubmissionModal from "../components/SubmissionModal";
 import BillInformationModal from "../components/BillInformationModal";
 import SubscriptionModal from "../components/SubscriptionModal";
+import AddFamilyMembersModal from "../components/AddFamilyMembersModal";
 
 const Dashboard = () => {
   const [isContactInfoOpen, setIsContactInfoOpen] = useState(false);
@@ -11,6 +12,7 @@ const Dashboard = () => {
   const [isBillModalOpen, setIsBillModalOpen] = useState(false);
   const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
   const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
+  const [isAddFamilyModalOpen, setIsAddFamilyModalOpen] = useState(false);
 
   // High-level onboarding and eligibility state (placeholder for backend data)
   const [subscriptionStatus, setSubscriptionStatus] = useState("active"); // "inactive" | "active"
@@ -21,7 +23,12 @@ const Dashboard = () => {
 
   // Disable scrolling when any modal is open
   useEffect(() => {
-    if (isBillModalOpen || isSubmissionModalOpen || isSubscriptionModalOpen) {
+    if (
+      isBillModalOpen ||
+      isSubmissionModalOpen ||
+      isSubscriptionModalOpen ||
+      isAddFamilyModalOpen
+    ) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
@@ -31,7 +38,7 @@ const Dashboard = () => {
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [isBillModalOpen, isSubmissionModalOpen, isSubscriptionModalOpen]);
+  }, [isBillModalOpen, isSubmissionModalOpen, isSubscriptionModalOpen, isAddFamilyModalOpen]);
 
   const familyMembersListed = [
     { id: 1, label: "Account Holder", value: "John Doe" },
@@ -69,7 +76,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
+      <Navbar onOpenAddFamilyMembers={() => setIsAddFamilyModalOpen(true)} />
 
       <div className="w-[92%] md:w-[92%] mx-auto px-4 md:px-6 lg:px-10 py-6 md:py-8 pt-20 md:pt-24 mt-12 md:mt-16">
         <div className="grid grid-cols-1 lg:grid-cols-[0.8fr_0.6fr] gap-8 md:gap-16 lg:gap-32">
@@ -330,117 +337,6 @@ const Dashboard = () => {
               )}
             </div>
 
-            {/* Add Family Members Section */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-              <button
-                onClick={() => setIsFamilyMembersOpen(!isFamilyMembersOpen)}
-                className="w-full flex items-center justify-between px-4 md:px-6 py-4 md:py-5 text-left"
-              >
-                <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900">Add Family Members</h2>
-                <svg
-                  className={`w-5 h-5 text-gray-600 transition-transform ${isFamilyMembersOpen ? '' : 'rotate-180'}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                </svg>
-              </button>
-
-              {isFamilyMembersOpen && (
-                <div className="px-4 md:px-6 pb-4 md:pb-6 space-y-3 md:space-y-4">
-                  {/* First Name and Second Name in a row */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                    {/* First Name */}
-                    <div className="flex flex-col gap-2">
-                      <label className="text-xs font-medium text-gray-500">
-                        First Name
-                      </label>
-                      <div className="relative">
-                        <svg
-                          className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                        <input
-                          type="text"
-                          className="w-full h-12 rounded-full border border-gray-300 bg-white pl-12 pr-4 text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
-                          placeholder="john"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Second Name */}
-                    <div className="flex flex-col gap-2">
-                      <label className="text-xs font-medium text-gray-500">
-                        Second Name
-                      </label>
-                      <div className="relative">
-                        <svg
-                          className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                        <input
-                          type="text"
-                          className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
-                          placeholder="Thomas"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Relationship with Patient */}
-                  <div className="flex flex-col gap-2">
-                    <label className="text-xs font-medium text-gray-500">
-                      Relationship with Patient
-                    </label>
-                    <select className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white px-3 md:px-4 pr-16 md:pr-20 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:10px] md:bg-[length:12px] bg-[right_1.5rem_center] md:bg-[right_2rem_center] bg-no-repeat">
-                      <option value="" disabled>Select</option>
-                    </select>
-                  </div>
-
-                  {/* Date of Birth */}
-                  <div className="flex flex-col gap-2">
-                    <label className="text-xs font-medium text-gray-500">
-                      Date of Birth
-                    </label>
-                    <select className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white px-3 md:px-4 pr-16 md:pr-20 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:10px] md:bg-[length:12px] bg-[right_1.5rem_center] md:bg-[right_2rem_center] bg-no-repeat">
-                      <option value="" disabled>Select</option>
-                    </select>
-                  </div>
-
-                  {/* Checkbox + Save */}
-                  <div className="flex items-center justify-between pt-2 gap-4">
-                    <div className="flex items-start gap-3">
-                      <input
-                        type="checkbox"
-                        id="email-agreement"
-                        className="mt-1 w-5 h-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                      />
-                      <label
-                        htmlFor="email-agreement"
-                        className="text-sm text-gray-700"
-                      >
-                        I'm only providing household family members
-                      </label>
-                    </div>
-                    <button
-                      type="button"
-                      className="px-5 py-2 rounded-full border border-purple-500 text-purple-700 text-xs md:text-sm font-medium bg-white hover:bg-purple-50 transition"
-                    >
-                      Save
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
           </div>
 
           {/* Right Column */}
@@ -614,6 +510,12 @@ const Dashboard = () => {
       <SubmissionModal
         isOpen={isSubmissionModalOpen}
         onClose={() => setIsSubmissionModalOpen(false)}
+      />
+
+      {/* Add Family Members Modal */}
+      <AddFamilyMembersModal
+        isOpen={isAddFamilyModalOpen}
+        onClose={() => setIsAddFamilyModalOpen(false)}
       />
     </div>
   );

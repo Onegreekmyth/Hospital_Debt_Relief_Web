@@ -46,8 +46,11 @@ const HomePage = () => {
         }}
       >
         <div className="max-w-3xl text-black">
-          <h6 className="text-[20px] md:text-[22px] leading-[1.2] md:leading-tight lg:text-[26px]">
-            Receive up to a 100% reduction on your current hospital bills,<br /> whether you have insurance or not. You can also explore our<br /> low monthly subscription plans starting at just $7/month to<br /> be prepared for future hospital bills.
+          <h1 className="text-[24px] md:text-[28px] leading-[1.2] md:leading-tight lg:text-[42px] font-bold text-black">
+          We provide the tools to help you save money on your hospital bills.
+          </h1><br />
+          <h6 className="text-[20px] md:text-[22px] leading-[1.2] md:leading-tight lg:text-[16px]">
+            Receive up to a 100% reduction on your current hospital bills, whether you have insurance or not. You can also explore our low monthly subscription plans starting at just $7/month to be prepared for future hospital bills.
           </h6>
           <p className="mt-4 text-black/90 text-[12px] md:text-[14px] leading-relaxed px-2">
             All backed by our money back Guarantee
