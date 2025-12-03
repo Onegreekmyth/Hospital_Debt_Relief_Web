@@ -293,46 +293,48 @@ const Dashboard = () => {
                         </div>
                       </div>
 
-                      <div className="flex gap-2 self-start md:self-center">
-                        <button
-                          type="button"
-                          className="p-2 rounded-full border border-purple-200 text-purple-700 bg-white hover:bg-purple-50 transition"
-                          aria-label="Edit family member"
-                        >
-                          <svg
-                            className="w-4 h-4 md:w-5 md:h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
+                      {member.label !== "Account Holder" && (
+                        <div className="flex gap-2 self-start md:self-center">
+                          <button
+                            type="button"
+                            className="p-2 rounded-full border border-purple-200 text-purple-700 bg-white hover:bg-purple-50 transition"
+                            aria-label="Edit family member"
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M15.232 5.232l3.536 3.536M4 20h4l9.268-9.268a2 2 0 000-2.828l-2.172-2.172a2 2 0 00-2.828 0L4 16v4z"
-                            />
-                          </svg>
-                        </button>
-                        <button
-                          type="button"
-                          className="p-2 rounded-full border border-red-200 text-red-600 bg-white hover:bg-red-50 transition"
-                          aria-label="Delete family member"
-                        >
-                          <svg
-                            className="w-4 h-4 md:w-5 md:h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
+                            <svg
+                              className="w-4 h-4 md:w-5 md:h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15.232 5.232l3.536 3.536M4 20h4l9.268-9.268a2 2 0 000-2.828l-2.172-2.172a2 2 0 00-2.828 0L4 16v4z"
+                              />
+                            </svg>
+                          </button>
+                          <button
+                            type="button"
+                            className="p-2 rounded-full border border-red-200 text-red-600 bg-white hover:bg-red-50 transition"
+                            aria-label="Delete family member"
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m-9 0h10"
-                            />
-                          </svg>
-                        </button>
-                      </div>
+                            <svg
+                              className="w-4 h-4 md:w-5 md:h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m-9 0h10"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -382,7 +384,7 @@ const Dashboard = () => {
               {/* Map */}
               <div
                 className="relative bg-gray-100 overflow-hidden"
-                style={{ height: "170px" }}
+                style={{ height: "200px" }}
               >
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.184132576782!2d-73.98784468459418!3d40.75889597932681!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25855c6480299%3A0x55194ec5a1ae4e8!2sTimes%20Square!5e0!3m2!1sen!2sus!4v1234567890123!5m2!1sen!2sus"
@@ -397,7 +399,7 @@ const Dashboard = () => {
               </div>
 
               {/* Overlapping hospital badge, centered and half over map */}
-              <div className="absolute left-1/2 top-[170px] -translate-x-1/2 -translate-y-1/2">
+              <div className="absolute left-1/2 top-[200px] -translate-x-1/2 -translate-y-1/2">
                 <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-[#27b652] border-[6px] border-white flex items-center justify-center shadow-lg">
                   <div className="w-11 h-11 md:w-14 md:h-14 rounded-full bg-white flex items-center justify-center">
                     {/* Four-leaf clover icon */}

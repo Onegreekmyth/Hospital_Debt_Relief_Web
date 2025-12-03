@@ -72,7 +72,7 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
                       onClick={onOpenAddFamilyMembers}
                       className="hover:text-purple-700 text-[#4720b1] border border-[#4720b1] px-4 py-2 rounded-full"
                     >
-                     <span className="text-sm font-medium">+</span> Add Family Member
+                     <p className="text-sm font-bold">+ Add Family Member </p>
                     </button>
                   )}
 
