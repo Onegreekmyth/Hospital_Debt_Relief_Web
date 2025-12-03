@@ -4,6 +4,8 @@ import SubmissionModal from "../components/SubmissionModal";
 import BillInformationModal from "../components/BillInformationModal";
 import SubscriptionModal from "../components/SubscriptionModal";
 import AddFamilyMembersModal from "../components/AddFamilyMembersModal";
+import uploadImg from "../assets/upload-img.png";
+import rightArrow from "../assets/right-arrow.png";
 
 const Dashboard = () => {
   const [isContactInfoOpen, setIsContactInfoOpen] = useState(false);
@@ -376,7 +378,7 @@ const Dashboard = () => {
             </div> */}
 
             {/* Hospital & Billing Card */}
-            <div className="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="relative bg-white rounded-[32px] md:rounded-[40px] shadow-sm border border-gray-200 overflow-hidden">
               {/* Map */}
               <div
                 className="relative bg-gray-100 overflow-hidden"
@@ -394,83 +396,139 @@ const Dashboard = () => {
                 ></iframe>
               </div>
 
-              {/* Content */}
-              <div className="p-4 md:p-5 space-y-5">
-                {/* Hospital Info */}
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-base md:text-lg font-bold text-gray-900">
-                      XYZ Hospital
-                    </h3>
-                    <p className="text-[13px] md:text-sm text-gray-900">Address</p>
-                    <p className="text-[13px] md:text-sm text-purple-700 underline cursor-pointer">
-                      Website
-                    </p>
+              {/* Overlapping hospital badge, centered and half over map */}
+              <div className="absolute left-1/2 top-[170px] -translate-x-1/2 -translate-y-1/2">
+                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-[#27b652] border-[6px] border-white flex items-center justify-center shadow-lg">
+                  <div className="w-11 h-11 md:w-14 md:h-14 rounded-full bg-white flex items-center justify-center">
+                    {/* Four-leaf clover icon */}
+                    <svg
+                      className="w-7 h-7 md:w-8 md:h-8 text-[#27b652]"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M12 2.75a3.25 3.25 0 0 1 3.25 3.25c0 .46-.1.9-.29 1.3a3.23 3.23 0 0 1 1.04-.18A3.25 3.25 0 1 1 12 10.37 3.25 3.25 0 1 1 8 7.12c.37 0 .72.06 1.05.18a3.22 3.22 0 0 1-.3-1.3A3.25 3.25 0 0 1 12 2.75Z" />
+                      <path d="M11.25 11.5h1.5v7.25a.75.75 0 0 1-1.5 0V11.5Z" />
+                    </svg>
                   </div>
+                </div>
+              </div>
 
-                  <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-[11px] md:text-xs font-medium">
-                    Available
+              {/* Content */}
+              <div className="px-6 md:px-8 pb-8 md:pb-9 pt-8 md:pt-9 bg-white justify-start">
+                {/* Hospital Info */}
+                <div className="flex flex-col items-center gap-1.5 md:gap-2 mb-6">
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-lg md:text-xl font-semibold text-black">
+                      Hospital Name
+                    </h3>
+                    <span className="px-4 py-1 rounded-full bg-[#c9f4b8] text-[#1a8c3a] text-[11px] md:text-xs font-medium">
+                      Eligible
+                    </span>
+                  </div>
+                  <span className="text-xs md:text-sm text-[#c0bde9]">
+                    1 mile away
                   </span>
                 </div>
 
-                {/* Buttons Section */}
-                <div className="space-y-4">
-                  {/* Upload Bill */}
-                  <div className="flex justify-start">
-                    <button
-                      type="button"
-                      onClick={() => setIsBillModalOpen(true)}
-                      className="w-2/3 flex items-center justify-center rounded-full border-2 border-purple-600 text-purple-700 bg-white px-4 py-2.5 text-xs md:text-sm font-semibold"
-                    >
-                      Upload Hospital Bill
-                    </button>
-                  </div>
+                {/* Nearby Hospitals Heading */}
+                <div className="mb-5 md:mb-6">
+                  <h4 className="text-xl md:text-2xl font-semibold text-black">
+                    Nearby&nbsp;Hospitals
+                  </h4>
+                  <p className="mt-1 text-xs md:text-sm text-gray-600">
+                    Based on your location and household info.
+                  </p>
+                </div>
 
-                  {/* Signup Monthly */}
-                  <div className="flex justify-start">
-                    <button
-                      type="button"
-                      onClick={() => setIsSubscriptionModalOpen(true)}
-                      className="w-2/3 flex items-center justify-center rounded-full border-2 border-purple-600 text-purple-700 bg-white px-4 py-2.5 text-xs md:text-sm font-semibold"
-                    >
-                      Sign Up - Monthly Subscription
-                    </button>
-                  </div>
-
-                  {/* Subscription Status */}
-                  <div className="flex flex-col md:flex-row items-center md:justify-between gap-3">
-                    <button
-                      type="button"
-                      className="w-2/3 flex items-center justify-center rounded-full border-2 border-purple-600 text-purple-700 bg-white px-4 py-2.5 text-xs md:text-sm font-semibold"
-                    >
-                      Subscription Status:{" "}
-                      <span className="ml-1">
-                        {subscriptionStatus === "active" ? "Active" : "Inactive"}
-                      </span>
-                    </button>
-
-                    {/* Subscription Date */}
-                    <div className="flex flex-col justify-center items-center md:items-end text-right h-full">
-                      <span className="text-[11px]  md:text-xs text-purple-700 font-medium">
-                        Subscription Date
-                      </span>
-                      <div className="px-4 py-2 rounded-full border-2 border-purple-600 text-[11px] md:text-xs text-gray-800">
-                        {subscriptionStatus === "active"
-                          ? subscriptionDate
-                          : "10/28/2025"}
+                {/* Action cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-2">
+                  {/* Upload Bill Card */}
+                  <button
+                    type="button"
+                    onClick={() => setIsBillModalOpen(true)}
+                    className="group h-32 md:h-36 hover:bg-[#e2dfec] w-full rounded-[26px] border-2 border-[#5225cc] bg-white px-6 py-5 flex flex-col items-center justify-between text-center hover:shadow-md transition"
+                  >
+                    <div>
+                      <p className="text-base md:text-lg font-semibold text-[#5225cc]">
+                        Upload
+                      </p>
+                      <p className="mt-1 text-xs md:text-sm text-[#5225cc]">
+                        Bills to save money
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-center mt-2">
+                      <div className="w-8 h-8 md:w-9 md:h-9 rounded-full  flex items-center justify-center transition">
+                        <img
+                          src={uploadImg}
+                          alt="Upload"
+                          className="w-4 h-4 md:w-5 md:h-5 object-contain"
+                        />
                       </div>
                     </div>
-                  </div>
+                  </button>
 
-                  {/* Cancel Subscription */}
-                  <div className="flex justify-start">
-                    <button
-                      type="button"
-                      className="w-2/3 flex items-center justify-center rounded-full border-2 border-purple-600 text-purple-700 bg-white px-4 py-2.5 text-xs md:text-sm font-semibold"
-                    >
-                      Cancel my Subscription Plan
-                    </button>
-                  </div>
+                  {/* Sign Up Monthly Subscription Card */}
+                  <button
+                    type="button"
+                    onClick={() => setIsSubscriptionModalOpen(true)}
+                    className="group h-32 md:h-36 hover:bg-[#e2dfec] w-full rounded-[26px] border-2 border-[#5225cc] bg-white px-6 py-5 flex flex-col items-center justify-between hover:shadow-md transition"
+                  >
+                    {subscriptionStatus === "inactive" && (
+
+                      <div className="text-center">
+                        <p className="text-base md:text-lg font-semibold text-[#5225cc]">
+                          Sign Up
+                        </p>
+                        <p className="mt-1 text-xs md:text-sm text-[#5225cc]">
+                          Monthly Subscription
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="mt-1 flex flex-col items-center gap-1.5">
+                      <div className="flex items-center gap-1 whitespace-nowrap">
+                        <span className="text-[11px] md:text-xs text-[#5225cc]">
+                          Subscription Status
+                        </span>
+                        <span
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] md:text-xs font-medium ${subscriptionStatus === "active"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-[#ffd7da] text-[#d45360]"
+                            }`}
+                        >
+                          {subscriptionStatus === "active" ? "Active" : "Inactive"}
+                        </span>
+                      </div>
+
+                      {subscriptionStatus === "active" && (
+                        <>
+                          <span className="text-[11px] md:text-xs  text-[#5225cc]">
+                            Subscription Date: {subscriptionDate}
+                          </span>
+                          <button
+                            type="button"
+                            className="text-[11px] md:text-[12px] font-extrabold text-[#5225cc]"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSubscriptionStatus("inactive");
+                              setSubscriptionTier(null);
+                            }}
+                          >
+                            Cancel My Subscription Plan
+                          </button>
+                        
+                        </>
+                      )}
+
+                      <div className="flex items-center justify-center">
+                        <img
+                          src={rightArrow}
+                          alt="View subscription"
+                          className="w-6 h-6 md:w-7 md:h-7 object-contain"
+                        />
+                      </div>
+                    </div>
+                  </button>
                 </div>
               </div>
             </div>
