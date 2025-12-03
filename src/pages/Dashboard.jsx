@@ -4,6 +4,7 @@ import SubmissionModal from "../components/SubmissionModal";
 import BillInformationModal from "../components/BillInformationModal";
 import SubscriptionModal from "../components/SubscriptionModal";
 import AddFamilyMembersModal from "../components/AddFamilyMembersModal";
+import ApplicationModal from "../components/ApplicationModal";
 import uploadImg from "../assets/upload-img.png";
 import rightArrow from "../assets/right-arrow.png";
 
@@ -15,6 +16,7 @@ const Dashboard = () => {
   const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
   const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
   const [isAddFamilyModalOpen, setIsAddFamilyModalOpen] = useState(false);
+  const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
 
   // High-level onboarding and eligibility state (placeholder for backend data)
   const [subscriptionStatus, setSubscriptionStatus] = useState("active"); // "inactive" | "active"
@@ -29,7 +31,8 @@ const Dashboard = () => {
       isBillModalOpen ||
       isSubmissionModalOpen ||
       isSubscriptionModalOpen ||
-      isAddFamilyModalOpen
+      isAddFamilyModalOpen ||
+      isApplicationModalOpen
     ) {
       document.body.style.overflow = "hidden";
     } else {
@@ -40,7 +43,13 @@ const Dashboard = () => {
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [isBillModalOpen, isSubmissionModalOpen, isSubscriptionModalOpen, isAddFamilyModalOpen]);
+  }, [
+    isBillModalOpen,
+    isSubmissionModalOpen,
+    isSubscriptionModalOpen,
+    isAddFamilyModalOpen,
+    isApplicationModalOpen,
+  ]);
 
   const familyMembersListed = [
     { id: 1, label: "Account Holder", value: "John Doe" },
@@ -546,7 +555,7 @@ const Dashboard = () => {
         isSubscriptionActive={subscriptionStatus === "active"}
         onSubmitted={() => {
           setIsBillModalOpen(false);
-          setIsSubmissionModalOpen(true);
+          setIsApplicationModalOpen(true);
         }}
       />
 
@@ -576,6 +585,16 @@ const Dashboard = () => {
       <AddFamilyMembersModal
         isOpen={isAddFamilyModalOpen}
         onClose={() => setIsAddFamilyModalOpen(false)}
+      />
+
+      {/* XYZ Application Modal */}
+      <ApplicationModal
+        isOpen={isApplicationModalOpen}
+        onClose={() => setIsApplicationModalOpen(false)}
+        onComplete={() => {
+          setIsApplicationModalOpen(false);
+          setIsSubmissionModalOpen(true);
+        }}
       />
     </div>
   );

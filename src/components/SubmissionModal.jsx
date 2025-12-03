@@ -6,11 +6,11 @@ const SubmissionModal = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Background Overlay */}
-      <div 
+      <div
         className="absolute inset-0 bg-black bg-opacity-50"
         onClick={onClose}
       />
-      
+
       {/* Modal */}
       <div className="relative bg-white rounded-2xl md:rounded-3xl shadow-2xl max-w-lg w-full p-6 md:p-8 lg:p-10 mx-4">
         {/* Green Circle with Checkmark */}
@@ -32,20 +32,24 @@ const SubmissionModal = ({ isOpen, onClose }) => {
           </div>
         </div>
 
-        {/* Congratulations Heading */}
-        <h2 className="text-center text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-3 md:mb-4">
-          Congratulations
-        </h2>
-
         {/* Application Completed Message */}
-        <p className="text-center text-sm md:text-base lg:text-lg text-black mb-4 md:mb-6 font-medium">
-          Application Completed.
-        </p>
+        <h1 className="text-center text-lg md:text-lg lg:text-xl text-black mb-4 md:mb-6 font-bold">
+          Your Application has been submitted.
+        </h1>
 
         {/* Instructions */}
-        <p className="text-center text-xs md:text-sm lg:text-base text-black leading-relaxed px-2">
-          Please wait 30 to 25 days for an updated bill or further communication from hospital xyz.
+        <p className="text-center text-xs md:text-sm lg:text-base text-black leading-relaxed px-2 mb-6">
+          Please allow up to 30 days for a updated bill
+          from XYZ Hospital as processing times may vary.
         </p>
+        <div className="flex justify-center mb-4 sm:mb-6">
+          <button className="h-10 sm:h-12 px-8 rounded-full text-[#5225cc] border border-[#5225cc] text-sm sm:text-base font-semibold">
+            <p className="text-sm sm:text-base font-semibold text-[#5225cc] px-4 py-3">
+              View Bill History
+            </p>
+          </button><br />
+        </div>
+        <p className="text-center text-xs md:text-sm lg:text-base text-[#1d0f7b] leading-relaxed px-2">Backed By Our Money Back Guarantee!</p>
       </div>
     </div>
   );
