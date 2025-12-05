@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import primaryLogo from "../assets/primary-logo.png";
+import uploadImg from "../assets/upload-img.png";
 
 const Navbar = ({ onOpenAddFamilyMembers }) => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -9,6 +10,7 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
   const navigate = useNavigate();
   const { pathname, hash } = location;
   const isDashboard = pathname === "/dashboard" || pathname === "/bill-history";
+  const isBillHistory = pathname === "/bill-history";
 
   const navLinkClasses = (isActive) =>
     `hover:text-purple-700 transition-colors ${
@@ -72,17 +74,34 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
                       onClick={onOpenAddFamilyMembers}
                       className="hover:text-purple-700 text-[#4720b1] border border-[#4720b1] px-4 py-2 rounded-full"
                     >
-                     <p className="text-sm font-bold">+ Add Family Member </p>
+                      <p className="text-sm font-bold">+ Add Family Member </p>
                     </button>
                   )}
 
                 </nav>
-                <Link
-                  to="/bill-history"
-                  className="hidden md:inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-900 to-blue-800 px-5 py-2 text-white text-sm font-medium hover:from-purple-800 hover:to-blue-700 transition"
-                >
-                  View Bill History
-                </Link>
+                {isBillHistory ? (
+                  <Link
+                    to="/dashboard"
+                    className="hidden md:inline-flex items-center justify-center gap-2 text-[#4720b1] border border-[#4720b1] px-4 py-2 rounded-full text-sm font-bold hover:bg-purple-50"
+                  >
+                      <span className="inline-flex items-center justify-center w-6 h-6 rounded-full">
+                      <img
+                        src={uploadImg}
+                        alt="Upload"
+                        className="w-5 h-5 object-contain"
+                      />
+                    </span>
+                    <span>Upload New Bill</span>
+                  
+                  </Link>
+                ) : (
+                  <Link
+                    to="/bill-history"
+                    className="hidden md:inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-900 to-blue-800 px-5 py-2 text-white text-sm font-medium hover:from-purple-800 hover:to-blue-700 transition"
+                  >
+                    View Bill History
+                  </Link>
+                )}
                 <button 
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                   className="md:hidden inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-900 to-blue-800 px-3 py-2 text-white text-xs font-medium"
@@ -215,13 +234,30 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
             >
               Logout
             </a>
-            <Link 
-              to="/bill-history"
-              className="mt-4 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-900 to-blue-800 px-5 py-2 text-white text-sm font-medium"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              View Bill History
-            </Link>
+            {isBillHistory ? (
+              <Link 
+                to="/dashboard"
+                className="mt-4 inline-flex items-center justify-center gap-2 text-[#4720b1] border border-[#4720b1] px-4 py-2 rounded-full text-sm font-bold"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <span>Upload New Bill</span>
+                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#f3ecff]">
+                  <img
+                    src={uploadImg}
+                    alt="Upload"
+                    className="w-3.5 h-3.5 object-contain"
+                  />
+                </span>
+              </Link>
+            ) : (
+              <Link 
+                to="/bill-history"
+                className="mt-4 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-900 to-blue-800 px-5 py-2 text-white text-sm font-medium"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                View Bill History
+              </Link>
+            )}
           </nav>
         </div>
       )}
