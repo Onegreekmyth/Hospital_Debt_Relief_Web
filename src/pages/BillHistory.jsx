@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 const MOCK_BILLS = [
@@ -35,6 +36,7 @@ const MOCK_BILLS = [
 const BillHistory = () => {
   const [filter, setFilter] = useState("All");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const navigate = useNavigate();
 
   const filteredBills = MOCK_BILLS.filter((bill) => {
     if (filter === "Submitted") return bill.status === "Submitted";
@@ -69,7 +71,7 @@ const BillHistory = () => {
               <button
                 type="button"
                 onClick={() => setIsFilterOpen((open) => !open)}
-                className="flex items-center gap-2 rounded-full border border-purple-800 px-4 py-2 text-xs md:text-sm font-medium text-purple-800 bg-white shadow-sm hover:bg-purple-50 transition"
+                className="flex items-center gap-2 rounded-full border border-[#5d3aba] px-4 py-2 text-xs md:text-sm font-medium text-purple-800 bg-white shadow-sm hover:bg-gray-100 transition"
               >
                 {/* Simple icon */}
                 <span className="flex h-7 w-8 text-3xl items-center justify-center rounded-full text-purple-800 text-base">
@@ -142,6 +144,7 @@ const BillHistory = () => {
                           <button
                             type="button"
                             className="text-xs md:text-sm font-semibold text-purple-700 hover:text-purple-900"
+                            onClick={() => navigate(`/bill-history/${bill.id}`)}
                           >
                             View
                           </button>

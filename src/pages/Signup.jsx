@@ -13,17 +13,19 @@ const Signup = () => {
 
         {/* Form */}
         <form
-          className="space-y-3 md:space-y-4"
+          className="space-y-4 md:space-y-5"
           onSubmit={(e) => {
             e.preventDefault();
             navigate("/otp-verification", { state: { from: "signup" } });
           }}
         >
           {/* Name Field */}
-          <div className="flex flex-col gap-1">
-            <span className="text-sm md:text-[15px] font-medium text-gray-900">
-              Name
-            </span>
+          <div className="relative pt-2">
+            <div className="absolute -top-3 left-6 bg-white px-2 py-0.5 rounded-b-md">
+              <span className="text-xs md:text-[13px] font-medium text-gray-900">
+                Name
+              </span>
+            </div>
             <div className="flex items-center gap-3 rounded-full border border-purple-200 bg-white px-3.5 md:px-4 py-2 md:py-3">
               <div className="flex items-center justify-center text-[#C9B6FF]">
                 <svg
@@ -49,10 +51,12 @@ const Signup = () => {
           </div>
 
           {/* Number Field */}
-          <div className="flex flex-col gap-1">
-            <span className="text-sm md:text-[15px] font-medium text-gray-900">
-              Number
-            </span>
+          <div className="relative pt-2">
+            <div className="absolute -top-3 left-6 bg-white px-2 py-0.5 rounded-b-md">
+              <span className="text-xs md:text-[13px] font-medium text-gray-900">
+                Number
+              </span>
+            </div>
             <div className="flex items-center gap-3 rounded-full border border-purple-200 bg-white px-3.5 md:px-4 py-2 md:py-3">
               <div className="flex items-center justify-center text-[#C9B6FF]">
                 <svg
@@ -78,10 +82,12 @@ const Signup = () => {
           </div>
 
           {/* Email Field */}
-          <div className="flex flex-col gap-1">
-            <span className="text-sm md:text-[15px] font-medium text-gray-900">
-              Email
-            </span>
+          <div className="relative pt-2">
+            <div className="absolute -top-3 left-6 bg-white px-2 py-0.5 rounded-b-md">
+              <span className="text-xs md:text-[13px] font-medium text-gray-900">
+                Email
+              </span>
+            </div>
             <div className="flex items-center gap-3 rounded-full border border-purple-200 bg-white px-3.5 md:px-4 py-2 md:py-3 md:mb-5">
               <div className="flex items-center justify-center text-[#C9B6FF]">
                 <svg

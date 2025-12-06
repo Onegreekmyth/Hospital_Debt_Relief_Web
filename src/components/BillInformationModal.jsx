@@ -136,5 +136,3 @@ const BillInformationModal = ({ isOpen, onClose, onSubmitted, isSubscriptionActi
 };
 
 export default BillInformationModal;
-
-

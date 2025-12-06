@@ -9,8 +9,8 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { pathname, hash } = location;
-  const isDashboard = pathname === "/dashboard" || pathname === "/bill-history";
-  const isBillHistory = pathname === "/bill-history";
+  const isDashboard = pathname === "/dashboard" || pathname.startsWith("/bill-history");
+  const isBillHistory = pathname.startsWith("/bill-history");
 
   const navLinkClasses = (isActive) =>
     `hover:text-purple-700 transition-colors ${
