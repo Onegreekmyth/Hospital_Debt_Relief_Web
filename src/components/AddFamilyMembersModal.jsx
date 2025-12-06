@@ -20,11 +20,8 @@ const AddFamilyMembersModal = ({ isOpen, onClose }) => {
         className="relative w-full max-w-xl sm:max-w-lg rounded-[32px] bg-white shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Subtle top background to better match visual */}
-        <div className="absolute -left-24 -top-24 h-40 w-40 rounded-full bg-purple-100 opacity-40 pointer-events-none" />
-        <div className="absolute -right-24 -bottom-24 h-52 w-52 rounded-full bg-purple-100 opacity-40 pointer-events-none" />
 
-        <div className="relative px-5 sm:px-7 pt-6 pb-5 sm:pt-7 sm:pb-6 bg-[#fbf9ff]">
+        <div className="relative px-5 sm:px-7 pt-6 pb-5 sm:pt-7 sm:pb-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-4 sm:mb-5">
             <h2 className="w-full text-center text-xl sm:text-2xl font-bold text-gray-900">
@@ -58,7 +55,7 @@ const AddFamilyMembersModal = ({ isOpen, onClose }) => {
                   </svg>
                   <input
                     type="text"
-                    className="w-full h-12 rounded-full border border-purple-200 bg-white pl-11 pr-4 text-sm sm:text-base text-gray-800 placeholder:text-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                    className="w-full h-12 rounded-full border border-[#ccc2ea] bg-white pl-11 pr-4 text-sm sm:text-base text-gray-800 placeholder:text-purple-200 focus:outline-none focus:ring-1 focus:ring-[#ccc2ea]"
                     placeholder="john"
                   />
                 </div>
@@ -85,7 +82,7 @@ const AddFamilyMembersModal = ({ isOpen, onClose }) => {
                   </svg>
                   <input
                     type="text"
-                    className="w-full h-12 rounded-full border border-purple-200 bg-white pl-11 pr-4 text-sm sm:text-base text-gray-800 placeholder:text-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                    className="w-full h-12 rounded-full border border-[#ccc2ea] bg-white pl-11 pr-4 text-sm sm:text-base text-gray-800 placeholder:text-purple-200 focus:outline-none focus:ring-1 focus:ring-[#ccc2ea]"
                     placeholder="Thomas"
                   />
                 </div>
@@ -99,7 +96,7 @@ const AddFamilyMembersModal = ({ isOpen, onClose }) => {
               </label>
               <select
                 defaultValue=""
-                className="w-full h-12 rounded-full border border-purple-200 bg-white px-4 pr-12 text-sm sm:text-base text-gray-800 placeholder:text-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%239C88FF%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:10px] bg-[right_1.5rem_center] bg-no-repeat"
+                className="w-full h-12 rounded-full border border-[#ccc2ea] bg-white px-4 pr-12 text-sm sm:text-base text-gray-800 placeholder:text-purple-200 focus:outline-none focus:ring-1 focus:ring-[#ccc2ea] appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%239C88FF%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:10px] bg-[right_1.5rem_center] bg-no-repeat"
               >
                 <option value="" disabled>
                   Select
@@ -114,7 +111,7 @@ const AddFamilyMembersModal = ({ isOpen, onClose }) => {
               </label>
               <select
                 defaultValue=""
-                className="w-full h-12 rounded-full border border-purple-200 bg-white px-4 pr-12 text-sm sm:text-base text-gray-800 placeholder:text-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%239C88FF%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:10px] bg-[right_1.5rem_center] bg-no-repeat"
+                  className="w-full h-12 rounded-full border border-[#ccc2ea] bg-white px-4 pr-12 text-sm sm:text-base text-gray-800 placeholder:text-purple-200 focus:outline-none focus:ring-1 focus:ring-purple-300 appearance-none bg-[length:10px] bg-[right_1.5rem_center] bg-no-repeat"
               >
                 <option value="" disabled>
                   Select
