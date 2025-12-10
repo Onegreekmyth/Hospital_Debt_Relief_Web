@@ -74,8 +74,8 @@ const HomePage = () => {
           }}
         >
           {/* Row 1 */}
-          <div className="grid gap-4 md:gap-6 md:grid-cols-3">
-            <div className="flex flex-col gap-2">
+          <div className="grid gap-4 md:gap-6 md:grid-cols-4">
+            <div className="flex flex-col gap-2 md:col-span-2">
               <label className="text-sm md:text-base font-medium text-gray-900">
                 Existing Hospital Bill?
               </label>
@@ -113,30 +113,20 @@ const HomePage = () => {
           <div className="grid gap-4 md:gap-6 md:grid-cols-2">
             <div className="flex flex-col gap-2 w-full">
               <label className="text-sm md:text-base font-medium text-gray-900">
-                Hospital Name
+                Local Hospital
               </label>
-              <input
-                type="text"
-                className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300"
-                placeholder="Enter hospital name"
-                onChange={(e) => setSelectedHospital(e.target.value || "xyz Hospital")}
-              />
+              <select
+                className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat"
+                value={selectedHospital}
+                onChange={(e) => setSelectedHospital(e.target.value)}
+              >
+                <option value="xyz Hospital">xyz Hospital</option>
+                <option value="General City Hospital">General City Hospital</option>
+                <option value="Regional Medical Center">Regional Medical Center</option>
+                <option value="Community Care Hospital">Community Care Hospital</option>
+              </select>
             </div>
-            <div className="flex flex-col gap-2 w-full">
-              <label className="text-sm md:text-base font-medium text-gray-900">
-                Total Owned to Hospital
-              </label>
-              <div className="relative">
-                <span className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 text-base">
-                  $
-                </span>
-                <input
-                  type="number"
-                  className="h-14 w-full rounded-full border border-purple-200 bg-white pl-10 pr-6 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300"
-                  placeholder=""
-                />
-              </div>
-            </div>
+           
           </div>
 
           {/* Row 3 */}
