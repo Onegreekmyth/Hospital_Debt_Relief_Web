@@ -9,6 +9,7 @@ import { fetchHospitals, resetHospitals } from "../store/hospitals/hospitalsSlic
 
 
 const HomePage = () => {
+  
   const [openIndex, setOpenIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedHospital, setSelectedHospital] = useState("");
@@ -71,8 +72,12 @@ const HomePage = () => {
     }
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Ensure modal is not shown when there are validation errors
+    setIsModalOpen(false);
 
     // Reset field errors
     setHospitalError("");
