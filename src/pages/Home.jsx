@@ -1,15 +1,143 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import heroImg from "../assets/hero-img.jpg";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import SuccessModal from "../components/SuccessModal";
+import axiosClient from "../api/axiosClient";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchHospitals, resetHospitals } from "../store/hospitals/hospitalsSlice";
 
 
 const HomePage = () => {
-
   const [openIndex, setOpenIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedHospital, setSelectedHospital] = useState("xyz Hospital");
+  const [selectedHospital, setSelectedHospital] = useState("");
+  const [selectedHospitalId, setSelectedHospitalId] = useState("");
+  const [hospitalInputActive, setHospitalInputActive] = useState(false);
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [householdIncome, setHouseholdIncome] = useState("");
+  const [householdSize, setHouseholdSize] = useState("");
+  const [notInCollections, setNotInCollections] = useState(false);
+  const [eligibilityLoading, setEligibilityLoading] = useState(false);
+  const [eligibilityError, setEligibilityError] = useState("");
+  const [eligibilityResponse, setEligibilityResponse] = useState(null);
+  const [hospitalError, setHospitalError] = useState("");
+  const [incomeError, setIncomeError] = useState("");
+  const [sizeError, setSizeError] = useState("");
+
+  const dispatch = useDispatch();
+  const { items: hospitals, page, totalPages, status } = useSelector(
+    (state) => state.hospitals
+  );
+
+  // Load hospitals whenever filters change (including initial load with no filters)
+  useEffect(() => {
+    dispatch(resetHospitals());
+    dispatch(
+      fetchHospitals({
+        page: 1,
+        state: selectedState || undefined,
+        city: selectedCity || undefined,
+      })
+    );
+  }, [dispatch, selectedState, selectedCity]);
+
+  const hospitalOptions = useMemo(() => hospitals || [], [hospitals]);
+
+  const handleSelectHospital = (hospital) => {
+    setSelectedHospital(hospital.Name);
+    setSelectedHospitalId(hospital._id);
+    setHospitalInputActive(false);
+  };
+
+  const handleHospitalScroll = (e) => {
+    if (!hospitalInputActive) return;
+    if (status === "loading") return;
+    if (page >= totalPages) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = e.target;
+    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+
+    // Prefetch next page a bit earlier so scrolling feels smoother
+    if (distanceFromBottom < 120) {
+      dispatch(
+        fetchHospitals({
+          page: page + 1,
+          state: selectedState || undefined,
+          city: selectedCity || undefined,
+        })
+      );
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Reset field errors
+    setHospitalError("");
+    setIncomeError("");
+    setSizeError("");
+
+    let hasError = false;
+
+    if (!selectedHospitalId) {
+      setHospitalError("Please select a local hospital.");
+      hasError = true;
+    }
+
+    if (!householdIncome) {
+      setIncomeError("Please enter your annual household income.");
+      hasError = true;
+    } else if (Number(householdIncome) <= 0) {
+      setIncomeError("Income must be greater than 0.");
+      hasError = true;
+    }
+
+    if (!householdSize) {
+      setSizeError("Please enter your household family size.");
+      hasError = true;
+    } else if (Number(householdSize) <= 0) {
+      setSizeError("Family size must be at least 1.");
+      hasError = true;
+    }
+
+    // City and State can be empty – no validation for them
+
+    if (hasError) {
+      return;
+    }
+
+    setEligibilityLoading(true);
+    setEligibilityError("");
+    setEligibilityResponse(null);
+
+    try {
+      const payload = {
+        hospitalId: selectedHospitalId,
+        householdIncome: Number(householdIncome),
+        householdSize: Number(householdSize),
+        isInCollections: !notInCollections,
+      };
+
+      const response = await axiosClient.post(
+        "/hospitals/calculate-eligibility",
+        payload
+      );
+
+      setEligibilityResponse(response.data);
+      setIsModalOpen(true);
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Unable to calculate eligibility right now.";
+      setEligibilityError(message);
+      setIsModalOpen(true);
+    } finally {
+      setEligibilityLoading(false);
+    }
+  };
 
   const faqs = [
     {
@@ -68,10 +196,7 @@ const HomePage = () => {
         </h2>
         <form
           className="max-w-6xl mx-auto text-left px-4 md:px-6 space-y-8"
-          onSubmit={(e) => {
-            e.preventDefault();
-            setIsModalOpen(true);
-          }}
+          onSubmit={handleSubmit}
         >
           {/* Row 1 */}
           <div className="grid gap-4 md:gap-6 md:grid-cols-4">
@@ -91,21 +216,25 @@ const HomePage = () => {
               <label className="text-sm md:text-base font-medium text-gray-900">
                 State
               </label>
-              <select className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat" defaultValue="">
-                <option value="" disabled>
-                  Select
-                </option>
-              </select>
+              <input
+                type="text"
+                className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                placeholder="e.g. WY"
+                value={selectedState}
+                onChange={(e) => setSelectedState(e.target.value.toUpperCase())}
+              />
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm md:text-base font-medium text-gray-900">
                 City
               </label>
-              <select className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat" defaultValue="">
-                <option value="" disabled>
-                  Select
-                </option>
-              </select>
+              <input
+                type="text"
+                className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                placeholder="e.g. Riverton"
+                value={selectedCity}
+                onChange={(e) => setSelectedCity(e.target.value)}
+              />
             </div>
           </div>
 
@@ -115,16 +244,47 @@ const HomePage = () => {
               <label className="text-sm md:text-base font-medium text-gray-900">
                 Local Hospital
               </label>
-              <select
-                className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat"
-                value={selectedHospital}
-                onChange={(e) => setSelectedHospital(e.target.value)}
-              >
-                <option value="xyz Hospital">xyz Hospital</option>
-                <option value="General City Hospital">General City Hospital</option>
-                <option value="Regional Medical Center">Regional Medical Center</option>
-                <option value="Community Care Hospital">Community Care Hospital</option>
-              </select>
+              <div className="relative">
+                <button
+                  type="button"
+                  className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-700 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-purple-300"
+                  onClick={() => setHospitalInputActive((prev) => !prev)}
+                >
+                  <span className={selectedHospital ? "text-gray-700" : "text-gray-500"}>
+                    {selectedHospital ||
+                      (status === "loading" && hospitalOptions.length === 0
+                        ? "Loading hospitals..."
+                        : "Select hospital")}
+                  </span>
+                  <span className="ml-2 text-gray-400 text-xs">▼</span>
+                </button>
+
+                {hospitalInputActive && (
+                  <div
+                    className="absolute z-20 mt-2 w-full rounded-xl border border-purple-200 bg-white shadow-lg max-h-60 overflow-y-auto"
+                    onScroll={handleHospitalScroll}
+                  >
+                    {hospitalOptions.map((hospital) => (
+                      <button
+                        type="button"
+                        key={hospital._id}
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-purple-50"
+                        onClick={() => handleSelectHospital(hospital)}
+                      >
+                        {hospital.Name} ({hospital.City}, {hospital.State})
+                      </button>
+                    ))}
+                    {status === "loading" && (
+                      <div className="px-4 py-2 text-xs text-gray-400">
+                        Loading more hospitals...
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+              {hospitalError && (
+                <p className="mt-1 text-xs text-red-600">{hospitalError}</p>
+              )}
             </div>
            
           </div>
@@ -143,18 +303,28 @@ const HomePage = () => {
                   type="number"
                   className="h-14 w-full rounded-full border border-purple-200 bg-white pl-10 pr-6 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300"
                   placeholder=""
+                  value={householdIncome}
+                  onChange={(e) => setHouseholdIncome(e.target.value)}
                 />
               </div>
+              {incomeError && (
+                <p className="mt-1 text-xs text-red-600">{incomeError}</p>
+              )}
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm md:text-base font-medium text-gray-900">
                 Household Family Size
               </label>
               <input
-                type="text"
+                type="number"
                 className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
                 placeholder="Enter total members"
+                value={householdSize}
+                onChange={(e) => setHouseholdSize(e.target.value)}
               />
+              {sizeError && (
+                <p className="mt-1 text-xs text-red-600">{sizeError}</p>
+              )}
             </div>
           </div>
 
@@ -164,6 +334,8 @@ const HomePage = () => {
               <input
                 type="checkbox"
                 className="h-4 w-4 text-purple-600 rounded border-gray-300 focus:ring-purple-500"
+                checked={notInCollections}
+                onChange={(e) => setNotInCollections(e.target.checked)}
               />
               <span className="ml-2">My hospital bill is not in collections</span>
             </label>
@@ -173,9 +345,11 @@ const HomePage = () => {
           <div className="flex justify-center pt-4">
             <button
               type="submit"
-              className="inline-flex items-center gap-2 rounded-full border-2 border-purple-700 bg-transparent px-10 py-3 text-sm md:text-base font-semibold text-purple-800 hover:bg-purple-50 transition"
+              disabled={eligibilityLoading}
+              className="inline-flex items-center gap-2 rounded-full border-2 border-purple-700 bg-transparent px-10 py-3 text-sm md:text-base font-semibold text-purple-800 hover:bg-purple-50 transition disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Get Results <span className="text-purple-800">→</span>
+              {eligibilityLoading ? "Checking..." : "Get Results"}{" "}
+              <span className="text-purple-800">→</span>
             </button>
           </div>
         </form>
@@ -186,6 +360,8 @@ const HomePage = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         hospitalName={selectedHospital}
+        eligibilityResponse={eligibilityResponse}
+        eligibilityError={eligibilityError}
       />
 
       {/* How It Works */}

@@ -1,8 +1,23 @@
 import React from "react";
 import partyPopperImg from "../assets/party-popper.png";
 
-const SuccessModal = ({ isOpen, onClose, hospitalName = "xyz Hospital" }) => {
+const SuccessModal = ({
+  isOpen,
+  onClose,
+  hospitalName,
+  eligibilityResponse,
+  eligibilityError,
+}) => {
   if (!isOpen) return null;
+
+  const details =
+    eligibilityResponse && eligibilityResponse.data
+      ? eligibilityResponse.data
+      : eligibilityResponse || null;
+
+  const isEligible = details?.eligible;
+  const eligibilityType = details?.eligibilityType;
+  const hospitalInfo = details?.hospitalInfo;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -25,13 +40,33 @@ const SuccessModal = ({ isOpen, onClose, hospitalName = "xyz Hospital" }) => {
 
         {/* Heading */}
         <h2 className="text-center text-[24px] md:text-[32px] lg:text-[36px] font-extrabold text-gray-900 mb-3 md:mb-4 tracking-[0.64px]">
-          Congratulations
+          {isEligible ? "You May Qualify for Help" : "Eligibility Result"}
         </h2>
 
-        {/* Message */}
-        <p className="text-center text-[14px] md:text-[16px] text-gray-800 mb-4 md:mb-6 leading-relaxed px-2">
-          Your Current or any future bill through {hospitalName} is eligible to be discounted.
-        </p>
+        {/* Short message: only show if they qualify or not */}
+        {details && (
+          <p className="text-center text-[13px] md:text-[14px] text-gray-800 mb-4 md:mb-6 leading-relaxed px-2">
+            {isEligible
+              ? `Based on your information, you may qualify for ${
+                  eligibilityType === "free_care"
+                    ? "FREE CARE (100% discount)"
+                    : eligibilityType === "discounted_care"
+                    ? "discounted care"
+                    : "financial assistance"
+                } at ${
+                  hospitalInfo?.name || hospitalName || "the selected hospital"
+                }.`
+              : `Based on your information, you may not qualify for financial assistance at ${
+                  hospitalInfo?.name || hospitalName || "this hospital"
+                }. You can still contact the hospital's financial assistance office to review your options.`}
+          </p>
+        )}
+
+        {eligibilityError && (
+          <p className="text-center text-[13px] md:text-[14px] text-red-600 mb-4 md:mb-6 leading-relaxed px-2">
+            {eligibilityError}
+          </p>
+        )}
 
         {/* Call to Action Link */}
         <p className="text-center text-[12px] md:text-[14px] text-purple-700 mb-6 md:mb-8 px-2">
