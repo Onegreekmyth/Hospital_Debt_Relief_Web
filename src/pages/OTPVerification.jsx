@@ -1,11 +1,17 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const OTPVerification = () => {
   const location = useLocation();
   const from = location.state?.from;
   const isFromLogin = from === "login";
   const buttonLabel = isFromLogin ? "Login" : "Create Account";
+
+  const navigate = useNavigate();
+  const handleSubmit = () => {
+    navigate("/dashboard");
+  };
+
   return (
     <div className="min-h-screen bg-[#F8F8FC] flex items-center justify-center px-4 md:px-6 py-8 md:py-12">
       <div className="w-full max-w-xl bg-white rounded-2xl md:rounded-3xl border-2 border-purple-200/60 shadow-xl p-6 md:p-8 lg:p-12">
@@ -78,6 +84,7 @@ const OTPVerification = () => {
         {/* Primary Button */}
         <button
           type="submit"
+          onClick={handleSubmit}
           className="w-full h-12 md:h-14 rounded-full bg-gradient-to-r from-[#5225cd] to-[#2e156f] text-white text-[16px] md:text-[18px] font-bold hover:from-[#7B2CAA] hover:to-[#5A1F9C] transition shadow-lg"
         >
           {buttonLabel}
