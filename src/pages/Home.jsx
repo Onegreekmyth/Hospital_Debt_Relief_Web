@@ -26,6 +26,7 @@ const HomePage = () => {
   const [hospitalError, setHospitalError] = useState("");
   const [incomeError, setIncomeError] = useState("");
   const [sizeError, setSizeError] = useState("");
+  const [existingBill, setExistingBill] = useState("no");
 
   const dispatch = useDispatch();
   const { items: hospitals, page, totalPages, status } = useSelector(
@@ -179,13 +180,13 @@ const HomePage = () => {
         }}
       >
         <div className="max-w-3xl text-black">
-          <h1 className="text-[24px] md:text-[28px] leading-[1.2] md:leading-tight lg:text-[42px] font-bold text-black">
+          <h1 className="text-[20px] md:text-[28px] leading-[1.2] md:leading-tight lg:text-[42px] font-bold text-black">
           We provide the tools to help you save money on your hospital bills.
           </h1><br />
-          <h6 className="text-[20px] md:text-[22px] leading-[1.2] md:leading-tight lg:text-[16px]">
+          <h6 className="text-[14px] md:text-[20px] leading-[1.4] md:leading-tight lg:text-[18px]">
             Receive up to a 100% reduction on your current hospital bills, whether you have insurance or not. You can also explore our low monthly subscription plans starting at just $7/month to be prepared for future hospital bills.
           </h6>
-          <p className="mt-4 text-black/90 text-[12px] md:text-[14px] leading-relaxed px-2">
+          <p className="mt-4 text-black/90 text-[11px] md:text-[14px] leading-relaxed px-2">
             All backed by our money back Guarantee
           </p>
           <button className="mt-6 md:mt-7 inline-flex items-center rounded-full bg-white text-purple-800 hover:bg-purple-50 px-5 md:px-6 py-2.5 md:py-3 text-xs md:text-sm font-semibold shadow">
@@ -211,7 +212,8 @@ const HomePage = () => {
               </label>
               <select
                 className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat"
-                defaultValue="no"
+                value={existingBill}
+                onChange={(e) => setExistingBill(e.target.value)}
               >
                 <option value="no">No</option>
                 <option value="yes">Yes</option>
@@ -334,17 +336,19 @@ const HomePage = () => {
           </div>
 
           {/* Checkbox Row */}
-          <div className="flex justify-start pt-2">
-            <label className="inline-flex items-center text-xs md:text-sm text-gray-700">
-              <input
-                type="checkbox"
-                className="h-4 w-4 text-purple-600 rounded border-gray-300 focus:ring-purple-500"
-                checked={notInCollections}
-                onChange={(e) => setNotInCollections(e.target.checked)}
-              />
-              <span className="ml-2">My hospital bill is not in collections</span>
-            </label>
-          </div>
+          {existingBill === "yes" && (
+            <div className="flex justify-start pt-2">
+              <label className="inline-flex items-center text-xs md:text-sm text-gray-700">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 text-purple-600 rounded border-gray-300 focus:ring-purple-500"
+                  checked={notInCollections}
+                  onChange={(e) => setNotInCollections(e.target.checked)}
+                />
+                <span className="ml-2">My hospital bill is not in collections</span>
+              </label>
+            </div>
+          )}
 
           {/* Button Row */}
           <div className="flex justify-center pt-4">

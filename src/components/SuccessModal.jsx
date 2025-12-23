@@ -18,6 +18,14 @@ const SuccessModal = ({
   const isEligible = details?.eligible;
   const eligibilityType = details?.eligibilityType;
   const hospitalInfo = details?.hospitalInfo;
+  const hospitalDisplayName =
+    hospitalInfo?.name || hospitalName || "the selected hospital";
+  const discountPercent =
+    typeof details?.estimatedDiscount === "number"
+      ? details.estimatedDiscount
+      : eligibilityType === "free_care"
+      ? 100
+      : null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -29,36 +37,38 @@ const SuccessModal = ({
       
       {/* Modal */}
       <div className="relative bg-white rounded-2xl border-2 border-purple-200/60 shadow-2xl max-w-lg w-full p-6 md:p-8 lg:p-10 mx-4">
-        {/* Party Popper Icon */}
+        {/* Icon */}
         <div className="flex justify-center mb-4 md:mb-6">
-          <img 
-            src={partyPopperImg} 
-            alt="Party popper" 
-            className="w-10 h-10 md:w-14 md:h-14 drop-shadow-lg"
-          />
+          {isEligible ? (
+            <img
+              src={partyPopperImg}
+              alt="Celebration"
+              className="w-10 h-10 md:w-14 md:h-14 drop-shadow-lg"
+            />
+          ) : (
+            <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-red-500 flex items-center justify-center shadow-lg">
+              <span className="text-white text-3xl md:text-4xl font-bold">!</span>
+            </div>
+          )}
         </div>
 
         {/* Heading */}
         <h2 className="text-center text-[24px] md:text-[32px] lg:text-[36px] font-extrabold text-gray-900 mb-3 md:mb-4 tracking-[0.64px]">
-          {isEligible ? "You May Qualify for Help" : "Eligibility Result"}
+          {isEligible && (eligibilityType === "free_care" || eligibilityType === "discounted_care")
+            ? "Congratulations"
+            : isEligible
+            ? "Eligibility Result"
+            : "Determination Notice"}
         </h2>
 
-        {/* Short message: only show if they qualify or not */}
+        {/* Short message based on eligibility */}
         {details && (
           <p className="text-center text-[13px] md:text-[14px] text-gray-800 mb-4 md:mb-6 leading-relaxed px-2">
             {isEligible
-              ? `Based on your information, you may qualify for ${
-                  eligibilityType === "free_care"
-                    ? "FREE CARE (100% discount)"
-                    : eligibilityType === "discounted_care"
-                    ? "discounted care"
-                    : "financial assistance"
-                } at ${
-                  hospitalInfo?.name || hospitalName || "the selected hospital"
-                }.`
-              : `Based on your information, you may not qualify for financial assistance at ${
-                  hospitalInfo?.name || hospitalName || "this hospital"
-                }. You can still contact the hospital's financial assistance office to review your options.`}
+              ? eligibilityType === "free_care" || eligibilityType === "discounted_care"
+                ? `You qualify! You will save ${discountPercent ?? 0}% on future out-of-pocket expenses billed by ${hospitalDisplayName}.`
+                : `Based on your information, you may qualify for financial assistance at ${hospitalDisplayName}.`
+              : `Based on the information provided, it appears you do not qualify for financial assistance from ${hospitalDisplayName}.`}
           </p>
         )}
 
@@ -70,15 +80,19 @@ const SuccessModal = ({
 
         {/* Call to Action Link */}
         <p className="text-center text-[12px] md:text-[14px] text-purple-700 mb-6 md:mb-8 px-2">
-            Create an account to upload your current hospital bill.
+          {isEligible
+            ? "Create an account to Subcribe."
+            : ""}
         </p>
 
-        {/* Create Button */}
+        {/* Primary Button */}
         <button
-          onClick={() => window.location.href = "/signup"}
+          onClick={() => {
+            window.location.href = isEligible ? "/signup" : "/";
+          }}
           className="w-full h-11 md:h-12 rounded-full border-2 border-purple-700 bg-white text-purple-700 text-sm md:text-base font-medium hover:bg-purple-50 transition flex items-center justify-center gap-2"
         >
-          Create
+          {isEligible ? "Create" : "Home"}
           <svg
             className="w-4 h-4"
             fill="none"

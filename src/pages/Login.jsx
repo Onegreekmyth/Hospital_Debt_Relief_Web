@@ -1,15 +1,23 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import primaryLogo from "../assets/primary-logo.png";
 
 const Login = () => {
   const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-[#F7F5FF] flex items-center justify-center px-4 md:px-6 py-4 md:py-6">
       <div className="w-full max-w-xl bg-white rounded-[36px] border border-purple-200/70 shadow-[0_18px_60px_rgba(82,37,205,0.08)] px-6 md:px-8 lg:px-10 py-10 md:py-14 min-h-[400px] md:min-h-[560px]">
-        {/* Heading */}
-        <h1 className="text-[28px] md:text-[36px] lg:text-[40px] font-semibold text-[#4B24C7] mb-8 text-center tracking-[0.04em]">
-          Login <span className="font-bold">“LOGO”</span>
-        </h1>
+        {/* Logo + Heading inline */}
+        <div className="flex items-center justify-center gap-2 mb-8">
+          <h1 className="text-[24px] md:text-[32px] lg:text-[36px] font-semibold text-[#4B24C7] tracking-[0.04em]">
+            Login
+          </h1>
+          <img
+            src={primaryLogo}
+            alt="Medical Financial Freedom"
+            className="h-7 md:h-8 lg:h-9"
+          />
+        </div>
 
         {/* Form */}
         <form
@@ -60,7 +68,7 @@ const Login = () => {
         </form>
 
         {/* Legal Text */}
-        <p className="mt-8 text-center text-[11px] md:text-[13px] text-gray-600 leading-relaxed">
+        <p className="mt-8 text-center text-[12px] md:text-[13px] text-gray-600 leading-relaxed">
           By continuing, you agree to our{" "}
           <a
             href="#"

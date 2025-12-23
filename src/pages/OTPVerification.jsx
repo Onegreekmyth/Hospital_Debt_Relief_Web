@@ -52,7 +52,7 @@ const OTPVerification = () => {
         </div>
 
         {/* Label */}
-        <p className="text-center text-[14px] md:text-[16px] lg:text-[18px] text-gray-800 mb-4 md:mb-6 font-medium px-2">
+        <p className="text-center text-[16px] md:text-[18px] lg:text-[20px] text-gray-800 mb-4 md:mb-6 font-medium px-2">
           Enter code sent to your email
         </p>
 

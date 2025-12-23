@@ -1,15 +1,23 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import primaryLogo from "../assets/primary-logo.png";
 
 const Signup = () => {
   const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-[#F7F5FF] flex items-center justify-center px-4 md:px-6 py-4 md:py-6">
       <div className="w-full max-w-xl bg-white rounded-[36px] border border-purple-200/70 shadow-[0_18px_60px_rgba(82,37,205,0.08)] px-6 md:px-8 lg:px-10 py-6 md:py-8">
-        {/* Heading */}
-        <h1 className="text-[24px] md:text-[30px] lg:text-[32px] font-semibold text-[#4B24C7] mb-6 text-center tracking-[0.04em]">
-          Create Account <span className="font-bold">“LOGO”</span>
-        </h1>
+        {/* Heading with logo */}
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <h1 className="text-[24px] md:text-[30px] lg:text-[32px] font-semibold text-[#4B24C7] tracking-[0.04em]">
+            Create Account
+          </h1>
+          <img
+            src={primaryLogo}
+            alt="Medical Financial Freedom"
+            className="h-7 md:h-8 lg:h-9"
+          />
+        </div>
 
         {/* Form */}
         <form
