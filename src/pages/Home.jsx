@@ -189,7 +189,7 @@ const HomePage = () => {
           <p className="mt-4 text-black/90 text-[11px] md:text-[14px] leading-relaxed px-2">
             All backed by our money back Guarantee
           </p>
-          <button className="mt-6 md:mt-7 inline-flex items-center rounded-full bg-white text-purple-800 hover:bg-purple-50 px-5 md:px-6 py-2.5 md:py-3 text-xs md:text-sm font-semibold shadow">
+          <button className="mt-6 md:mt-7 inline-flex items-center border-2 border-purple-700 rounded-full bg-white text-purple-700 hover:bg-purple-50 px-5 md:px-6 py-2.5 md:py-3 text-xs md:text-sm font-semibold shadow">
             Check qualification
           </button>
         </div>
@@ -469,45 +469,56 @@ const HomePage = () => {
       </section>
 
       {/* FAQ */}
-      <section className="py-12 md:py-24 bg-gradient-to-b from-[#F7F5FF] to-white">
-        <div className="text-center mb-8 md:mb-12">
-          <h2 className="text-[28px] md:text-[40px] lg:text-[56px] font-semibold text-gray-900 tracking-[0.64px] leading-tight px-4">
-            Frequently Asked <br /> Questions
-          </h2>
-        </div>
-        <div className="w-full px-4 md:px-6 lg:px-16">
-          <div className="space-y-0">
-            {faqs.map((faq, index) => (
-              <div key={index} className="border-b border-gray-200 last:border-b-0">
-                <button
-                  onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                  className="w-full flex items-center gap-4 py-6 text-start"
-                >
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full border-2 border-purple-300 flex items-center justify-center bg-white">
-                    {openIndex === index ? (
-                      <span className="text-gray-900 font-bold text-lg leading-none">−</span>
-                    ) : (
-                      <span className="text-gray-900 font-bold text-lg leading-none">+</span>
-                    )}
-                  </div>
-                  <span className="flex-1 text-[14px] md:text-[18px] lg:text-[20px] font-bold text-gray-900 tracking-[0.64px]">
-                    {faq.question}
-                  </span>
-                </button>
-                {openIndex === index && faq.answer.length > 0 && (
-                  <div className="pl-10 md:pl-12 pb-4 md:pb-6">
-                    <ul className="space-y-2 md:space-y-3 text-[14px] md:text-[16px] text-gray-900 list-none">
-                      {faq.answer.map((item, i) => (
-                        <li key={i} className="flex items-start">
-                          <span className="mr-3 mt-2.5 w-2 h-2 rounded-full bg-gray-900 flex-shrink-0"></span>
-                          <span className="leading-relaxed">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            ))}
+      <section className="relative py-12 md:py-24 bg-white overflow-hidden">
+        {/* Left-side oval gradient background */}
+        <div
+          className="pointer-events-none absolute inset-y-0 -left-1/3 w-2/3 md:-left-1/4 md:w-1/2"
+          aria-hidden="true"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, rgba(86,49,211,0.20) 0, rgba(86,49,211,0.06) 45%, rgba(86,49,211,0) 75%)",
+          }}
+        />
+        <div className="relative">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-[28px] md:text-[40px] lg:text-[56px] font-semibold text-gray-900 tracking-[0.64px] leading-tight px-4">
+              Frequently Asked <br /> Questions
+            </h2>
+          </div>
+          <div className="w-full px-4 md:px-6 lg:px-16">
+            <div className="space-y-0">
+              {faqs.map((faq, index) => (
+                <div key={index} className="border-b border-gray-200 last:border-b-0">
+                  <button
+                    onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                    className="w-full flex items-center gap-4 py-6 text-start"
+                  >
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full border-2 border-purple-300 flex items-center justify-center bg-white">
+                      {openIndex === index ? (
+                        <span className="text-gray-900 font-bold text-lg leading-none">−</span>
+                      ) : (
+                        <span className="text-gray-900 font-bold text-lg leading-none">+</span>
+                      )}
+                    </div>
+                    <span className="flex-1 text-[14px] md:text-[18px] lg:text-[20px] font-bold text-gray-900 tracking-[0.64px]">
+                      {faq.question}
+                    </span>
+                  </button>
+                  {openIndex === index && faq.answer.length > 0 && (
+                    <div className="pl-10 md:pl-12 pb-4 md:pb-6">
+                      <ul className="space-y-2 md:space-y-3 text-[14px] md:text-[16px] text-gray-900 list-none">
+                        {faq.answer.map((item, i) => (
+                          <li key={i} className="flex items-start">
+                            <span className="mr-3 mt-2.5 w-2 h-2 rounded-full bg-gray-900 flex-shrink-0"></span>
+                            <span className="leading-relaxed">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

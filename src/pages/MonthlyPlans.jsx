@@ -29,10 +29,27 @@ const MonthlyPlansPage = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-24 md:pt-32 pb-12 md:pb-16 bg-white">
-        <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-10">
-          <h1 className="text-[24px] md:text-[36px] lg:text-[48px] leading-tight font-bold text-gray-900 text-center pt-5 mt-5">
-            Plans that could save you<span className="hidden md:inline"><br /></span> thousands of dollars on future<span className="hidden md:inline"><br /></span> hospital bills.
+      <section className="relative flex items-center justify-center text-center px-4 md:px-6 pt-32 md:pt-40 pb-12 md:pb-16 min-h-[60vh] md:min-h-[70vh] bg-white overflow-hidden">
+        {/* Soft gradient background behind the banner content */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          aria-hidden="true"
+          style={{
+            background:
+              "radial-gradient(circle at center, rgba(86,49,211,0.22) 0, rgba(86,49,211,0.04) 45%, rgba(86,49,211,0) 70%)",
+          }}
+        />
+        <div className="relative max-w-4xl text-gray-900">
+          <h1 className="text-[24px] md:text-[36px] lg:text-[48px] leading-tight font-bold text-center pt-5 mt-5">
+            Plans that could save you
+            <span className="hidden md:inline">
+              <br />
+            </span>{" "}
+            thousands of dollars on future
+            <span className="hidden md:inline">
+              <br />
+            </span>{" "}
+            hospital bills.
           </h1>
         </div>
       </section>

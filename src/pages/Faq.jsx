@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import heroImg from "../assets/hero-img.png";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -108,24 +107,28 @@ const FAQPage = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section
-        className="relative flex flex-col items-center justify-center text-center px-4 md:px-6 pt-32 md:pt-40 pb-16 md:pb-24 bg-cover bg-center min-h-[60vh] md:min-h-[70vh]"
-        style={{
-          backgroundImage: `linear-gradient(rgba(22, 10, 41, 0.7), rgba(22, 10, 41, 0.7)), url(${heroImg})`,
-        }}
-      >
-        <div className="max-w-3xl text-white">
+      <section className="relative flex flex-col items-center justify-center text-center px-4 md:px-6 pt-32 md:pt-40 pb-16 md:pb-24 min-h-[60vh] md:min-h-[70vh] bg-white overflow-hidden">
+        {/* Soft gradient background behind the banner content */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          aria-hidden="true"
+          style={{
+            background:
+              "radial-gradient(circle at center, rgba(86,49,211,0.22) 0, rgba(86,49,211,0.04) 45%, rgba(86,49,211,0) 70%)",
+          }}
+        />
+        <div className="relative max-w-3xl text-gray-900">
           <h1 className="text-[24px] md:text-[32px] lg:text-[40px] leading-tight font-bold">
             Frequently Asked Questions
           </h1>
-          <p className="mt-4 text-white/90 text-[13px] md:text-[15px] lg:text-[18px] leading-relaxed px-2">
+          <p className="mt-4 text-black text-[13px] md:text-[15px] lg:text-[18px] leading-relaxed px-2">
             Here you can learn more about us.
           </p>
         </div>
       </section>
 
       {/* FAQ Section */}
-      <section className="py-12 md:py-20 bg-gradient-to-b from-[#F7F5FF] to-white">
+      <section className="py-12 md:py-20">
         <div className="w-full max-w-5xl mx-auto px-4 md:px-6 lg:px-10">
           <div className="text-center mb-8 md:mb-12">
             <h2 className="text-[24px] md:text-[32px] lg:text-[40px] font-semibold text-gray-900 tracking-[0.64px] leading-tight">

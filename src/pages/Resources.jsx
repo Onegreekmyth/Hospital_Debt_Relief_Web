@@ -1,5 +1,4 @@
 import React from "react";
-import heroImg from "../assets/hero-img.png";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import insightsImg from "../assets/insight-img.png";
@@ -11,17 +10,21 @@ const ResourcesPage = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section
-        className="relative flex flex-col items-center justify-center text-center px-4 md:px-6 pt-32 md:pt-40 pb-20 md:pb-28 bg-cover bg-center min-h-[90vh] md:min-h-[90vh]"
-        style={{
-          backgroundImage: `linear-gradient(rgba(22, 10, 41, 0.55), rgba(22, 10, 41, 0.55)), url(${heroImg})`,
-        }}
-      >
-        <div className="max-w-3xl text-white">
-          <h1 className="text-[24px] md:text-[28px] leading-[1.2] md:leading-tight lg:text-[40px] font-bold text-white">
+      <section className="relative flex flex-col items-center justify-center text-center px-4 md:px-6 pt-32 md:pt-40 pb-20 md:pb-28 min-h-[70vh] md:min-h-[80vh] bg-white overflow-hidden">
+        {/* Soft gradient background behind the banner content */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          aria-hidden="true"
+          style={{
+            background:
+              "radial-gradient(circle at center, rgba(86,49,211,0.22) 0, rgba(86,49,211,0.04) 45%, rgba(86,49,211,0) 70%)",
+          }}
+        />
+        <div className="relative max-w-3xl text-gray-900">
+          <h1 className="text-[24px] md:text-[28px] leading-[1.2] md:leading-tight lg:text-[40px] font-bold">
             Resources
           </h1>
-          <p className="mt-4 text-white/90 text-[12px] md:text-[14px] lg:text-[18px] leading-relaxed px-2">
+          <p className="mt-4 text-black text-[12px] md:text-[14px] lg:text-[18px] leading-relaxed px-2">
             News, insights and guides to help you maximize savings on hospital visits.
           </p>
         </div>
