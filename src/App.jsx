@@ -10,6 +10,7 @@ import MonthlyPlansPage from './pages/MonthlyPlans';
 import Login from './pages/Login';
 import BillHistory from './pages/BillHistory';
 import BillDetails from './pages/BillDetails';
+import FAQPage from './pages/Faq';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
       <Route path="/" element={<HomePage />} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/resources" element={<ResourcesPage />} />
+      <Route path="/faq" element={<FAQPage />} />
       <Route path="/plans" element={<MonthlyPlansPage />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/otp-verification" element={<OTPVerification />} />
