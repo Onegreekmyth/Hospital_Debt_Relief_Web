@@ -195,6 +195,7 @@ const HomePage = () => {
         </div>
       </section>
 
+
       {/* Qualification Form */}
       <section className="py-16 md:py-24 bg-[#F7F5FF] text-center">
         <h2 className="mb-10 md:mb-14 text-[32px] md:text-[44px] leading-tight font-semibold text-gray-900 tracking-[0.04em] px-4">
