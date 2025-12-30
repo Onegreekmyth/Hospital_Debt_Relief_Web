@@ -33,6 +33,29 @@ const HomePage = () => {
     (state) => state.hospitals
   );
 
+  // Build dropdown options for states and cities from API data (no hardcoded lists)
+  const stateOptions = useMemo(() => {
+    if (!hospitals || hospitals.length === 0) return [];
+    const set = new Set();
+    hospitals.forEach((h) => {
+      if (h.State) {
+        set.add(h.State);
+      }
+    });
+    return Array.from(set).sort();
+  }, [hospitals]);
+
+  const cityOptions = useMemo(() => {
+    if (!hospitals || hospitals.length === 0) return [];
+    const set = new Set();
+    hospitals.forEach((h) => {
+      if (!h.City) return;
+      if (selectedState && h.State !== selectedState) return;
+      set.add(h.City);
+    });
+    return Array.from(set).sort();
+  }, [hospitals, selectedState]);
+
   // Load hospitals whenever filters change (including initial load with no filters)
   useEffect(() => {
     dispatch(resetHospitals());
@@ -224,25 +247,39 @@ const HomePage = () => {
               <label className="text-sm md:text-base font-medium text-gray-900">
                 State
               </label>
-              <input
-                type="text"
-                className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
-                placeholder="e.g. WY"
+              <select
+                className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat"
                 value={selectedState}
-                onChange={(e) => setSelectedState(e.target.value.toUpperCase())}
-              />
+                onChange={(e) => {
+                  setSelectedState(e.target.value);
+                  setSelectedCity("");
+                }}
+              >
+                <option value="">All states</option>
+                {stateOptions.map((state) => (
+                  <option key={state} value={state}>
+                    {state}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm md:text-base font-medium text-gray-900">
                 City
               </label>
-              <input
-                type="text"
-                className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
-                placeholder="e.g. Riverton"
+              <select
+                className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat"
                 value={selectedCity}
                 onChange={(e) => setSelectedCity(e.target.value)}
-              />
+                disabled={cityOptions.length === 0}
+              >
+                <option value="">All cities</option>
+                {cityOptions.map((city) => (
+                  <option key={city} value={city}>
+                    {city}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
