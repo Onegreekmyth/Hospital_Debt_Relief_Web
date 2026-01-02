@@ -6,6 +6,8 @@ import SuccessModal from "../components/SuccessModal";
 import axiosClient from "../api/axiosClient";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchHospitals, resetHospitals } from "../store/hospitals/hospitalsSlice";
+import usStates from "../data/usStates.json";
+import usStateNameToCode from "../data/usStateNameToCode.json";
 
 
 const HomePage = () => {
@@ -33,28 +35,29 @@ const HomePage = () => {
     (state) => state.hospitals
   );
 
-  // Build dropdown options for states and cities from API data (no hardcoded lists)
+  // Build dropdown options for states and cities
   const stateOptions = useMemo(() => {
-    if (!hospitals || hospitals.length === 0) return [];
-    const set = new Set();
-    hospitals.forEach((h) => {
-      if (h.State) {
-        set.add(h.State);
-      }
-    });
-    return Array.from(set).sort();
-  }, [hospitals]);
+    if (!usStates || usStates.length === 0) return [];
+    return [...usStates].sort();
+  }, []);
 
+  // Map selected state name to API state code (e.g. "New York" -> "NY")
+  const apiStateCode = useMemo(() => {
+    if (!selectedState) return undefined;
+    return usStateNameToCode[selectedState] || selectedState;
+  }, [selectedState]);
+
+  // Derive available cities for the selected state from hospitals API data
   const cityOptions = useMemo(() => {
     if (!hospitals || hospitals.length === 0) return [];
     const set = new Set();
     hospitals.forEach((h) => {
       if (!h.City) return;
-      if (selectedState && h.State !== selectedState) return;
+      if (apiStateCode && h.State !== apiStateCode) return;
       set.add(h.City);
     });
     return Array.from(set).sort();
-  }, [hospitals, selectedState]);
+  }, [hospitals, apiStateCode]);
 
   // Load hospitals whenever filters change (including initial load with no filters)
   useEffect(() => {
@@ -62,13 +65,20 @@ const HomePage = () => {
     dispatch(
       fetchHospitals({
         page: 1,
-        state: selectedState || undefined,
+        state: apiStateCode,
         city: selectedCity || undefined,
       })
     );
-  }, [dispatch, selectedState, selectedCity]);
+  }, [dispatch, apiStateCode, selectedCity]);
 
   const hospitalOptions = useMemo(() => hospitals || [], [hospitals]);
+
+  // Clear selected hospital when state or city changes
+  useEffect(() => {
+    setSelectedHospital("");
+    setSelectedHospitalId("");
+    setHospitalInputActive(false);
+  }, [selectedState, selectedCity]);
 
   const handleSelectHospital = (hospital) => {
     setSelectedHospital(hospital.Name);
@@ -89,7 +99,7 @@ const HomePage = () => {
       dispatch(
         fetchHospitals({
           page: page + 1,
-          state: selectedState || undefined,
+          state: apiStateCode,
           city: selectedCity || undefined,
         })
       );
@@ -319,9 +329,22 @@ const HomePage = () => {
                         {hospital.Name} ({hospital.City}, {hospital.State})
                       </button>
                     ))}
+
+                    {status === "succeeded" && hospitalOptions.length === 0 && (
+                      <div className="px-4 py-2 text-sm text-gray-500">
+                        No hospital found for the selected state or city.
+                      </div>
+                    )}
+
+                    {status === "failed" && (
+                      <div className="px-4 py-2 text-sm text-red-500">
+                        Unable to load hospitals. Please try again.
+                      </div>
+                    )}
+
                     {status === "loading" && (
                       <div className="px-4 py-2 text-xs text-gray-400">
-                        Loading more hospitals...
+                        Loading hospitals...
                       </div>
                     )}
                   </div>
