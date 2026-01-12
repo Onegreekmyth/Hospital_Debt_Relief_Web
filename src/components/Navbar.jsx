@@ -9,7 +9,8 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { pathname, hash } = location;
-  const isDashboard = pathname === "/dashboard" || pathname.startsWith("/bill-history");
+  const isDashboard =
+    pathname === "/dashboard" || pathname.startsWith("/bill-history");
   const isBillHistory = pathname.startsWith("/bill-history");
 
   const navLinkClasses = (isActive) =>
@@ -33,9 +34,11 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
   return (
     <>
       <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] md:w-[88%]">
-        <div className={`flex items-center justify-between rounded-full border border-purple-300 backdrop-blur-xl px-3 md:px-8 h-16 md:h-16 shadow-lg transition-colors overflow-hidden ${
-          isScrolled ? "bg-gray-100/90" : "bg-white/90"
-        }`}>
+        <div
+          className={`flex items-center justify-between rounded-full border border-purple-300 backdrop-blur-xl px-3 md:px-8 h-16 md:h-16 shadow-lg transition-colors overflow-hidden ${
+            isScrolled ? "bg-gray-100/90" : "bg-white/90"
+          }`}
+        >
           <div className="flex items-center h-full overflow-hidden flex-shrink-0">
             <img
               src={primaryLogo}
@@ -48,23 +51,14 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
             {isDashboard ? (
               <>
                 <nav className="hidden md:flex items-center space-x-6 text-sm font-medium text-black-800">
-                  <button
-                    type="button"
-                    className="hover:text-purple-700"
-                  >
+                  <button type="button" className="hover:text-purple-700">
                     Bills
                   </button>
-                  <button
-                    type="button"
-                    className="hover:text-purple-700"
-                  >
+                  <button type="button" className="hover:text-purple-700">
                     Help
                   </button>
-                 
-                  <button
-                    type="button"
-                    className="hover:text-purple-700"
-                  >
+
+                  <button type="button" className="hover:text-purple-700">
                     Logout
                   </button>
 
@@ -77,14 +71,13 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
                       <p className="text-sm font-bold">+ Add Family Member </p>
                     </button>
                   )}
-
                 </nav>
                 {isBillHistory ? (
                   <Link
                     to="/dashboard"
                     className="hidden md:inline-flex items-center justify-center gap-2 text-[#4720b1] border border-[#4720b1] px-4 py-2 rounded-full text-sm font-bold hover:bg-purple-50"
                   >
-                      <span className="inline-flex items-center justify-center w-6 h-6 rounded-full">
+                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full">
                       <img
                         src={uploadImg}
                         alt="Upload"
@@ -92,7 +85,6 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
                       />
                     </span>
                     <span>Upload New Bill</span>
-                  
                   </Link>
                 ) : (
                   <Link
@@ -102,11 +94,11 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
                     View Bill History
                   </Link>
                 )}
-                <button 
+                <button
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                   className="md:hidden inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-900 to-blue-800 px-3 py-2 text-white text-xs font-medium"
                 >
-                  {isMobileMenuOpen ? '✕' : '☰'}
+                  {isMobileMenuOpen ? "✕" : "☰"}
                 </button>
               </>
             ) : (
@@ -118,12 +110,12 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
                   >
                     About
                   </Link>
-                   <Link
-                    to="#"
-                    className={navLinkClasses(pathname === "/resources")}
+                  <Link
+                    to="/contact"
+                    className={navLinkClasses(pathname === "/contact")}
                   >
-                    Resources
-                  </Link> 
+                    Contact
+                  </Link>
                   <Link
                     to="/faq"
                     className={navLinkClasses(pathname === "/faq")}
@@ -143,11 +135,11 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
                 >
                   Login
                 </Link>
-                <button 
+                <button
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                   className="md:hidden inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-900 to-blue-800 px-3 py-2 text-white text-xs font-medium"
                 >
-                  {isMobileMenuOpen ? '✕' : '☰'}
+                  {isMobileMenuOpen ? "✕" : "☰"}
                 </button>
               </>
             )}
@@ -159,35 +151,43 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
       {!isDashboard && isMobileMenuOpen && (
         <div className="fixed top-24 left-1/2 -translate-x-1/2 z-40 w-[92%] md:hidden bg-white rounded-2xl border border-purple-300 shadow-lg p-6">
           <nav className="flex flex-col space-y-4">
-            <Link 
+            <Link
               to="/about"
-              className={`text-sm font-medium py-2 ${navLinkClasses(pathname === "/about")}`}
+              className={`text-sm font-medium py-2 ${navLinkClasses(
+                pathname === "/about"
+              )}`}
               onClick={() => setIsMobileMenuOpen(false)}
             >
               About
             </Link>
-            {/* <Link 
-              to="/resources"
-              className={`text-sm font-medium py-2 ${navLinkClasses(pathname === "/resources")}`}
+            <Link
+              to="/contact"
+              className={`text-sm font-medium py-2 ${navLinkClasses(
+                pathname === "/contact"
+              )}`}
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              Resources
-            </Link> */}
+              Contact
+            </Link>
             <Link
               to="/faq"
-              className={`text-sm font-medium py-2 ${navLinkClasses(pathname === "/faq")}`}
+              className={`text-sm font-medium py-2 ${navLinkClasses(
+                pathname === "/faq"
+              )}`}
               onClick={() => setIsMobileMenuOpen(false)}
             >
               FAQ
             </Link>
-            <Link 
+            <Link
               to="/plans"
-              className={`text-sm font-medium py-2 ${navLinkClasses(pathname === "/plans")}`}
+              className={`text-sm font-medium py-2 ${navLinkClasses(
+                pathname === "/plans"
+              )}`}
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Monthly Plans
             </Link>
-            <Link 
+            <Link
               to="/login"
               className="mt-4 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-900 to-blue-800 px-5 py-2 text-white text-sm font-medium"
               onClick={() => setIsMobileMenuOpen(false)}
@@ -202,15 +202,15 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
       {isDashboard && isMobileMenuOpen && (
         <div className="fixed top-24 left-1/2 -translate-x-1/2 z-40 w-[92%] md:hidden bg-white rounded-2xl border border-purple-300 shadow-lg p-6">
           <nav className="flex flex-col space-y-4">
-            <a 
+            <a
               href="#"
               className="text-sm font-medium text-gray-800 hover:text-purple-700 py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Bills
             </a>
-            <a 
-              href="#" 
+            <a
+              href="#"
               className="text-sm font-medium text-gray-800 hover:text-purple-700 py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
@@ -228,15 +228,15 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
                 Family Members Listed
               </button>
             )}
-            <a 
-              href="#" 
+            <a
+              href="#"
               className="text-sm font-medium text-gray-800 hover:text-purple-700 py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Logout
             </a>
             {isBillHistory ? (
-              <Link 
+              <Link
                 to="/dashboard"
                 className="mt-4 inline-flex items-center justify-center gap-2 text-[#4720b1] border border-[#4720b1] px-4 py-2 rounded-full text-sm font-bold"
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -251,7 +251,7 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
                 </span>
               </Link>
             ) : (
-              <Link 
+              <Link
                 to="/bill-history"
                 className="mt-4 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-900 to-blue-800 px-5 py-2 text-white text-sm font-medium"
                 onClick={() => setIsMobileMenuOpen(false)}
