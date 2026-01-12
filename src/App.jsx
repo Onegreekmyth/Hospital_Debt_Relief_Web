@@ -5,7 +5,7 @@ import Signup from './pages/Signup';
 import OTPVerification from './pages/OTPVerification';
 import Dashboard from './pages/Dashboard';
 import AboutPage from './pages/About';
-import ResourcesPage from './pages/Resources';
+// import ResourcesPage from './pages/Resources';
 import MonthlyPlansPage from './pages/MonthlyPlans';
 import Login from './pages/Login';
 import BillHistory from './pages/BillHistory';
@@ -17,7 +17,7 @@ function App() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/about" element={<AboutPage />} />
-      <Route path="/resources" element={<ResourcesPage />} />
+      {/* <Route path="/resources" element={<ResourcesPage />} /> */}
       <Route path="/faq" element={<FAQPage />} />
       <Route path="/plans" element={<MonthlyPlansPage />} />
       <Route path="/signup" element={<Signup />} />

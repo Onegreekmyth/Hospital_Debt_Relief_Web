@@ -28,7 +28,8 @@ const HomePage = () => {
   const [hospitalError, setHospitalError] = useState("");
   const [incomeError, setIncomeError] = useState("");
   const [sizeError, setSizeError] = useState("");
-  const [existingBill, setExistingBill] = useState("no");
+  const [existingBill, setExistingBill] = useState("");
+  const [billAmount, setBillAmount] = useState("");
 
   const dispatch = useDispatch();
   const { items: hospitals, page, totalPages, status } = useSelector(
@@ -207,9 +208,10 @@ const HomePage = () => {
 
       {/* Hero Section */}
       <section
-        className="relative flex flex-col items-center justify-center text-center px-4 md:px-6 pt-32 md:pt-40 pb-20 md:pb-28 min-h-[90vh] md:min-h-[90vh] bg-cover bg-no-repeat bg-top"
+        className="relative flex flex-col items-center justify-center text-center px-4 md:px-6 pt-32 md:pt-40 pb-20 md:pb-28 min-h-[90vh] md:min-h-[90vh] bg-no-repeat bg-center"
         style={{
           backgroundImage: `linear-gradient(rgba(136, 126, 156, 0.55), rgba(191, 184, 207, 0.55)), url(${heroImg})`,
+          backgroundSize: "100% auto",
         }}
       >
         <div className="max-w-3xl text-black">
@@ -249,6 +251,9 @@ const HomePage = () => {
                 value={existingBill}
                 onChange={(e) => setExistingBill(e.target.value)}
               >
+                <option value="" disabled>
+                  Select
+                </option>
                 <option value="no">No</option>
                 <option value="yes">Yes</option>
               </select>
@@ -265,7 +270,9 @@ const HomePage = () => {
                   setSelectedCity("");
                 }}
               >
-                <option value="">All states</option>
+                <option value="">
+                  Select
+                </option>
                 {stateOptions.map((state) => (
                   <option key={state} value={state}>
                     {state}
@@ -283,7 +290,9 @@ const HomePage = () => {
                 onChange={(e) => setSelectedCity(e.target.value)}
                 disabled={cityOptions.length === 0}
               >
-                <option value="">All cities</option>
+                <option value="">
+                  Select
+                </option>
                 {cityOptions.map((city) => (
                   <option key={city} value={city}>
                     {city}
@@ -354,7 +363,25 @@ const HomePage = () => {
                 <p className="mt-1 text-xs text-red-600">{hospitalError}</p>
               )}
             </div>
-           
+            {existingBill === "yes" && (
+              <div className="flex flex-col gap-2">
+                <label className="text-sm md:text-base font-medium text-gray-900">
+                  Bill Amount
+                </label>
+                <div className="relative">
+                  <span className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 text-base">
+                    $
+                  </span>
+                  <input
+                    type="number"
+                    className="h-14 w-full rounded-full border border-purple-200 bg-white pl-10 pr-6 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                    placeholder="Enter bill amount"
+                    value={billAmount}
+                    onChange={(e) => setBillAmount(e.target.value)}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Row 3 */}
@@ -510,20 +537,17 @@ const HomePage = () => {
           </div>
 
           {/* Testimonial card */}
-          <div className="rounded-[20px] md:rounded-[24px] border-2 border-purple-300/70 bg-white shadow-[0_20px_40px_rgba(79,40,232,0.08)] p-6 md:p-8 lg:p-12">
-            <div className="flex items-start justify-between mb-6">
-              <div>
-                <div className="text-yellow-400 text-xl leading-none">★★★★★</div>
-                <h3 className="mt-3 text-[22px] md:text-[24px] font-extrabold">Stephen Brekke</h3>
-                <p className="text-gray-500 text-[14px]">From Washington State</p>
-              </div>
-              <img className="w-16 h-16 rounded-full object-cover" src="https://i.pravatar.cc/100?img=15" alt="avatar" />
+          <div className="rounded-[20px] md:rounded-[24px] border-2 border-purple-300/70 bg-white shadow-[0_20px_40px_rgba(79,40,232,0.08)] p-6 md:p-8 lg:p-12 max-w-[480px] min-h-[400px] mx-auto md:mx-auto">
+            <div className="mb-6">
+              <div className="text-yellow-400 text-xl leading-none">★★★★★</div>
+              <h3 className="mt-3 text-[22px] md:text-[24px] font-extrabold">Sarah O.</h3>
+              <p className="text-gray-500 text-[14px]">From Michigan</p>
             </div>
             <p className="text-[16px] leading-7 text-gray-700 mb-8">
-              My husband has his own business with no insurance coverage. His appendix burst and he had emergency surgery.
+              My husband owns his own company and our insurance is kind of expensive for what we have. We have a high deductible plan which means we have higher out of pocket expenses. Overall, I was very happy that we saved over $8000 on our hospital bill.
             </p>
             <p className="text-[18px] font-extrabold text-gray-900">
-              Saved Over <span className="text-purple-700">$4k</span>
+              Saved Over <span className="text-purple-700">$8k</span>
             </p>
           </div>
         </div>

@@ -118,12 +118,12 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
                   >
                     About
                   </Link>
-                  <Link
-                    to="/resources"
+                   <Link
+                    to="#"
                     className={navLinkClasses(pathname === "/resources")}
                   >
                     Resources
-                  </Link>
+                  </Link> 
                   <Link
                     to="/faq"
                     className={navLinkClasses(pathname === "/faq")}
@@ -166,13 +166,13 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
             >
               About
             </Link>
-            <Link 
+            {/* <Link 
               to="/resources"
               className={`text-sm font-medium py-2 ${navLinkClasses(pathname === "/resources")}`}
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Resources
-            </Link>
+            </Link> */}
             <Link
               to="/faq"
               className={`text-sm font-medium py-2 ${navLinkClasses(pathname === "/faq")}`}
