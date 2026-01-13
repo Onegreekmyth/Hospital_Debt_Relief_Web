@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import heroImg from "../assets/hero-img.jpg";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -11,6 +12,7 @@ import usStateNameToCode from "../data/usStateNameToCode.json";
 
 
 const HomePage = () => {
+  const navigate = useNavigate();
   
   const [openIndex, setOpenIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -181,24 +183,32 @@ const HomePage = () => {
 
   const faqs = [
     {
-      question: "What are the benefits of using Medical Financial Freedom?",
+      question: "What are the benefits of using HospitalDebtRelief.com?",
       answer: [
-        "Backed Our Money Back Guarantee",
-        "You May Qualify to Get 100% of Your Bill Adjusted",
-        "Lowered Bills Can Help Avoid Debt Collection"
+        "Backed Our Money Back Guarantee.",
+        "Simple & Easy Process.",
+        "We provide you with the right tools to save you money.",
       ]
     },
     {
-      question: "How does the Money Back Guarantee Work?",
-      answer: ['lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.']
+      question: "How does the Money Back Guarantee work?",
+      answer: ['Application processing times may vary, but if we are unable to save you more than what you paid us, we will refund you what you paid.']
     },
     {
       question: "How does all of this work?",
-      answer: ['lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.']
+      answer: [
+        'The process starts with our Savings Calculator – answer a few questions to see how much we can save you.',
+        'Based on your answers, we are able to estimate your savings.',
+        'The next step is easy: we will ask you to create an account with us where we will gather additional information to complete your application.'
+      ]
     },
     {
-      question: "What would I have to pay?",
-      answer: ['lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.']
+      question: "How much could HospitalDebtRelief.com save me?",
+      answer: [
+        'People using our services could see their bill lowered by up to 100%.',
+        'Keep in mind that everyone\'s situation is different, so results may vary.',
+        'Check out our customer feedback section to see what people are saying.'
+      ]
     }
   ];
 
@@ -572,7 +582,7 @@ const HomePage = () => {
           </div>
           <div className="w-full px-4 md:px-6 lg:px-16">
             <div className="space-y-0">
-              {faqs.map((faq, index) => (
+              {faqs.slice(0, 4).map((faq, index) => (
                 <div key={index} className="border-b border-gray-200 last:border-b-0">
                   <button
                     onClick={() => setOpenIndex(openIndex === index ? null : index)}
@@ -603,6 +613,17 @@ const HomePage = () => {
                   )}
                 </div>
               ))}
+            </div>
+            <div className="flex justify-center mt-8 md:mt-12">
+              <button
+                onClick={() => {
+                  window.scrollTo(0, 0);
+                  navigate("/faq");
+                }}
+                className="inline-flex items-center gap-2 rounded-full border-2 border-purple-700 bg-transparent px-8 md:px-10 py-3 md:py-3.5 text-sm md:text-base font-semibold text-purple-700 hover:bg-purple-50 transition"
+              >
+                View More <span className="text-purple-700">→</span>
+              </button>
             </div>
           </div>
         </div>
