@@ -11,6 +11,8 @@ import Login from "./pages/Login";
 import BillHistory from "./pages/BillHistory";
 import BillDetails from "./pages/BillDetails";
 import FAQPage from "./pages/Faq";
+import PrivacyPolicyPage from "./pages/PrivacyPolicy";
+import TermsAndConditionsPage from "./pages/TermsAndConditions";
 
 function App() {
   return (
@@ -19,6 +21,11 @@ function App() {
       <Route path="/about" element={<AboutPage />} />
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/faq" element={<FAQPage />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+      <Route
+        path="/terms-and-conditions"
+        element={<TermsAndConditionsPage />}
+      />
       <Route path="/plans" element={<MonthlyPlansPage />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/otp-verification" element={<OTPVerification />} />
