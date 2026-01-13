@@ -6,14 +6,16 @@ import Footer from "../components/Footer";
 import SuccessModal from "../components/SuccessModal";
 import axiosClient from "../api/axiosClient";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchHospitals, resetHospitals } from "../store/hospitals/hospitalsSlice";
+import {
+  fetchHospitals,
+  resetHospitals,
+} from "../store/hospitals/hospitalsSlice";
 import usStates from "../data/usStates.json";
 import usStateNameToCode from "../data/usStateNameToCode.json";
 
-
 const HomePage = () => {
   const navigate = useNavigate();
-  
+
   const [openIndex, setOpenIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedHospital, setSelectedHospital] = useState("");
@@ -34,9 +36,12 @@ const HomePage = () => {
   const [billAmount, setBillAmount] = useState("");
 
   const dispatch = useDispatch();
-  const { items: hospitals, page, totalPages, status } = useSelector(
-    (state) => state.hospitals
-  );
+  const {
+    items: hospitals,
+    page,
+    totalPages,
+    status,
+  } = useSelector((state) => state.hospitals);
 
   // Build dropdown options for states and cities
   const stateOptions = useMemo(() => {
@@ -108,7 +113,6 @@ const HomePage = () => {
       );
     }
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -188,28 +192,30 @@ const HomePage = () => {
         "Backed Our Money Back Guarantee.",
         "Simple & Easy Process.",
         "We provide you with the right tools to save you money.",
-      ]
+      ],
     },
     {
       question: "How does the Money Back Guarantee work?",
-      answer: ['Application processing times may vary, but if we are unable to save you more than what you paid us, we will refund you what you paid.']
+      answer: [
+        "Application processing times may vary, but if we are unable to save you more than what you paid us, we will refund you what you paid.",
+      ],
     },
     {
       question: "How does all of this work?",
       answer: [
-        'The process starts with our Savings Calculator – answer a few questions to see how much we can save you.',
-        'Based on your answers, we are able to estimate your savings.',
-        'The next step is easy: we will ask you to create an account with us where we will gather additional information to complete your application.'
-      ]
+        "The process starts with our Savings Calculator – answer a few questions to see how much we can save you.",
+        "Based on your answers, we are able to estimate your savings.",
+        "The next step is easy: we will ask you to create an account with us where we will gather additional information to complete your application.",
+      ],
     },
     {
       question: "How much could HospitalDebtRelief.com save me?",
       answer: [
-        'People using our services could see their bill lowered by up to 100%.',
-        'Keep in mind that everyone\'s situation is different, so results may vary.',
-        'Check out our customer feedback section to see what people are saying.'
-      ]
-    }
+        "People using our services could see their bill lowered by up to 100%.",
+        "Keep in mind that everyone's situation is different, so results may vary.",
+        "Check out our customer feedback section to see what people are saying.",
+      ],
+    },
   ];
 
   return (
@@ -226,10 +232,14 @@ const HomePage = () => {
       >
         <div className="max-w-3xl text-black">
           <h1 className="text-[20px] md:text-[28px] leading-[1.2] md:leading-tight lg:text-[42px] font-bold text-black">
-          We provide the tools to help you save money on your hospital bills.
-          </h1><br />
+            We provide the tools to help you save money on your hospital bills.
+          </h1>
+          <br />
           <h6 className="text-[14px] md:text-[20px] leading-[1.4] md:leading-tight lg:text-[18px]">
-            Receive up to a 100% reduction on your current hospital bills, whether you have insurance or not. You can also explore our low monthly subscription plans starting at just $7/month to be prepared for future hospital bills.
+            Receive up to a 100% reduction on your current hospital bills,
+            whether you have insurance or not. You can also explore our low
+            monthly subscription plans starting at just $7/month to be prepared
+            for future hospital bills.
           </h6>
           <p className="mt-4 text-black/90 text-[11px] md:text-[14px] leading-relaxed px-2">
             All backed by our money back Guarantee
@@ -239,7 +249,6 @@ const HomePage = () => {
           </button>
         </div>
       </section>
-
 
       {/* Qualification Form */}
       <section className="py-16 md:py-24 bg-[#F7F5FF] text-center">
@@ -280,9 +289,7 @@ const HomePage = () => {
                   setSelectedCity("");
                 }}
               >
-                <option value="">
-                  Select
-                </option>
+                <option value="">Select</option>
                 {stateOptions.map((state) => (
                   <option key={state} value={state}>
                     {state}
@@ -300,9 +307,7 @@ const HomePage = () => {
                 onChange={(e) => setSelectedCity(e.target.value)}
                 disabled={cityOptions.length === 0}
               >
-                <option value="">
-                  Select
-                </option>
+                <option value="">Select</option>
                 {cityOptions.map((city) => (
                   <option key={city} value={city}>
                     {city}
@@ -324,7 +329,11 @@ const HomePage = () => {
                   className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-700 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-purple-300"
                   onClick={() => setHospitalInputActive((prev) => !prev)}
                 >
-                  <span className={selectedHospital ? "text-gray-700" : "text-gray-500"}>
+                  <span
+                    className={
+                      selectedHospital ? "text-gray-700" : "text-gray-500"
+                    }
+                  >
                     {selectedHospital ||
                       (status === "loading" && hospitalOptions.length === 0
                         ? "Loading hospitals..."
@@ -443,7 +452,9 @@ const HomePage = () => {
                   checked={notInCollections}
                   onChange={(e) => setNotInCollections(e.target.checked)}
                 />
-                <span className="ml-2">My hospital bill is not in collections</span>
+                <span className="ml-2">
+                  My hospital bill is not in collections
+                </span>
               </label>
             </div>
           )}
@@ -494,7 +505,8 @@ const HomePage = () => {
                 Calculate Your Savings
               </h3>
               <p className="mt-2 text-white/90 text-[14px] md:text-[15px] leading-6 md:leading-7 max-w-[520px]">
-                Answer a few questions and that will tell us how much we will be able to save you.
+                Answer a few questions and that will tell us how much we will be
+                able to save you.
               </p>
             </div>
 
@@ -508,7 +520,8 @@ const HomePage = () => {
                 Register your account
               </h3>
               <p className="mt-2 text-white/90 text-[14px] md:text-[15px] leading-6 md:leading-7 max-w-[520px]">
-                By registering your account with us, you will be able to upload an existing bill or sign up for one of our plans.
+                By registering your account with us, you will be able to upload
+                an existing bill or sign up for one of our plans.
               </p>
             </div>
 
@@ -522,7 +535,8 @@ const HomePage = () => {
                 Start saving
               </h3>
               <p className="mt-2 text-[#1B0D47] text-[14px] md:text-[15px] leading-6 md:leading-7 max-w-[520px]">
-                We will find the best way to have you pay as little as possible. Backed by our "Money Back Guarantee".
+                We will find the best way to have you pay as little as possible.
+                Backed by our "Money Back Guarantee".
               </p>
             </div>
           </div>
@@ -534,15 +548,25 @@ const HomePage = () => {
         <div className="max-w-[1200px] mx-auto grid md:grid-cols-2 gap-8 md:gap-16 items-start px-4 md:px-6">
           {/* Left copy */}
           <div>
-            <p className="uppercase tracking-[0.64px] text-[12px] font-semibold text-purple-700 mb-4">Testimonials</p>
+            <p className="uppercase tracking-[0.64px] text-[12px] font-semibold text-purple-700 mb-4">
+              Testimonials
+            </p>
             <h2 className="text-[28px] md:text-[36px] lg:text-[44px] font-bold leading-tight mb-4 md:mb-6">
               Our clients appreciate what we do.
             </h2>
-            <p className="text-[14px] md:text-[16px] text-gray-800 mb-2">Don't just believe what we say.</p>
-            <p className="text-[14px] md:text-[16px] text-gray-800 mb-6 md:mb-8">Learn what our clients are saying about us.</p>
+            <p className="text-[14px] md:text-[16px] text-gray-800 mb-2">
+              Don't just believe what we say.
+            </p>
+            <p className="text-[14px] md:text-[16px] text-gray-800 mb-6 md:mb-8">
+              Learn what our clients are saying about us.
+            </p>
             <div className="flex gap-4">
-              <button className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-purple-600 text-purple-700 flex items-center justify-center hover:bg-purple-700 hover:text-white transition">←</button>
-              <button className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-purple-600 text-purple-700 flex items-center justify-center hover:bg-purple-700 hover:text-white transition">→</button>
+              <button className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-purple-600 text-purple-700 flex items-center justify-center hover:bg-purple-700 hover:text-white transition">
+                ←
+              </button>
+              <button className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-purple-600 text-purple-700 flex items-center justify-center hover:bg-purple-700 hover:text-white transition">
+                →
+              </button>
             </div>
           </div>
 
@@ -550,11 +574,16 @@ const HomePage = () => {
           <div className="rounded-[20px] md:rounded-[24px] border-2 border-purple-300/70 bg-white shadow-[0_20px_40px_rgba(79,40,232,0.08)] p-6 md:p-8 lg:p-12 max-w-[480px] min-h-[400px] mx-auto md:mx-auto">
             <div className="mb-6">
               <div className="text-yellow-400 text-xl leading-none">★★★★★</div>
-              <h3 className="mt-3 text-[22px] md:text-[24px] font-extrabold">Sarah O.</h3>
+              <h3 className="mt-3 text-[22px] md:text-[24px] font-extrabold">
+                Sarah O.
+              </h3>
               <p className="text-gray-500 text-[14px]">From Michigan</p>
             </div>
             <p className="text-[16px] leading-7 text-gray-700 mb-8">
-              My husband owns his own company and our insurance is kind of expensive for what we have. We have a high deductible plan which means we have higher out of pocket expenses. Overall, I was very happy that we saved over $8000 on our hospital bill.
+              My husband owns his own company and our insurance is kind of
+              expensive for what we have. We have a high deductible plan which
+              means we have higher out of pocket expenses. Overall, I was very
+              happy that we saved over $8000 on our hospital bill.
             </p>
             <p className="text-[18px] font-extrabold text-gray-900">
               Saved Over <span className="text-purple-700">$8k</span>
@@ -583,16 +612,25 @@ const HomePage = () => {
           <div className="w-full px-4 md:px-6 lg:px-16">
             <div className="space-y-0">
               {faqs.slice(0, 4).map((faq, index) => (
-                <div key={index} className="border-b border-gray-200 last:border-b-0">
+                <div
+                  key={index}
+                  className="border-b border-gray-200 last:border-b-0"
+                >
                   <button
-                    onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                    onClick={() =>
+                      setOpenIndex(openIndex === index ? null : index)
+                    }
                     className="w-full flex items-center gap-4 py-6 text-start"
                   >
                     <div className="flex-shrink-0 w-8 h-8 rounded-full border-2 border-purple-300 flex items-center justify-center bg-white">
                       {openIndex === index ? (
-                        <span className="text-gray-900 font-bold text-lg leading-none">−</span>
+                        <span className="text-gray-900 font-bold text-lg leading-none">
+                          −
+                        </span>
                       ) : (
-                        <span className="text-gray-900 font-bold text-lg leading-none">+</span>
+                        <span className="text-gray-900 font-bold text-lg leading-none">
+                          +
+                        </span>
                       )}
                     </div>
                     <span className="flex-1 text-[14px] md:text-[18px] lg:text-[20px] font-bold text-gray-900 tracking-[0.64px]">
@@ -629,11 +667,9 @@ const HomePage = () => {
         </div>
       </section>
 
-
       <Footer />
     </div>
   );
 };
-
 
 export default HomePage;
