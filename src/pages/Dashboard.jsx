@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import SubmissionModal from "../components/SubmissionModal";
 import BillInformationModal from "../components/BillInformationModal";
 import SubscriptionModal from "../components/SubscriptionModal";
 import AddFamilyMembersModal from "../components/AddFamilyMembersModal";
 import ApplicationModal from "../components/ApplicationModal";
+import axiosClient from "../api/axiosClient";
 import uploadImg from "../assets/upload-img.png";
 import rightArrow from "../assets/right-arrow.png";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [isContactInfoOpen, setIsContactInfoOpen] = useState(false);
   const [isFamilyMembersOpen, setIsFamilyMembersOpen] = useState(false);
   const [isFamilyListOpen, setIsFamilyListOpen] = useState(false);
@@ -18,12 +21,76 @@ const Dashboard = () => {
   const [isAddFamilyModalOpen, setIsAddFamilyModalOpen] = useState(false);
   const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
 
+  // Profile state
+  const [profile, setProfile] = useState({
+    firstName: "",
+    lastName: "",
+    mailingAddress: "",
+    email: "",
+    phone: "",
+    annualHouseholdIncome: "",
+  });
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [profileError, setProfileError] = useState("");
+
   // High-level onboarding and eligibility state (placeholder for backend data)
   const [subscriptionStatus, setSubscriptionStatus] = useState("active"); // "inactive" | "active"
   const [subscriptionTier, setSubscriptionTier] = useState(null); // "7" | "14" | "21" | null
   const [subscriptionDate, setSubscriptionDate] = useState("10/28/2025");
   const [eligibilityStatus, setEligibilityStatus] = useState("eligible"); // "eligible" | "ineligible"
   const [discountPercentage, setDiscountPercentage] = useState(40); // Example: calculated by backend
+
+  // Fetch user profile on component mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setProfileLoading(true);
+        setProfileError("");
+        
+        const response = await axiosClient.get("/auth/profile");
+        
+        if (response.data.success) {
+          const userData = response.data.data;
+          
+          // Split name into first and last name
+          const nameParts = (userData.name || "").trim().split(" ");
+          const firstName = nameParts[0] || "";
+          const lastName = nameParts.slice(1).join(" ") || "";
+          
+          // Get annual household income from eligibility data
+          const annualHouseholdIncome = userData.eligibilityData?.householdIncome;
+          
+          setProfile({
+            firstName,
+            lastName,
+            mailingAddress: userData.mailingAddress || "",
+            email: userData.email || "",
+            phone: userData.phone || "",
+            annualHouseholdIncome: annualHouseholdIncome 
+              ? annualHouseholdIncome.toLocaleString('en-US') 
+              : "",
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        const message =
+          error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message ||
+          "Failed to load profile";
+        setProfileError(message);
+        
+        // If unauthorized, redirect to login
+        if (error.response?.status === 401) {
+          navigate("/login");
+        }
+      } finally {
+        setProfileLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [navigate]);
 
   // Disable scrolling when any modal is open
   useEffect(() => {
@@ -112,6 +179,12 @@ const Dashboard = () => {
 
               {isContactInfoOpen && (
                 <div className="px-4 md:px-6 pb-4 md:pb-6 space-y-3 md:space-y-4">
+                  {/* Error Message */}
+                  {profileError && (
+                    <div className="p-3 rounded-lg bg-red-50 border border-red-200">
+                      <p className="text-sm text-red-600">{profileError}</p>
+                    </div>
+                  )}
                   {/* First Name and Second Name in a row */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                     {/* First Name */}
@@ -130,8 +203,10 @@ const Dashboard = () => {
                         </svg>
                         <input
                           type="text"
+                          value={profile.firstName}
+                          readOnly
                           className="w-full h-12 rounded-full border border-gray-300 bg-white pl-12 pr-4 text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
-                          placeholder="john"
+                          placeholder={profileLoading ? "Loading..." : "john"}
                         />
                       </div>
                     </div>
@@ -152,8 +227,10 @@ const Dashboard = () => {
                         </svg>
                         <input
                           type="text"
+                          value={profile.lastName}
+                          readOnly
                           className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
-                          placeholder="Thomas"
+                          placeholder={profileLoading ? "Loading..." : "Thomas"}
                         />
                       </div>
                     </div>
@@ -174,8 +251,10 @@ const Dashboard = () => {
                       </svg>
                       <input
                         type="text"
+                        value={profile.mailingAddress}
+                        readOnly
                         className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
-                        placeholder="address"
+                        placeholder={profileLoading ? "Loading..." : "address"}
                       />
                     </div>
                   </div>
@@ -196,8 +275,10 @@ const Dashboard = () => {
                       </svg>
                       <input
                         type="email"
+                        value={profile.email}
+                        readOnly
                         className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
-                        placeholder="email@gmail.com"
+                        placeholder={profileLoading ? "Loading..." : "email@gmail.com"}
                       />
                     </div>
                   </div>
@@ -218,8 +299,10 @@ const Dashboard = () => {
                       </svg>
                       <input
                         type="tel"
+                        value={profile.phone}
+                        readOnly
                         className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
-                        placeholder="+92************"
+                        placeholder={profileLoading ? "Loading..." : "+92************"}
                       />
                     </div>
                   </div>
@@ -232,9 +315,11 @@ const Dashboard = () => {
                     <div className="relative">
                       <span className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm md:text-base">$</span>
                       <input
-                        type="number"
+                        type="text"
+                        value={profile.annualHouseholdIncome}
+                        readOnly
                         className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-8 md:pl-10 pr-3 md:pr-4 text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
-                        placeholder="Enter amount"
+                        placeholder={profileLoading ? "Loading..." : "Enter amount"}
                       />
                     </div>
                   </div>

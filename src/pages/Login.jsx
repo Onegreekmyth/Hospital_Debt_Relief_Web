@@ -1,9 +1,53 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import primaryLogo from "../assets/primary-logo.png";
+import axiosClient from "../api/axiosClient";
 
 const Login = () => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (!email.trim()) {
+      setError("Please enter your email address");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Send OTP to user's email
+      await axiosClient.post("/auth/send-otp", { email: email.trim() });
+
+      // Navigate to OTP verification page
+      navigate("/otp-verification", {
+        state: {
+          from: "login",
+          email: email.trim(),
+        },
+      });
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Failed to send OTP. Please try again.";
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-[#F7F5FF] flex items-center justify-center px-4 md:px-6 py-4 md:py-6">
       <div className="w-full max-w-xl bg-white rounded-[36px] border border-purple-200/70 shadow-[0_18px_60px_rgba(82,37,205,0.08)] px-6 md:px-8 lg:px-10 py-10 md:py-14 min-h-[400px] md:min-h-[560px]">
@@ -19,14 +63,15 @@ const Login = () => {
           />
         </div>
 
+        {/* Error Message */}
+        {error && (
+          <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200">
+            <p className="text-sm text-red-600">{error}</p>
+          </div>
+        )}
+
         {/* Form */}
-        <form
-          className="space-y-5"
-          onSubmit={(e) => {
-            e.preventDefault();
-            navigate("/otp-verification", { state: { from: "login" } });
-          }}
-        >
+        <form className="space-y-5" onSubmit={handleSubmit}>
           {/* Email Field */}
           <div className="relative pt-2">
             <div className="absolute -top-3 left-6 bg-white px-2 py-0.5 rounded-b-md">
@@ -52,6 +97,8 @@ const Login = () => {
               </div>
               <input
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="flex-1 border-none bg-transparent text-sm md:text-[15px] text-gray-800 placeholder-[#D3C2FF] focus:outline-none focus:ring-0 py-0.5"
                 placeholder="email@gmail.com"
               />
@@ -61,9 +108,10 @@ const Login = () => {
           {/* Continue Button */}
           <button
             type="submit"
-            className="w-full h-11 md:h-12 rounded-full bg-gradient-to-r from-[#6C3BFF] via-[#5B2BE4] to-[#1A0B40] text-white text-sm md:text-[15px] font-semibold hover:from-[#7442FF] hover:via-[#5B2BE4] hover:to-[#241055] transition shadow-[0_16px_32px_rgba(76,39,191,0.35)] mt-6"
+            disabled={loading}
+            className="w-full h-11 md:h-12 rounded-full bg-gradient-to-r from-[#6C3BFF] via-[#5B2BE4] to-[#1A0B40] text-white text-sm md:text-[15px] font-semibold hover:from-[#7442FF] hover:via-[#5B2BE4] hover:to-[#241055] transition shadow-[0_16px_32px_rgba(76,39,191,0.35)] mt-6 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Continue
+            {loading ? "Sending OTP..." : "Continue"}
           </button>
         </form>
 

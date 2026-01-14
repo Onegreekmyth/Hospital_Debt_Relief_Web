@@ -148,7 +148,22 @@ const HomePage = () => {
       hasError = true;
     }
 
-    // City and State can be empty – no validation for them
+    // Validate state and city (required by backend)
+    if (!selectedState) {
+      setEligibilityError("Please select a state.");
+      hasError = true;
+    }
+
+    if (!selectedCity) {
+      setEligibilityError("Please select a city.");
+      hasError = true;
+    }
+
+    // Validate billAmount if existingBill is "yes"
+    if (existingBill === "yes" && (!billAmount || Number(billAmount) <= 0)) {
+      setEligibilityError("Please enter a valid bill amount.");
+      hasError = true;
+    }
 
     if (hasError) {
       return;
@@ -164,6 +179,10 @@ const HomePage = () => {
         householdIncome: Number(householdIncome),
         householdSize: Number(householdSize),
         isInCollections: !notInCollections,
+        hasExistingBill: existingBill === "yes",
+        state: selectedState,
+        city: selectedCity,
+        billAmount: existingBill === "yes" ? Number(billAmount) : undefined,
       };
 
       const response = await axiosClient.post(
@@ -172,6 +191,12 @@ const HomePage = () => {
       );
 
       setEligibilityResponse(response.data);
+      
+      // Save eligibility request ID to localStorage for linking to user account
+      if (response.data?.data?.eligibilityRequestId) {
+        localStorage.setItem('pendingEligibilityRequestId', response.data.data.eligibilityRequestId);
+      }
+      
       setIsModalOpen(true);
     } catch (error) {
       const message =

@@ -1,9 +1,104 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import primaryLogo from "../assets/primary-logo.png";
+import axiosClient from "../api/axiosClient";
 
 const Signup = () => {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+  });
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required";
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone number is required";
+    }
+
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+    setErrorMessage("");
+
+    try {
+      // Get eligibility request ID from localStorage
+      const eligibilityRequestId = localStorage.getItem("pendingEligibilityRequestId");
+
+      const payload = {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        ...(eligibilityRequestId && { eligibilityRequestId }), // Include if exists
+      };
+
+      const response = await axiosClient.post("/auth/register", payload);
+
+      if (response.data.success) {
+        // Clear the stored eligibility request ID
+        localStorage.removeItem("pendingEligibilityRequestId");
+
+        // Navigate to OTP verification page
+        navigate("/otp-verification", {
+          state: {
+            from: "signup",
+            email: formData.email.trim(),
+            userData: response.data.data,
+          },
+        });
+      }
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Failed to create account. Please try again.";
+      setErrorMessage(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-[#F7F5FF] flex items-center justify-center px-4 md:px-6 py-4 md:py-6">
       <div className="w-full max-w-xl bg-white rounded-[36px] border border-purple-200/70 shadow-[0_18px_60px_rgba(82,37,205,0.08)] px-6 md:px-8 lg:px-10 py-6 md:py-8">
@@ -19,14 +114,15 @@ const Signup = () => {
           />
         </div>
 
+        {/* Error Message */}
+        {errorMessage && (
+          <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200">
+            <p className="text-sm text-red-600">{errorMessage}</p>
+          </div>
+        )}
+
         {/* Form */}
-        <form
-          className="space-y-4 md:space-y-5"
-          onSubmit={(e) => {
-            e.preventDefault();
-            navigate("/otp-verification", { state: { from: "signup" } });
-          }}
-        >
+        <form className="space-y-4 md:space-y-5" onSubmit={handleSubmit}>
           {/* Name Field */}
           <div className="relative pt-2">
             <div className="absolute -top-3 left-6 bg-white px-2 py-0.5 rounded-b-md">
@@ -52,10 +148,16 @@ const Signup = () => {
               </div>
               <input
                 type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
                 className="flex-1 border-none bg-transparent text-sm md:text-[15px] text-gray-800 placeholder-[#D3C2FF] focus:outline-none focus:ring-0 py-0.5"
                 placeholder="First & last name"
               />
             </div>
+            {errors.name && (
+              <p className="text-xs text-red-600 mt-1 ml-6">{errors.name}</p>
+            )}
           </div>
 
           {/* Number Field */}
@@ -83,10 +185,16 @@ const Signup = () => {
               </div>
               <input
                 type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
                 className="flex-1 border-none bg-transparent text-sm md:text-[15px] text-gray-800 placeholder-[#D3C2FF] focus:outline-none focus:ring-0 py-0.5"
                 placeholder="Enter your mobile number"
               />
             </div>
+            {errors.phone && (
+              <p className="text-xs text-red-600 mt-1 ml-6">{errors.phone}</p>
+            )}
           </div>
 
           {/* Email Field */}
@@ -114,18 +222,25 @@ const Signup = () => {
               </div>
               <input
                 type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
                 className="flex-1 border-none bg-transparent text-sm md:text-[15px] text-gray-800 placeholder-[#D3C2FF] focus:outline-none focus:ring-0 py-0.5"
                 placeholder="Enter your email address"
               />
             </div>
+            {errors.email && (
+              <p className="text-xs text-red-600 mt-1 ml-6">{errors.email}</p>
+            )}
           </div>
 
           {/* Continue Button */}
           <button
             type="submit"
-            className="w-full h-11 md:h-12 rounded-full bg-gradient-to-r from-[#6C3BFF] via-[#5B2BE4] to-[#1A0B40] text-white text-sm md:text-[15px] font-semibold hover:from-[#7442FF] hover:via-[#5B2BE4] hover:to-[#241055] transition shadow-[0_14px_28px_rgba(76,39,191,0.35)] mt-5 md:mt-5"
+            disabled={loading}
+            className="w-full h-11 md:h-12 rounded-full bg-gradient-to-r from-[#6C3BFF] via-[#5B2BE4] to-[#1A0B40] text-white text-sm md:text-[15px] font-semibold hover:from-[#7442FF] hover:via-[#5B2BE4] hover:to-[#241055] transition shadow-[0_14px_28px_rgba(76,39,191,0.35)] mt-5 md:mt-5 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Continue
+            {loading ? "Creating Account..." : "Continue"}
           </button>
         </form>
 
