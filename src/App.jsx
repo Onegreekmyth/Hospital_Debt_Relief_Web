@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import HomePage from "./pages/Home";
 import Signup from "./pages/Signup";
 import OTPVerification from "./pages/OTPVerification";
@@ -13,6 +12,14 @@ import BillDetails from "./pages/BillDetails";
 import FAQPage from "./pages/Faq";
 import PrivacyPolicyPage from "./pages/PrivacyPolicy";
 import TermsAndConditionsPage from "./pages/TermsAndConditions";
+
+const ProtectedRoute = () => {
+  const isAuthenticated =
+    localStorage.getItem("token") ||
+    localStorage.getItem("isAuthenticated") === "true";
+
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+};
 
 function App() {
   return (
@@ -29,10 +36,12 @@ function App() {
       <Route path="/plans" element={<MonthlyPlansPage />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/otp-verification" element={<OTPVerification />} />
-      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/bill-history" element={<BillHistory />} />
-      <Route path="/bill-history/:id" element={<BillDetails />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/bill-history" element={<BillHistory />} />
+        <Route path="/bill-history/:id" element={<BillDetails />} />
+      </Route>
     </Routes>
   );
 }

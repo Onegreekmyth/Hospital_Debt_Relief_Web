@@ -30,6 +30,8 @@ const Dashboard = () => {
     phone: "",
     annualHouseholdIncome: "",
   });
+  const [householdSize, setHouseholdSize] = useState(1);
+  const [familyMembers, setFamilyMembers] = useState([]);
   const [profileLoading, setProfileLoading] = useState(true);
   const [profileError, setProfileError] = useState("");
 
@@ -59,6 +61,7 @@ const Dashboard = () => {
           
           // Get annual household income from eligibility data
           const annualHouseholdIncome = userData.eligibilityData?.householdIncome;
+          const fetchedHouseholdSize = userData.eligibilityData?.householdSize;
           
           setProfile({
             firstName,
@@ -70,6 +73,7 @@ const Dashboard = () => {
               ? annualHouseholdIncome.toLocaleString('en-US') 
               : "",
           });
+          setHouseholdSize(Number(fetchedHouseholdSize) > 0 ? Number(fetchedHouseholdSize) : 1);
         }
       } catch (error) {
         console.error("Error fetching profile:", error);
@@ -91,6 +95,20 @@ const Dashboard = () => {
 
     fetchProfile();
   }, [navigate]);
+
+  useEffect(() => {
+    const memberCount = Math.max(householdSize - 1, 0);
+    setFamilyMembers((prev) => {
+      if (prev.length === memberCount) {
+        return prev;
+      }
+      const next = [...prev].slice(0, memberCount);
+      while (next.length < memberCount) {
+        next.push("");
+      }
+      return next;
+    });
+  }, [householdSize]);
 
   // Disable scrolling when any modal is open
   useEffect(() => {
@@ -118,15 +136,11 @@ const Dashboard = () => {
     isApplicationModalOpen,
   ]);
 
-  const familyMembersListed = [
-    { id: 1, label: "Account Holder", value: "John Doe" },
-    { id: 2, label: "Family Member", value: "Spouse" },
-    { id: 3, label: "Family Member", value: "Child" },
-    { id: 4, label: "Family Member", value: "Child" },
-    { id: 5, label: "Family Member", value: "Child" },
-  ];
-
-  const householdCount = familyMembersListed.length;
+  const accountHolderName = [profile.firstName, profile.lastName]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+  const householdCount = Math.max(householdSize, 1);
 
   const getSubscriptionInfoForHousehold = (count) => {
     if (count <= 3) {
@@ -205,7 +219,7 @@ const Dashboard = () => {
                           type="text"
                           value={profile.firstName}
                           readOnly
-                          className="w-full h-12 rounded-full border border-gray-300 bg-white pl-12 pr-4 text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                          className="w-full h-12 rounded-full border border-gray-300 bg-gray-100 pl-12 pr-4 text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
                           placeholder={profileLoading ? "Loading..." : "john"}
                         />
                       </div>
@@ -229,7 +243,7 @@ const Dashboard = () => {
                           type="text"
                           value={profile.lastName}
                           readOnly
-                          className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                          className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-gray-100 pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
                           placeholder={profileLoading ? "Loading..." : "Thomas"}
                         />
                       </div>
@@ -253,7 +267,7 @@ const Dashboard = () => {
                         type="text"
                         value={profile.mailingAddress}
                         readOnly
-                        className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                        className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-gray-100 pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
                         placeholder={profileLoading ? "Loading..." : "address"}
                       />
                     </div>
@@ -277,7 +291,7 @@ const Dashboard = () => {
                         type="email"
                         value={profile.email}
                         readOnly
-                        className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                        className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-gray-100 pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
                         placeholder={profileLoading ? "Loading..." : "email@gmail.com"}
                       />
                     </div>
@@ -301,7 +315,7 @@ const Dashboard = () => {
                         type="tel"
                         value={profile.phone}
                         readOnly
-                        className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                        className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-gray-100 pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
                         placeholder={profileLoading ? "Loading..." : "+92************"}
                       />
                     </div>
@@ -318,7 +332,7 @@ const Dashboard = () => {
                         type="text"
                         value={profile.annualHouseholdIncome}
                         readOnly
-                        className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-8 md:pl-10 pr-3 md:pr-4 text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                        className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-gray-100 pl-8 md:pl-10 pr-3 md:pr-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
                         placeholder={profileLoading ? "Loading..." : "Enter amount"}
                       />
                     </div>
@@ -356,81 +370,80 @@ const Dashboard = () => {
 
               {isFamilyListOpen && (
                 <div className="px-4 md:px-6 pb-4 md:pb-6 space-y-3 md:space-y-4">
-                  {familyMembersListed.map((member, index) => (
-                    <div
-                      key={member.id || index}
-                      className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4"
-                    >
-                      <div className="flex-1 flex items-center gap-4 rounded-full border border-purple-200 bg-white px-4 md:px-5 py-2 md:py-3">
-                        <div className="flex items-center justify-center text-gray-300">
-                          <svg
-                            className="w-5 h-5 md:w-6 md:h-6"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4">
+                    <div className="flex-1 flex items-center gap-4 rounded-full border border-purple-200 bg-white px-4 md:px-5 py-2 md:py-3">
+                      <div className="flex items-center justify-center text-gray-300">
+                        <svg
+                          className="w-5 h-5 md:w-6 md:h-6"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                          />
+                        </svg>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs md:text-sm font-medium text-purple-900">
+                          Account Holder
+                        </span>
+                        <span className="text-sm md:text-base text-gray-600">
+                          {accountHolderName || (profileLoading ? "Loading..." : "—")}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {familyMembers.map((memberName, index) => {
+                    const label = index === 0 ? "Spouse" : "Child";
+                    return (
+                      <div
+                        key={`family-member-${index}`}
+                        className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4"
+                      >
+                        <div className="flex-1 flex items-center gap-4 rounded-full border border-purple-200 bg-white px-4 md:px-5 py-2 md:py-3">
+                          <div className="flex items-center justify-center text-gray-300">
+                            <svg
+                              className="w-5 h-5 md:w-6 md:h-6"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                              />
+                            </svg>
+                          </div>
+                          <div className="flex flex-col gap-1 w-full">
+                            <span className="text-xs md:text-sm font-medium text-purple-900">
+                              {label}
+                            </span>
+                            <input
+                              type="text"
+                              value={memberName}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                setFamilyMembers((prev) => {
+                                  const next = [...prev];
+                                  next[index] = value;
+                                  return next;
+                                });
+                              }}
+                              className="w-full border-none bg-transparent text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none"
+                              placeholder={`Enter ${label.toLowerCase()} name`}
                             />
-                          </svg>
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-xs md:text-sm font-medium text-purple-900">
-                            {member.label}
-                          </span>
-                          <span className="text-sm md:text-base text-gray-600">
-                            {member.value}
-                          </span>
+                          </div>
                         </div>
                       </div>
-
-                      {member.label !== "Account Holder" && (
-                        <div className="flex gap-2 self-start md:self-center">
-                          <button
-                            type="button"
-                            className="p-2 rounded-full border border-purple-200 text-purple-700 bg-white hover:bg-purple-50 transition"
-                            aria-label="Edit family member"
-                          >
-                            <svg
-                              className="w-4 h-4 md:w-5 md:h-5"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M15.232 5.232l3.536 3.536M4 20h4l9.268-9.268a2 2 0 000-2.828l-2.172-2.172a2 2 0 00-2.828 0L4 16v4z"
-                              />
-                            </svg>
-                          </button>
-                          <button
-                            type="button"
-                            className="p-2 rounded-full border border-red-200 text-red-600 bg-white hover:bg-red-50 transition"
-                            aria-label="Delete family member"
-                          >
-                            <svg
-                              className="w-4 h-4 md:w-5 md:h-5"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m-9 0h10"
-                              />
-                            </svg>
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

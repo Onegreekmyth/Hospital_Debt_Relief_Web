@@ -172,8 +172,8 @@ const OTPVerification = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F8FC] flex items-center justify-center px-4 md:px-6 py-8 md:py-12">
-      <div className="w-full max-w-xl bg-white rounded-2xl md:rounded-3xl border-2 border-purple-200/60 shadow-xl p-6 md:p-8 lg:p-12">
+    <div className="min-h-screen bg-[#F8F8FC] flex items-center justify-center px-3 sm:px-4 md:px-6 py-6 md:py-12">
+      <div className="w-full max-w-xl bg-white rounded-2xl md:rounded-3xl border-2 border-purple-200/60 shadow-xl p-4 sm:p-6 md:p-8 lg:p-12">
         {/* Email Icon */}
         <div className="flex justify-center mb-6 md:mb-8">
           <div className="relative">
@@ -248,7 +248,7 @@ const OTPVerification = () => {
 
         {/* OTP Input Fields */}
         <div className="mb-6 md:mb-8">
-          <div className="flex justify-center gap-2 md:gap-3">
+          <div className="flex flex-wrap justify-center gap-2 md:gap-3">
             {otp.map((digit, index) => (
               <input
                 key={index}
@@ -260,7 +260,7 @@ const OTPVerification = () => {
                 onChange={(e) => handleOtpChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 onPaste={index === 0 ? handlePaste : undefined}
-                className="w-12 h-12 md:w-14 md:h-14 rounded-lg border-2 border-gray-300 bg-white text-center text-xl md:text-2xl font-semibold text-gray-800 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition"
+                className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg border-2 border-gray-300 bg-white text-center text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition"
               />
             ))}
           </div>
