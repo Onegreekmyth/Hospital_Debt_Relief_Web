@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 
 const BillInformationModal = ({ isOpen, onClose, onSubmitted, isSubscriptionActive = true }) => {
+  const [uploadError, setUploadError] = useState("");
+  const [uploadedFileName, setUploadedFileName] = useState("");
   if (!isOpen) return null;
 
   const handleSubmit = (e) => {
@@ -10,6 +12,44 @@ const BillInformationModal = ({ isOpen, onClose, onSubmitted, isSubscriptionActi
     } else if (onClose) {
       onClose();
     }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    const isPdf =
+      file.type === "application/pdf" ||
+      file.name.toLowerCase().endsWith(".pdf");
+
+    if (!isPdf) {
+      setUploadError("Only PDF files are allowed.");
+      setUploadedFileName("");
+      e.target.value = "";
+      return;
+    }
+
+    setUploadError("");
+    setUploadedFileName(file.name);
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result;
+      try {
+        localStorage.setItem("pendingBillFileName", file.name);
+        if (typeof result === "string") {
+          localStorage.setItem("pendingBillFileData", result);
+        }
+      } catch (error) {
+        setUploadError("Unable to save file. Please try again.");
+      }
+    };
+    reader.onerror = () => {
+      setUploadError("File read error. Please try again.");
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -98,13 +138,16 @@ const BillInformationModal = ({ isOpen, onClose, onSubmitted, isSubscriptionActi
                 type="file"
                 id="bill-upload"
                 className="hidden"
-                accept=".pdf,.jpg,.jpeg,.png"
+                accept=".pdf,application/pdf"
+                onChange={handleFileChange}
               />
               <label
                 htmlFor="bill-upload"
                 className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white px-3 md:px-4 pr-10 md:pr-12 flex items-center text-sm md:text-base text-gray-500 cursor-pointer hover:bg-purple-50 transition relative"
               >
-                <span className="flex-1">Upload</span>
+                <span className="flex-1">
+                  {uploadedFileName || "Upload PDF"}
+                </span>
                 <svg
                   className="w-4 h-4 md:w-5 md:h-5 text-purple-400 absolute right-3 md:right-4"
                   fill="none"
@@ -120,6 +163,9 @@ const BillInformationModal = ({ isOpen, onClose, onSubmitted, isSubscriptionActi
                 </svg>
               </label>
             </div>
+            {uploadError && (
+              <p className="text-xs text-red-600">{uploadError}</p>
+            )}
           </div>
 
           {/* Submit Button */}
