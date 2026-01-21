@@ -3,6 +3,9 @@ import React, { useState } from "react";
 const BillInformationModal = ({ isOpen, onClose, onSubmitted, isSubscriptionActive = true }) => {
   const [uploadError, setUploadError] = useState("");
   const [uploadedFileName, setUploadedFileName] = useState("");
+  const [patientName, setPatientName] = useState("");
+  const [serviceDate, setServiceDate] = useState("");
+  const [billAmount, setBillAmount] = useState("");
   if (!isOpen) return null;
 
   const handleSubmit = (e) => {
@@ -89,8 +92,18 @@ const BillInformationModal = ({ isOpen, onClose, onSubmitted, isSubscriptionActi
                   d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                 />
               </svg>
-              <select className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-10 md:pl-12 pr-16 md:pr-20 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-100 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%239C88FF%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:10px] md:bg-[length:12px] bg-[right_1.5rem_center] md:bg-[right_2rem_center] bg-no-repeat">
+              <select
+                value={patientName}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setPatientName(value);
+                }}
+                className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-10 md:pl-12 pr-16 md:pr-20 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-100 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%239C88FF%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:10px] md:bg-[length:12px] bg-[right_1.5rem_center] md:bg-[right_2rem_center] bg-no-repeat"
+              >
                 <option value="">Select</option>
+                <option value="Account Holder">Account Holder</option>
+                <option value="Spouse">Spouse</option>
+                <option value="Child">Child</option>
               </select>
             </div>
           </div>
@@ -104,6 +117,11 @@ const BillInformationModal = ({ isOpen, onClose, onSubmitted, isSubscriptionActi
               <div className="relative">
                 <input
                   type="date"
+                  value={serviceDate}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setServiceDate(value);
+                  }}
                   className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white px-3 md:px-4 pr-3 md:pr-4 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-100"
                   placeholder="Select Date"
                 />
@@ -122,6 +140,11 @@ const BillInformationModal = ({ isOpen, onClose, onSubmitted, isSubscriptionActi
               </span>
               <input
                 type="number"
+                value={billAmount}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setBillAmount(value);
+                }}
                 className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-8 md:pl-10 pr-3 md:pr-4 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-100"
                 placeholder="Enter bill amount"
               />
