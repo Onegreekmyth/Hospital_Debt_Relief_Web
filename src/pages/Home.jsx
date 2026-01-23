@@ -252,7 +252,8 @@ const HomePage = () => {
         className="relative flex flex-col items-center justify-center text-center px-4 md:px-6 pt-32 md:pt-40 pb-20 md:pb-28 min-h-[90vh] md:min-h-[90vh] bg-no-repeat bg-center"
         style={{
           backgroundImage: `linear-gradient(rgba(136, 126, 156, 0.55), rgba(191, 184, 207, 0.55)), url(${heroImg})`,
-          backgroundSize: "100% auto",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       >
         <div className="max-w-3xl text-black">
