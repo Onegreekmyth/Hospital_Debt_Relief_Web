@@ -1,25 +1,42 @@
 import React, { useState } from "react";
+import axiosClient from "../api/axiosClient";
 
-const BillInformationModal = ({ isOpen, onClose, onSubmitted, isSubscriptionActive = true }) => {
+const BillInformationModal = ({ 
+  isOpen, 
+  onClose, 
+  onSubmitted, 
+  isSubscriptionActive = true,
+  accountHolderName = "",
+  familyMembers = []
+}) => {
   const [uploadError, setUploadError] = useState("");
   const [uploadedFileName, setUploadedFileName] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
   const [patientName, setPatientName] = useState("");
   const [serviceDate, setServiceDate] = useState("");
   const [billAmount, setBillAmount] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (onSubmitted) {
-      onSubmitted();
-    } else if (onClose) {
-      onClose();
+  // Build patient options from account holder and family members
+  const patientOptions = [];
+  if (accountHolderName) {
+    patientOptions.push({ value: accountHolderName, label: `Account Holder: ${accountHolderName}` });
+  }
+  familyMembers.forEach((member, index) => {
+    if (member && member.trim()) {
+      const label = index === 0 ? "Spouse" : `Child ${index}`;
+      patientOptions.push({ value: member.trim(), label: `${label}: ${member.trim()}` });
     }
-  };
+  });
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) {
+      setSelectedFile(null);
+      setUploadedFileName("");
       return;
     }
 
@@ -30,29 +47,99 @@ const BillInformationModal = ({ isOpen, onClose, onSubmitted, isSubscriptionActi
     if (!isPdf) {
       setUploadError("Only PDF files are allowed.");
       setUploadedFileName("");
+      setSelectedFile(null);
+      e.target.value = "";
+      return;
+    }
+
+    // Check file size (10MB max)
+    if (file.size > 10 * 1024 * 1024) {
+      setUploadError("File size must be less than 10MB.");
+      setUploadedFileName("");
+      setSelectedFile(null);
       e.target.value = "";
       return;
     }
 
     setUploadError("");
     setUploadedFileName(file.name);
+    setSelectedFile(file);
+  };
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result;
-      try {
-        localStorage.setItem("pendingBillFileName", file.name);
-        if (typeof result === "string") {
-          localStorage.setItem("pendingBillFileData", result);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitError("");
+    setUploadError("");
+
+    // Validation
+    if (!patientName) {
+      setSubmitError("Please select a patient name.");
+      return;
+    }
+
+    if (!serviceDate && isSubscriptionActive) {
+      setSubmitError("Please select a service date.");
+      return;
+    }
+
+    if (!billAmount || parseFloat(billAmount) <= 0) {
+      setSubmitError("Please enter a valid bill amount.");
+      return;
+    }
+
+    if (!selectedFile) {
+      setSubmitError("Please upload a PDF file of the bill.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Create FormData for multipart/form-data upload
+      const formData = new FormData();
+      formData.append("patientName", patientName);
+      formData.append("serviceDate", serviceDate || new Date().toISOString().split('T')[0]);
+      formData.append("billAmount", parseFloat(billAmount));
+      formData.append("pdf", selectedFile);
+
+      const response = await axiosClient.post("/bills", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.data.success) {
+        // Reset form
+        setPatientName("");
+        setServiceDate("");
+        setBillAmount("");
+        setSelectedFile(null);
+        setUploadedFileName("");
+        
+        // Clear file input
+        const fileInput = document.getElementById("bill-upload");
+        if (fileInput) {
+          fileInput.value = "";
         }
-      } catch (error) {
-        setUploadError("Unable to save file. Please try again.");
+
+        // Call success callback
+        if (onSubmitted) {
+          onSubmitted(response.data.data);
+        } else if (onClose) {
+          onClose();
+        }
       }
-    };
-    reader.onerror = () => {
-      setUploadError("File read error. Please try again.");
-    };
-    reader.readAsDataURL(file);
+    } catch (error) {
+      console.error("Error submitting bill:", error);
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Failed to upload bill. Please try again.";
+      setSubmitError(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -101,9 +188,19 @@ const BillInformationModal = ({ isOpen, onClose, onSubmitted, isSubscriptionActi
                 className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-10 md:pl-12 pr-16 md:pr-20 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-100 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%239C88FF%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:10px] md:bg-[length:12px] bg-[right_1.5rem_center] md:bg-[right_2rem_center] bg-no-repeat"
               >
                 <option value="">Select</option>
-                <option value="Account Holder">Account Holder</option>
-                <option value="Spouse">Spouse</option>
-                <option value="Child">Child</option>
+                {patientOptions.length > 0 ? (
+                  patientOptions.map((option, index) => (
+                    <option key={index} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))
+                ) : (
+                  <>
+                    <option value="Account Holder">Account Holder</option>
+                    <option value="Spouse">Spouse</option>
+                    <option value="Child">Child</option>
+                  </>
+                )}
               </select>
             </div>
           </div>
@@ -191,12 +288,20 @@ const BillInformationModal = ({ isOpen, onClose, onSubmitted, isSubscriptionActi
             )}
           </div>
 
+          {/* Error Message */}
+          {submitError && (
+            <div className="p-3 rounded-lg bg-red-50 border border-red-200">
+              <p className="text-xs text-red-600">{submitError}</p>
+            </div>
+          )}
+
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full h-11 md:h-12 rounded-full bg-gradient-to-r from-purple-900 to-blue-800 text-white font-bold text-sm md:text-base hover:from-purple-600 hover:to-purple-800 transition-all shadow-lg mt-4 md:mt-6"
+            disabled={loading}
+            className="w-full h-11 md:h-12 rounded-full bg-gradient-to-r from-purple-900 to-blue-800 text-white font-bold text-sm md:text-base hover:from-purple-600 hover:to-purple-800 transition-all shadow-lg mt-4 md:mt-6 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Continue
+            {loading ? "Uploading..." : "Continue"}
           </button>
         </form>
       </div>

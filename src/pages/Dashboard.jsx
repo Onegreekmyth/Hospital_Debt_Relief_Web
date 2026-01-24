@@ -6,6 +6,7 @@ import BillInformationModal from "../components/BillInformationModal";
 import SubscriptionModal from "../components/SubscriptionModal";
 import AddFamilyMembersModal from "../components/AddFamilyMembersModal";
 import ApplicationModal from "../components/ApplicationModal";
+import ApplicationSubmittedModal from "../components/ApplicationSubmittedModal";
 import axiosClient from "../api/axiosClient";
 import uploadImg from "../assets/upload-img.png";
 import rightArrow from "../assets/right-arrow.png";
@@ -20,6 +21,9 @@ const Dashboard = () => {
   const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
   const [isAddFamilyModalOpen, setIsAddFamilyModalOpen] = useState(false);
   const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
+  const [isApplicationSubmittedModalOpen, setIsApplicationSubmittedModalOpen] = useState(false);
+  const [submittedBillId, setSubmittedBillId] = useState(null);
+  const [submittedBillData, setSubmittedBillData] = useState(null);
 
   // Profile state
   const [profile, setProfile] = useState({
@@ -117,7 +121,8 @@ const Dashboard = () => {
       isSubmissionModalOpen ||
       isSubscriptionModalOpen ||
       isAddFamilyModalOpen ||
-      isApplicationModalOpen
+      isApplicationModalOpen ||
+      isApplicationSubmittedModalOpen
     ) {
       document.body.style.overflow = "hidden";
     } else {
@@ -468,7 +473,7 @@ const Dashboard = () => {
                   {eligibilityStatus === "eligible" ? "Eligible" : "Temporarily Ineligible"}
                 </span>
               </div>
-              <p className="text-xs md:text-sm text-gray-700 mb-2">
+asa              <p className="text-xs md:text-sm text-gray-700 mb-2">
                 Based on your latest income and household details, you may qualify for:
               </p>
               <p className="text-2xl md:text-3xl font-extrabold text-purple-700 mb-2">
@@ -651,10 +656,27 @@ const Dashboard = () => {
         isOpen={isBillModalOpen}
         onClose={() => setIsBillModalOpen(false)}
         isSubscriptionActive={subscriptionStatus === "active"}
-        onSubmitted={() => {
+        accountHolderName={[profile.firstName, profile.lastName].filter(Boolean).join(" ").trim()}
+        familyMembers={familyMembers}
+        onSubmitted={(billData) => {
           setIsBillModalOpen(false);
-          setIsApplicationModalOpen(true);
+          // Store bill ID and data for the submitted modal
+          setSubmittedBillId(billData._id);
+          setSubmittedBillData(billData);
+          setIsApplicationSubmittedModalOpen(true);
         }}
+      />
+
+      {/* Application Submitted Modal */}
+      <ApplicationSubmittedModal
+        isOpen={isApplicationSubmittedModalOpen}
+        onClose={() => {
+          setIsApplicationSubmittedModalOpen(false);
+          setSubmittedBillId(null);
+          setSubmittedBillData(null);
+        }}
+        billId={submittedBillId}
+        billData={submittedBillData}
       />
 
       {/* Monthly Subscription Modal */}

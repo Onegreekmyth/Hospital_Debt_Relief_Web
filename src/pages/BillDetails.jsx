@@ -1,63 +1,104 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import uploadImg from "../assets/upload-circle.png";
 import billPlaceholder from "../assets/bill-history.png";
-
-// Simple mock data – should match BillHistory statuses and design for now
-const MOCK_BILLS = [
-  {
-    id: 1,
-    hospital: "Hopkins Hospital",
-    amount: "$450.00",
-    newAmount: "$249.22",
-    savedAmount: "$200.78",
-    amountPaidToUs: "$299.00",
-    status: "Submitted",
-    date: "11/20/2025",
-    billNumber: "BH-0001",
-  },
-  {
-    id: 2,
-    hospital: "Massachusetts General Hospital",
-    amount: "$450.00",
-    newAmount: "$249.22",
-    savedAmount: "$200.78",
-    amountPaidToUs: "$299.00",
-    status: "Pending",
-    date: "11/21/2025",
-    billNumber: "BH-0002",
-  },
-  {
-    id: 3,
-    hospital: "Hopkins Hospital",
-    amount: "$450.00",
-    newAmount: "$249.22",
-    savedAmount: "$200.78",
-    amountPaidToUs: "$299.00",
-    status: "Submitted",
-    date: "11/22/2025",
-    billNumber: "BH-0003",
-  },
-  {
-    id: 4,
-    hospital: "Massachusetts General Hospital",
-    amount: "$450.00",
-    newAmount: "$249.22",
-    savedAmount: "$200.78",
-    amountPaidToUs: "$299.00",
-    status: "Refunded",
-    date: "11/23/2025",
-    billNumber: "BH-0004",
-  },
-];
+import axiosClient from "../api/axiosClient";
 
 const BillDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const bill = MOCK_BILLS.find((b) => String(b.id) === String(id));
+  const [bill, setBill] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const fileInputRef = useRef(null);
   const [uploadedFileName, setUploadedFileName] = useState("");
+
+  // Fetch bill from API and transform to match MOCK_BILLS format
+  useEffect(() => {
+    const fetchBill = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        
+        const response = await axiosClient.get(`/bills/${id}`);
+        
+        if (response.data.success) {
+          const apiBill = response.data.data;
+          
+          // Map backend status to UI status
+          const mapStatusToUI = (backendStatus) => {
+            const statusMap = {
+              pending: "Pending",
+              submitted: "Submitted",
+              processing: "Submitted",
+              approved: "Refunded",
+              rejected: "Pending",
+            };
+            return statusMap[backendStatus] || "Pending";
+          };
+
+          // Format currency
+          const formatCurrency = (amount) => {
+            if (!amount && amount !== 0) return "$0.00";
+            return `$${Number(amount).toLocaleString("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}`;
+          };
+
+          // Format date
+          const formatDate = (dateString) => {
+            if (!dateString) return "N/A";
+            const date = new Date(dateString);
+            return date.toLocaleDateString("en-US", {
+              month: "2-digit",
+              day: "2-digit",
+              year: "numeric",
+            });
+          };
+
+          // Transform to match MOCK_BILLS format
+          const transformedBill = {
+            id: apiBill._id,
+            hospital: apiBill.patientName || "N/A",
+            amount: formatCurrency(apiBill.billAmount),
+            newAmount: formatCurrency(apiBill.billAmount * 0.55), // Placeholder calculation (45% discount)
+            savedAmount: formatCurrency(apiBill.billAmount * 0.45), // Placeholder calculation
+            amountPaidToUs: "$299.00", // Placeholder
+            status: mapStatusToUI(apiBill.status),
+            date: formatDate(apiBill.submittedAt || apiBill.createdAt),
+            billNumber: `BH-${apiBill._id.toString().slice(-4).toUpperCase()}`, // Generate from ID
+            pdfUrl: apiBill.pdfUrl, // Keep for PDF display
+            supportingDocuments: apiBill.supportingDocuments || [], // Keep for supporting docs
+          };
+
+          setBill(transformedBill);
+        } else {
+          setError("Bill not found");
+        }
+      } catch (err) {
+        console.error("Error fetching bill:", err);
+        const message =
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          err.message ||
+          "Failed to load bill";
+        setError(message);
+        
+        // If unauthorized, redirect to login
+        if (err.response?.status === 401) {
+          navigate("/login");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchBill();
+    }
+  }, [id, navigate]);
 
   const handleUploadClick = () => {
     if (fileInputRef.current) {
@@ -72,7 +113,22 @@ const BillDetails = () => {
     }
   };
 
-  if (!bill) {
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#f5f5fb]">
+        <Navbar />
+        <main className="pt-28 md:pt-28 pb-16 mt-10">
+          <div className="w-[92%] md:w-[90%] lg:w-[86%] mx-auto">
+            <div className="bg-white border border-gray-200 rounded-[32px] shadow-sm p-10 text-center text-gray-700">
+              Loading bill details...
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (error || !bill) {
     return (
       <div className="min-h-screen bg-[#f5f5fb]">
         <Navbar />
@@ -86,7 +142,7 @@ const BillDetails = () => {
               ← Back to Bill History
             </button>
             <div className="bg-white border border-gray-200 rounded-[32px] shadow-sm p-10 text-center text-gray-700">
-              Bill not found.
+              {error || "Bill not found."}
             </div>
           </div>
         </main>
@@ -178,11 +234,19 @@ const BillDetails = () => {
                       <p className="text-sm text-[#8c86c3] mb-3 md:mb-4 text-center">
                         Image of Uploaded Bill
                       </p>
-                      <img
-                        src={billPlaceholder}
-                        alt="Uploaded bill placeholder"
-                        className="w-full h-full max-h-[360px] object-contain rounded-2xl"
-                      />
+                      {bill.pdfUrl ? (
+                        <iframe
+                          src={bill.pdfUrl}
+                          className="w-full h-full max-h-[360px] rounded-2xl"
+                          title="Bill PDF"
+                        />
+                      ) : (
+                        <img
+                          src={billPlaceholder}
+                          alt="Uploaded bill placeholder"
+                          className="w-full h-full max-h-[360px] object-contain rounded-2xl"
+                        />
+                      )}
                     </div>
                   </div>
                 </div>
@@ -237,11 +301,19 @@ const BillDetails = () => {
                         Image of Uploaded Bill
                       </p>
 
-                      <img
-                        src={billPlaceholder}
-                        alt="Uploaded bill placeholder"
-                        className="w-full h-full max-h-[360px] object-contain rounded-2xl"
-                      />
+                      {bill.pdfUrl ? (
+                        <iframe
+                          src={bill.pdfUrl}
+                          className="w-full h-full max-h-[360px] rounded-2xl"
+                          title="Bill PDF"
+                        />
+                      ) : (
+                        <img
+                          src={billPlaceholder}
+                          alt="Uploaded bill placeholder"
+                          className="w-full h-full max-h-[360px] object-contain rounded-2xl"
+                        />
+                      )}
                     </div>
                   </div>
 
