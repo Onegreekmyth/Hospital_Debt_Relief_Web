@@ -11,6 +11,7 @@ const faqs = [
       "We provide you with the right tools to save you money.",
     ],
   },
+  
   {
     question: "How does the Money Back Guarantee work?",
     answer: [
@@ -130,15 +131,7 @@ const FAQPage = () => {
       {/* FAQ Section */}
       <section className="py-12 md:py-20">
         <div className="w-full max-w-5xl mx-auto px-4 md:px-6 lg:px-10">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-[24px] md:text-[32px] lg:text-[40px] font-semibold text-gray-900 tracking-[0.64px] leading-tight">
-              Frequently asked questions
-            </h2>
-            <p className="mt-3 text-[13px] md:text-[15px] text-gray-700">
-              Find answers to common questions about how HospitalDebtRelief.com
-              works.
-            </p>
-          </div>
+         
 
           <div className="bg-white rounded-2xl md:rounded-3xl shadow-[0_16px_40px_rgba(79,40,232,0.08)] border border-purple-100">
             {faqs.map((faq, index) => (
