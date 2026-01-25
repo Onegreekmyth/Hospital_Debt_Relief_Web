@@ -473,7 +473,7 @@ const Dashboard = () => {
                   {eligibilityStatus === "eligible" ? "Eligible" : "Temporarily Ineligible"}
                 </span>
               </div>
-asa              <p className="text-xs md:text-sm text-gray-700 mb-2">
+              <p className="text-xs md:text-sm text-gray-700 mb-2">
                 Based on your latest income and household details, you may qualify for:
               </p>
               <p className="text-2xl md:text-3xl font-extrabold text-purple-700 mb-2">

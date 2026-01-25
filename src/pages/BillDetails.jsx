@@ -4,6 +4,10 @@ import Navbar from "../components/Navbar";
 import uploadImg from "../assets/upload-circle.png";
 import billPlaceholder from "../assets/bill-history.png";
 import axiosClient from "../api/axiosClient";
+import { getDocument, GlobalWorkerOptions } from "pdfjs-dist/legacy/build/pdf";
+import workerSrc from "pdfjs-dist/legacy/build/pdf.worker.min.mjs?url";
+
+GlobalWorkerOptions.workerSrc = workerSrc;
 
 const BillDetails = () => {
   const { id } = useParams();
@@ -13,6 +17,9 @@ const BillDetails = () => {
   const [error, setError] = useState("");
   const fileInputRef = useRef(null);
   const [uploadedFileName, setUploadedFileName] = useState("");
+  const pdfCanvasRef = useRef(null);
+  const [pdfPreviewLoading, setPdfPreviewLoading] = useState(false);
+  const [pdfPreviewError, setPdfPreviewError] = useState("");
 
   // Fetch bill from API and transform to match MOCK_BILLS format
   useEffect(() => {
@@ -99,6 +106,66 @@ const BillDetails = () => {
       fetchBill();
     }
   }, [id, navigate]);
+
+  useEffect(() => {
+    if (!bill?.pdfUrl) {
+      setPdfPreviewError("");
+      setPdfPreviewLoading(false);
+      return;
+    }
+
+    let isMounted = true;
+    const canvas = pdfCanvasRef.current;
+    if (!canvas) {
+      return;
+    }
+
+    setPdfPreviewLoading(true);
+    setPdfPreviewError("");
+
+    const loadingTask = getDocument({
+      url: bill.pdfUrl,
+      withCredentials: false,
+      disableRange: true,
+      disableStream: true,
+    });
+
+    loadingTask.promise
+      .then(async (pdf) => {
+        const page = await pdf.getPage(1);
+        const unscaledViewport = page.getViewport({ scale: 1 });
+        const containerWidth =
+          canvas.parentElement?.clientWidth || unscaledViewport.width;
+        const scale = containerWidth / unscaledViewport.width;
+        const viewport = page.getViewport({ scale });
+
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        const context = canvas.getContext("2d");
+        if (!context) {
+          throw new Error("Canvas context not available.");
+        }
+
+        await page.render({ canvasContext: context, viewport }).promise;
+      })
+      .then(() => {
+        if (isMounted) {
+          setPdfPreviewLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (!isMounted) return;
+        console.error("PDF preview error:", err);
+        setPdfPreviewError("Unable to load PDF preview.");
+        setPdfPreviewLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+      loadingTask.destroy();
+    };
+  }, [bill?.pdfUrl]);
 
   const handleUploadClick = () => {
     if (fileInputRef.current) {
@@ -235,11 +302,37 @@ const BillDetails = () => {
                         Image of Uploaded Bill
                       </p>
                       {bill.pdfUrl ? (
-                        <iframe
-                          src={bill.pdfUrl}
-                          className="w-full h-full max-h-[360px] rounded-2xl"
-                          title="Bill PDF"
-                        />
+                        <div className="w-full h-full max-h-[360px] flex items-center justify-center">
+                          {pdfPreviewLoading ? (
+                            <span className="text-xs text-gray-500">
+                              Loading preview...
+                            </span>
+                          ) : pdfPreviewError ? (
+                            <div className="flex flex-col items-center gap-2 text-center">
+                              <img
+                                src={billPlaceholder}
+                                alt="Uploaded bill placeholder"
+                                className="w-full h-full max-h-[360px] object-contain rounded-2xl"
+                              />
+                              <span className="text-xs text-red-600">
+                                PDF preview unavailable. Open the file instead.
+                              </span>
+                              <a
+                                href={bill.pdfUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-xs text-purple-700 hover:text-purple-900 underline"
+                              >
+                                Open PDF in new tab
+                              </a>
+                            </div>
+                          ) : (
+                            <canvas
+                              ref={pdfCanvasRef}
+                              className="w-full h-full max-h-[360px] rounded-2xl"
+                            />
+                          )}
+                        </div>
                       ) : (
                         <img
                           src={billPlaceholder}
@@ -302,11 +395,37 @@ const BillDetails = () => {
                       </p>
 
                       {bill.pdfUrl ? (
-                        <iframe
-                          src={bill.pdfUrl}
-                          className="w-full h-full max-h-[360px] rounded-2xl"
-                          title="Bill PDF"
-                        />
+                        <div className="w-full h-full max-h-[360px] flex items-center justify-center">
+                          {pdfPreviewLoading ? (
+                            <span className="text-xs text-gray-500">
+                              Loading preview...
+                            </span>
+                          ) : pdfPreviewError ? (
+                            <div className="flex flex-col items-center gap-2 text-center">
+                              <img
+                                src={billPlaceholder}
+                                alt="Uploaded bill placeholder"
+                                className="w-full h-full max-h-[360px] object-contain rounded-2xl"
+                              />
+                              <span className="text-xs text-red-600">
+                                PDF preview unavailable. Open the file instead.
+                              </span>
+                              <a
+                                href={bill.pdfUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-xs text-purple-700 hover:text-purple-900 underline"
+                              >
+                                Open PDF in new tab
+                              </a>
+                            </div>
+                          ) : (
+                            <canvas
+                              ref={pdfCanvasRef}
+                              className="w-full h-full max-h-[360px] rounded-2xl"
+                            />
+                          )}
+                        </div>
                       ) : (
                         <img
                           src={billPlaceholder}
