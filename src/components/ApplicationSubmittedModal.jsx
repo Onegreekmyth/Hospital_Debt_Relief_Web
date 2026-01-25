@@ -182,7 +182,7 @@ const ApplicationSubmittedModal = ({
               </svg>
             </div>
             <span className="text-base md:text-lg font-semibold text-purple-900">
-              Upload
+              Complete & Upload
             </span>
             <span className="text-sm text-purple-700 mt-1">
               Supporting Documents

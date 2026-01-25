@@ -4,10 +4,6 @@ import Navbar from "../components/Navbar";
 import uploadImg from "../assets/upload-circle.png";
 import billPlaceholder from "../assets/bill-history.png";
 import axiosClient from "../api/axiosClient";
-import { getDocument, GlobalWorkerOptions } from "pdfjs-dist/legacy/build/pdf";
-import workerSrc from "pdfjs-dist/legacy/build/pdf.worker.min.mjs?url";
-
-GlobalWorkerOptions.workerSrc = workerSrc;
 
 const BillDetails = () => {
   const { id } = useParams();
@@ -17,9 +13,6 @@ const BillDetails = () => {
   const [error, setError] = useState("");
   const fileInputRef = useRef(null);
   const [uploadedFileName, setUploadedFileName] = useState("");
-  const pdfCanvasRef = useRef(null);
-  const [pdfPreviewLoading, setPdfPreviewLoading] = useState(false);
-  const [pdfPreviewError, setPdfPreviewError] = useState("");
 
   // Fetch bill from API and transform to match MOCK_BILLS format
   useEffect(() => {
@@ -106,66 +99,6 @@ const BillDetails = () => {
       fetchBill();
     }
   }, [id, navigate]);
-
-  useEffect(() => {
-    if (!bill?.pdfUrl) {
-      setPdfPreviewError("");
-      setPdfPreviewLoading(false);
-      return;
-    }
-
-    let isMounted = true;
-    const canvas = pdfCanvasRef.current;
-    if (!canvas) {
-      return;
-    }
-
-    setPdfPreviewLoading(true);
-    setPdfPreviewError("");
-
-    const loadingTask = getDocument({
-      url: bill.pdfUrl,
-      withCredentials: false,
-      disableRange: true,
-      disableStream: true,
-    });
-
-    loadingTask.promise
-      .then(async (pdf) => {
-        const page = await pdf.getPage(1);
-        const unscaledViewport = page.getViewport({ scale: 1 });
-        const containerWidth =
-          canvas.parentElement?.clientWidth || unscaledViewport.width;
-        const scale = containerWidth / unscaledViewport.width;
-        const viewport = page.getViewport({ scale });
-
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-
-        const context = canvas.getContext("2d");
-        if (!context) {
-          throw new Error("Canvas context not available.");
-        }
-
-        await page.render({ canvasContext: context, viewport }).promise;
-      })
-      .then(() => {
-        if (isMounted) {
-          setPdfPreviewLoading(false);
-        }
-      })
-      .catch((err) => {
-        if (!isMounted) return;
-        console.error("PDF preview error:", err);
-        setPdfPreviewError("Unable to load PDF preview.");
-        setPdfPreviewLoading(false);
-      });
-
-    return () => {
-      isMounted = false;
-      loadingTask.destroy();
-    };
-  }, [bill?.pdfUrl]);
 
   const handleUploadClick = () => {
     if (fileInputRef.current) {
@@ -302,36 +235,29 @@ const BillDetails = () => {
                         Image of Uploaded Bill
                       </p>
                       {bill.pdfUrl ? (
-                        <div className="w-full h-full max-h-[360px] flex items-center justify-center">
-                          {pdfPreviewLoading ? (
-                            <span className="text-xs text-gray-500">
-                              Loading preview...
-                            </span>
-                          ) : pdfPreviewError ? (
-                            <div className="flex flex-col items-center gap-2 text-center">
-                              <img
-                                src={billPlaceholder}
-                                alt="Uploaded bill placeholder"
-                                className="w-full h-full max-h-[360px] object-contain rounded-2xl"
+                        <div className="w-full h-full max-h-[360px] flex flex-col items-center justify-center gap-4 text-center px-4">
+                          <div className="w-16 h-16 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center">
+                            <svg
+                              className="w-8 h-8"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"
                               />
-                              <span className="text-xs text-red-600">
-                                PDF preview unavailable. Open the file instead.
-                              </span>
-                              <a
-                                href={bill.pdfUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-xs text-purple-700 hover:text-purple-900 underline"
-                              >
-                                Open PDF in new tab
-                              </a>
-                            </div>
-                          ) : (
-                            <canvas
-                              ref={pdfCanvasRef}
-                              className="w-full h-full max-h-[360px] rounded-2xl"
-                            />
-                          )}
+                            </svg>
+                          </div>
+                          <a
+                            href={bill.pdfUrl}
+                            download
+                            className="inline-flex items-center gap-2 rounded-full border border-purple-200 px-4 py-2 text-sm text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition"
+                          >
+                            <span>Download PDF</span>
+                          </a>
                         </div>
                       ) : (
                         <img
@@ -395,36 +321,29 @@ const BillDetails = () => {
                       </p>
 
                       {bill.pdfUrl ? (
-                        <div className="w-full h-full max-h-[360px] flex items-center justify-center">
-                          {pdfPreviewLoading ? (
-                            <span className="text-xs text-gray-500">
-                              Loading preview...
-                            </span>
-                          ) : pdfPreviewError ? (
-                            <div className="flex flex-col items-center gap-2 text-center">
-                              <img
-                                src={billPlaceholder}
-                                alt="Uploaded bill placeholder"
-                                className="w-full h-full max-h-[360px] object-contain rounded-2xl"
+                        <div className="w-full h-full max-h-[360px] flex flex-col items-center justify-center gap-4 text-center px-4">
+                          <div className="w-16 h-16 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center">
+                            <svg
+                              className="w-8 h-8"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"
                               />
-                              <span className="text-xs text-red-600">
-                                PDF preview unavailable. Open the file instead.
-                              </span>
-                              <a
-                                href={bill.pdfUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-xs text-purple-700 hover:text-purple-900 underline"
-                              >
-                                Open PDF in new tab
-                              </a>
-                            </div>
-                          ) : (
-                            <canvas
-                              ref={pdfCanvasRef}
-                              className="w-full h-full max-h-[360px] rounded-2xl"
-                            />
-                          )}
+                            </svg>
+                          </div>
+                          <a
+                            href={bill.pdfUrl}
+                            download
+                            className="inline-flex items-center gap-2 rounded-full border border-purple-200 px-4 py-2 text-sm text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition"
+                          >
+                            <span>Download PDF</span>
+                          </a>
                         </div>
                       ) : (
                         <img

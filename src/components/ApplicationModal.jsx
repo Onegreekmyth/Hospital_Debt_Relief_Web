@@ -69,7 +69,7 @@ const ApplicationModal = ({ isOpen, onClose, onComplete, feeAmount = 299 }) => {
           >
             <div>
               <p className="text-sm sm:text-base font-semibold text-[#5225cc]">
-                Upload
+                Complete & Upload
               </p>
               <p className="mt-1 text-xs sm:text-sm text-[#5225cc]">
                 Supporting Documents
