@@ -129,7 +129,7 @@ const ApplicationSubmittedModal = ({
           <button
             type="button"
             onClick={handleViewApplication}
-            className="flex flex-col items-center justify-center p-4 md:p-5 rounded-2xl border-2 border-purple-200 bg-purple-50 hover:bg-purple-100 transition-colors"
+            className="flex flex-col items-center justify-center p-4 md:p-5 rounded-2xl border-2 border-purple-200  hover:bg-purple-100 transition-colors"
           >
             <div className="mb-2">
               <svg
@@ -166,7 +166,7 @@ const ApplicationSubmittedModal = ({
                 fileInput.click();
               }
             }}
-            className="flex flex-col items-center justify-center p-4 md:p-5 rounded-2xl border-2 border-purple-200 bg-purple-50 hover:bg-purple-100 transition-colors"
+            className="flex flex-col items-center justify-center p-4 md:p-5 rounded-2xl border-2 border-purple-200  hover:bg-purple-100 transition-colors"
           >
             <div className="mb-2">
               <svg

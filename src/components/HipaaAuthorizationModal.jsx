@@ -5,11 +5,14 @@ const HipaaAuthorizationModal = ({ isOpen, onClose, billData }) => {
     familyMemberName: "",
     hospitalName: "",
     billDate: "",
-    familyMemberSignature: "",
     guardianPrintName: "",
-    guardianSignature: "",
     acknowledged: false,
   });
+  const [familySignatureFile, setFamilySignatureFile] = useState(null);
+  const [guardianSignatureFile, setGuardianSignatureFile] = useState(null);
+  const [familySignaturePreview, setFamilySignaturePreview] = useState("");
+  const [guardianSignaturePreview, setGuardianSignaturePreview] = useState("");
+  const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
     if (!isOpen) return;
@@ -21,9 +24,54 @@ const HipaaAuthorizationModal = ({ isOpen, onClose, billData }) => {
       ...prev,
       familyMemberName,
       billDate,
-      familyMemberSignature: familyMemberName || prev.familyMemberSignature,
     }));
+    setFormErrors({});
   }, [isOpen, billData]);
+
+  useEffect(() => {
+    if (familySignatureFile) {
+      const url = URL.createObjectURL(familySignatureFile);
+      setFamilySignaturePreview(url);
+      return () => URL.revokeObjectURL(url);
+    }
+    setFamilySignaturePreview("");
+  }, [familySignatureFile]);
+
+  useEffect(() => {
+    if (guardianSignatureFile) {
+      const url = URL.createObjectURL(guardianSignatureFile);
+      setGuardianSignaturePreview(url);
+      return () => URL.revokeObjectURL(url);
+    }
+    setGuardianSignaturePreview("");
+  }, [guardianSignatureFile]);
+
+  const validateForm = () => {
+    const nextErrors = {};
+    if (!hipaaForm.familyMemberName.trim()) {
+      nextErrors.familyMemberName = "Family member name is required.";
+    }
+    if (!hipaaForm.hospitalName.trim()) {
+      nextErrors.hospitalName = "Hospital name is required.";
+    }
+    if (!hipaaForm.billDate) {
+      nextErrors.billDate = "Date of hospital bill is required.";
+    }
+    if (!hipaaForm.guardianPrintName.trim()) {
+      nextErrors.guardianPrintName = "Parent/guardian name is required.";
+    }
+    if (!familySignatureFile) {
+      nextErrors.familySignature = "Family member signature is required.";
+    }
+    if (!guardianSignatureFile) {
+      nextErrors.guardianSignature = "Parent/guardian signature is required.";
+    }
+    if (!hipaaForm.acknowledged) {
+      nextErrors.acknowledged = "You must confirm authorization.";
+    }
+    setFormErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
 
   if (!isOpen) return null;
 
@@ -50,6 +98,12 @@ const HipaaAuthorizationModal = ({ isOpen, onClose, billData }) => {
           </button>
         </div>
 
+        {Object.keys(formErrors).length > 0 && (
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-xs md:text-sm text-red-700">
+            Please complete all required fields before e-signing.
+          </div>
+        )}
+
         <div className="space-y-4 text-sm md:text-base text-gray-800">
           <p>
             I,{" "}
@@ -68,6 +122,11 @@ const HipaaAuthorizationModal = ({ isOpen, onClose, billData }) => {
             , Family Members, hereby authorize the use or disclosure of my
             protected information as described below:
           </p>
+          {formErrors.familyMemberName && (
+            <p className="text-[11px] md:text-xs text-red-600">
+              {formErrors.familyMemberName}
+            </p>
+          )}
 
           <div>
             <p className="font-semibold">
@@ -91,6 +150,11 @@ const HipaaAuthorizationModal = ({ isOpen, onClose, billData }) => {
               information to my hired third party company,
               www.HospitalDebtRelief.com of Frisco, Texas 75036.
             </p>
+            {formErrors.hospitalName && (
+              <p className="text-[11px] md:text-xs text-red-600">
+                {formErrors.hospitalName}
+              </p>
+            )}
           </div>
 
           <div>
@@ -131,6 +195,11 @@ const HipaaAuthorizationModal = ({ isOpen, onClose, billData }) => {
               />{" "}
               and expires one year after the beginning date.
             </p>
+            {formErrors.billDate && (
+              <p className="text-[11px] md:text-xs text-red-600">
+                {formErrors.billDate}
+              </p>
+            )}
           </div>
 
           <div>
@@ -155,22 +224,32 @@ const HipaaAuthorizationModal = ({ isOpen, onClose, billData }) => {
               <label className="text-sm font-medium text-gray-700">
                 Signature on behalf of Family Member
               </label>
-              <input
-                type="text"
-                value={hipaaForm.familyMemberSignature}
-                onChange={(e) =>
-                  setHipaaForm((prev) => ({
-                    ...prev,
-                    familyMemberSignature: e.target.value,
-                  }))
-                }
-                className="rounded-md border border-yellow-300 bg-yellow-50 px-3 py-2 text-gray-900"
-                placeholder="Type full name"
-              />
+              <div className="flex items-center gap-3">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setFamilySignatureFile(e.target.files?.[0] || null)
+                  }
+                  className="w-full rounded-md border border-yellow-300 bg-yellow-50 px-3 py-2 text-gray-900 file:mr-3 file:rounded-full file:border-0 file:bg-purple-100 file:px-3 file:py-1 file:text-xs file:font-semibold file:text-purple-700 hover:file:bg-purple-200"
+                />
+                {familySignaturePreview && (
+                  <img
+                    src={familySignaturePreview}
+                    alt="Family member signature preview"
+                    className="h-12 w-24 rounded-md border border-purple-200 object-contain"
+                  />
+                )}
+              </div>
+              {formErrors.familySignature && (
+                <p className="text-[11px] md:text-xs text-red-600">
+                  {formErrors.familySignature}
+                </p>
+              )}
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-gray-700">
-                Parent/Guardian Print Name
+                Parent/Guardian Name
               </label>
               <input
                 type="text"
@@ -184,23 +263,38 @@ const HipaaAuthorizationModal = ({ isOpen, onClose, billData }) => {
                 className="rounded-md border border-yellow-300 bg-yellow-50 px-3 py-2 text-gray-900"
                 placeholder="Print name"
               />
+              {formErrors.guardianPrintName && (
+                <p className="text-[11px] md:text-xs text-red-600">
+                  {formErrors.guardianPrintName}
+                </p>
+              )}
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-gray-700">
                 Parent/Guardian Signature
               </label>
-              <input
-                type="text"
-                value={hipaaForm.guardianSignature}
-                onChange={(e) =>
-                  setHipaaForm((prev) => ({
-                    ...prev,
-                    guardianSignature: e.target.value,
-                  }))
-                }
-                className="rounded-md border border-yellow-300 bg-yellow-50 px-3 py-2 text-gray-900"
-                placeholder="Type full name"
-              />
+              <div className="flex items-center gap-3">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setGuardianSignatureFile(e.target.files?.[0] || null)
+                  }
+                  className="w-full rounded-md border border-yellow-300 bg-yellow-50 px-3 py-2 text-gray-900 file:mr-3 file:rounded-full file:border-0 file:bg-purple-100 file:px-3 file:py-1 file:text-xs file:font-semibold file:text-purple-700 hover:file:bg-purple-200"
+                />
+                {guardianSignaturePreview && (
+                  <img
+                    src={guardianSignaturePreview}
+                    alt="Guardian signature preview"
+                    className="h-12 w-24 rounded-md border border-purple-200 object-contain"
+                  />
+                )}
+              </div>
+              {formErrors.guardianSignature && (
+                <p className="text-[11px] md:text-xs text-red-600">
+                  {formErrors.guardianSignature}
+                </p>
+              )}
             </div>
           </div>
 
@@ -221,6 +315,11 @@ const HipaaAuthorizationModal = ({ isOpen, onClose, billData }) => {
               disclosure.
             </span>
           </label>
+          {formErrors.acknowledged && (
+            <p className="text-[11px] md:text-xs text-red-600">
+              {formErrors.acknowledged}
+            </p>
+          )}
         </div>
 
         <div className="mt-6 flex flex-col md:flex-row gap-3">
@@ -233,7 +332,7 @@ const HipaaAuthorizationModal = ({ isOpen, onClose, billData }) => {
           </button>
           <button
             type="button"
-            disabled={!hipaaForm.acknowledged}
+            onClick={validateForm}
             className="flex-1 rounded-full bg-gradient-to-r from-purple-700 to-purple-900 py-3 text-white font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
           >
             E-Sign Authorization
