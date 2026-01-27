@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosClient from "../api/axiosClient";
+import HipaaAuthorizationModal from "./HipaaAuthorizationModal";
 
 const ApplicationSubmittedModal = ({ 
   isOpen, 
@@ -14,6 +15,7 @@ const ApplicationSubmittedModal = ({
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [isHipaaOpen, setIsHipaaOpen] = useState(false);
 
   if (!isOpen) return null;
 
@@ -113,25 +115,25 @@ const ApplicationSubmittedModal = ({
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl md:rounded-3xl shadow-xl p-6 md:p-8 max-w-2xl w-full"
+        className="bg-white rounded-2xl md:rounded-3xl shadow-xl p-4 md:p-6 max-w-xl w-full"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Title */}
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-6 md:mb-8">
+        <h2 className="text-xl md:text-2xl font-bold text-gray-900 text-center mb-4 md:mb-6">
           Application Submitted
         </h2>
 
         {/* Two Action Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-4 md:mb-6">
           {/* View Application Button */}
           <button
             type="button"
             onClick={handleViewApplication}
-            className="flex flex-col items-center justify-center p-6 md:p-8 rounded-2xl border-2 border-purple-200 bg-purple-50 hover:bg-purple-100 transition-colors"
+            className="flex flex-col items-center justify-center p-4 md:p-5 rounded-2xl border-2 border-purple-200 bg-purple-50 hover:bg-purple-100 transition-colors"
           >
-            <div className="mb-3">
+            <div className="mb-2">
               <svg
-                className="w-8 h-8 md:w-10 md:h-10 text-purple-700"
+                className="w-7 h-7 md:w-8 md:h-8 text-purple-700"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -150,7 +152,7 @@ const ApplicationSubmittedModal = ({
                 />
               </svg>
             </div>
-            <span className="text-base md:text-lg font-semibold text-purple-900">
+            <span className="text-sm md:text-base font-semibold text-purple-900">
               View Application
             </span>
           </button>
@@ -164,11 +166,11 @@ const ApplicationSubmittedModal = ({
                 fileInput.click();
               }
             }}
-            className="flex flex-col items-center justify-center p-6 md:p-8 rounded-2xl border-2 border-purple-200 bg-purple-50 hover:bg-purple-100 transition-colors"
+            className="flex flex-col items-center justify-center p-4 md:p-5 rounded-2xl border-2 border-purple-200 bg-purple-50 hover:bg-purple-100 transition-colors"
           >
-            <div className="mb-3">
+            <div className="mb-2">
               <svg
-                className="w-8 h-8 md:w-10 md:h-10 text-purple-700"
+                className="w-7 h-7 md:w-8 md:h-8 text-purple-700"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -181,17 +183,25 @@ const ApplicationSubmittedModal = ({
                 />
               </svg>
             </div>
-            <span className="text-base md:text-lg font-semibold text-purple-900">
+            <span className="text-sm md:text-base font-semibold text-purple-900">
               Complete & Upload
             </span>
-            <span className="text-sm text-purple-700 mt-1">
+            <span className="text-xs md:text-sm text-purple-700 mt-1">
               Supporting Documents
             </span>
           </button>
         </div>
 
+        <button
+          type="button"
+          onClick={() => setIsHipaaOpen(true)}
+          className="w-full mb-6 md:mb-8 rounded-full border-2 border-purple-700 bg-white text-purple-700 font-semibold text-sm md:text-base py-3 md:py-4 hover:bg-purple-50 transition-colors"
+        >
+          HIPAA Authorization Form
+        </button>
+
         {/* Supporting Document Upload Section */}
-        <div className="mb-6 md:mb-8">
+        <div className="mb-4 md:mb-6">
           <input
             type="file"
             id="supporting-doc-upload"
@@ -201,9 +211,9 @@ const ApplicationSubmittedModal = ({
           />
           
           {uploadedFileName && (
-            <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="mb-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-xs md:text-sm font-medium text-gray-700">
                   Selected: {uploadedFileName}
                 </span>
                 <button
@@ -237,7 +247,7 @@ const ApplicationSubmittedModal = ({
                 type="button"
                 onClick={handleUploadSupportingDocument}
                 disabled={uploading}
-                className="w-full py-2 px-4 bg-purple-700 text-white rounded-lg font-medium hover:bg-purple-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full py-2 px-4 bg-purple-700 text-white rounded-lg text-sm font-medium hover:bg-purple-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {uploading ? "Uploading..." : "Upload Document"}
               </button>
@@ -245,14 +255,14 @@ const ApplicationSubmittedModal = ({
           )}
 
           {uploadError && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600">{uploadError}</p>
+            <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-xs md:text-sm text-red-600">{uploadError}</p>
             </div>
           )}
 
           {uploadSuccess && (
-            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-sm text-green-600">
+            <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-xs md:text-sm text-green-600">
                 Document uploaded successfully!
               </p>
             </div>
@@ -262,7 +272,7 @@ const ApplicationSubmittedModal = ({
         {/* Payment Button */}
         <button
           type="button"
-          className="w-full py-4 md:py-5 rounded-full bg-gradient-to-r from-purple-700 to-purple-900 text-white font-bold text-base md:text-lg mb-4 md:mb-6 hover:from-purple-600 hover:to-purple-800 transition-all shadow-lg"
+          className="w-full py-3 md:py-4 rounded-full bg-gradient-to-r from-purple-700 to-purple-900 text-white font-bold text-sm md:text-base mb-3 md:mb-5 hover:from-purple-600 hover:to-purple-800 transition-all shadow-lg"
         >
           Pay $299 Flat Fee
         </button>
@@ -270,16 +280,22 @@ const ApplicationSubmittedModal = ({
         {/* Complete Application Button */}
         <button
           type="button"
-          className="w-full py-4 md:py-5 rounded-full border-2 border-purple-700 bg-white text-purple-700 font-bold text-base md:text-lg mb-4 md:mb-6 hover:bg-purple-50 transition-colors"
+          className="w-full py-3 md:py-4 rounded-full border-2 border-purple-700 bg-white text-purple-700 font-bold text-sm md:text-base mb-3 md:mb-5 hover:bg-purple-50 transition-colors"
         >
           Click to Complete Application
         </button>
 
         {/* Guarantee Text */}
-        <p className="text-center text-sm text-gray-600">
+        <p className="text-center text-xs md:text-sm text-gray-600">
           Backed By Our Money Back Guarantee!
         </p>
       </div>
+
+      <HipaaAuthorizationModal
+        isOpen={isHipaaOpen}
+        onClose={() => setIsHipaaOpen(false)}
+        billData={billData}
+      />
     </div>
   );
 };

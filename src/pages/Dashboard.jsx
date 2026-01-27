@@ -5,7 +5,6 @@ import SubmissionModal from "../components/SubmissionModal";
 import BillInformationModal from "../components/BillInformationModal";
 import SubscriptionModal from "../components/SubscriptionModal";
 import AddFamilyMembersModal from "../components/AddFamilyMembersModal";
-import ApplicationModal from "../components/ApplicationModal";
 import ApplicationSubmittedModal from "../components/ApplicationSubmittedModal";
 import axiosClient from "../api/axiosClient";
 import uploadImg from "../assets/upload-img.png";
@@ -20,7 +19,6 @@ const Dashboard = () => {
   const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
   const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
   const [isAddFamilyModalOpen, setIsAddFamilyModalOpen] = useState(false);
-  const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
   const [isApplicationSubmittedModalOpen, setIsApplicationSubmittedModalOpen] = useState(false);
   const [submittedBillId, setSubmittedBillId] = useState(null);
   const [submittedBillData, setSubmittedBillData] = useState(null);
@@ -121,7 +119,6 @@ const Dashboard = () => {
       isSubmissionModalOpen ||
       isSubscriptionModalOpen ||
       isAddFamilyModalOpen ||
-      isApplicationModalOpen ||
       isApplicationSubmittedModalOpen
     ) {
       document.body.style.overflow = "hidden";
@@ -138,7 +135,6 @@ const Dashboard = () => {
     isSubmissionModalOpen,
     isSubscriptionModalOpen,
     isAddFamilyModalOpen,
-    isApplicationModalOpen,
   ]);
 
   const accountHolderName = [profile.firstName, profile.lastName]
@@ -707,15 +703,6 @@ const Dashboard = () => {
         onClose={() => setIsAddFamilyModalOpen(false)}
       />
 
-      {/* XYZ Application Modal */}
-      <ApplicationModal
-        isOpen={isApplicationModalOpen}
-        onClose={() => setIsApplicationModalOpen(false)}
-        onComplete={() => {
-          setIsApplicationModalOpen(false);
-          setIsSubmissionModalOpen(true);
-        }}
-      />
     </div>
   );
 };
