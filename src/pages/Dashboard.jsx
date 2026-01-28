@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import SubmissionModal from "../components/SubmissionModal";
 import BillInformationModal from "../components/BillInformationModal";
@@ -12,6 +12,7 @@ import rightArrow from "../assets/right-arrow.png";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isContactInfoOpen, setIsContactInfoOpen] = useState(false);
   const [isFamilyMembersOpen, setIsFamilyMembersOpen] = useState(false);
   const [isFamilyListOpen, setIsFamilyListOpen] = useState(false);
@@ -43,6 +44,40 @@ const Dashboard = () => {
   const [subscriptionDate, setSubscriptionDate] = useState("10/28/2025");
   const [eligibilityStatus, setEligibilityStatus] = useState("eligible"); // "eligible" | "ineligible"
   const [discountPercentage, setDiscountPercentage] = useState(40); // Example: calculated by backend
+
+  // Handle Stripe redirect: sync subscription status when user returns from Stripe success
+  useEffect(() => {
+    const subscriptionParam = searchParams.get("subscription");
+    const sessionId = searchParams.get("session_id");
+
+    if (subscriptionParam === "success" && sessionId) {
+      // Sync subscription status from Stripe (works in dev when webhook can't reach localhost)
+      const syncSession = async () => {
+        try {
+          await axiosClient.post("/payments/sync-session", { sessionId });
+          // Refresh profile to get updated subscription status
+          const profileRes = await axiosClient.get("/auth/profile");
+          if (profileRes.data?.success && profileRes.data?.data?.subscription) {
+            setSubscriptionStatus(profileRes.data.data.subscription.status || "active");
+            setSubscriptionTier(profileRes.data.data.subscription.planId || null);
+          }
+        } catch (err) {
+          console.error("Failed to sync subscription:", err);
+        } finally {
+          searchParams.delete("subscription");
+          searchParams.delete("session_id");
+          setSearchParams(searchParams, { replace: true });
+        }
+      };
+      syncSession();
+    } else if (subscriptionParam === "success") {
+      searchParams.delete("subscription");
+      setSearchParams(searchParams, { replace: true });
+    } else if (subscriptionParam === "cancelled") {
+      searchParams.delete("subscription");
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   // Fetch user profile on component mount
   useEffect(() => {
@@ -149,6 +184,7 @@ const Dashboard = () => {
         price: "7.00",
         tier: "7",
         type: "Household Subscription for a Family Size of up to 3 People",
+        planId: "monthly_basic",
       };
     }
     if (count <= 6) {
@@ -156,12 +192,14 @@ const Dashboard = () => {
         price: "14.00",
         tier: "14",
         type: "Household Subscription for a Family Size of 4 to 6 People",
+        planId: "monthly_standard",
       };
     }
     return {
       price: "21.00",
       tier: "21",
       type: "Household Subscription for a Family Size of 6 or More People",
+      planId: "monthly_premium",
     };
   };
 
@@ -681,13 +719,13 @@ const Dashboard = () => {
         onClose={() => setIsSubscriptionModalOpen(false)}
         householdCount={householdCount}
         subscriptionInfo={subscriptionInfo}
+        planId={subscriptionInfo?.planId}
         onStartSubscription={() => {
-          setSubscriptionStatus("active");
-          setSubscriptionTier(subscriptionInfo.tier);
+          // This will be called after successful redirect from Stripe
+          // The webhook will update the subscription status in the database
         }}
         onCancelSubscription={() => {
-          setSubscriptionStatus("inactive");
-          setSubscriptionTier(null);
+          // User cancelled - just close the modal
         }}
       />
 

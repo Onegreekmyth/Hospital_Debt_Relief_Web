@@ -1,21 +1,57 @@
-import React from "react";
+import React, { useState } from "react";
+import axiosClient from "../api/axiosClient";
 
 const SubscriptionModal = ({
   isOpen,
   onClose,
   householdCount,
   subscriptionInfo,
+  planId,
   onStartSubscription,
   onCancelSubscription,
 }) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   if (!isOpen) return null;
 
-  const handleStart = () => {
-    if (onStartSubscription) {
-      onStartSubscription();
+  const handleStart = async () => {
+    if (!planId) {
+      setError("Invalid subscription plan. Please try again.");
+      return;
     }
-    if (onClose) {
-      onClose();
+
+    setLoading(true);
+    setError("");
+
+    try {
+      // Get current URL for success/cancel redirects
+      // Stripe replaces {CHECKOUT_SESSION_ID} with the actual session ID on redirect
+      const baseUrl = window.location.origin;
+      const successUrl = `${baseUrl}/dashboard?subscription=success&session_id={CHECKOUT_SESSION_ID}`;
+      const cancelUrl = `${baseUrl}/dashboard?subscription=cancelled`;
+
+      // Call backend to create Stripe Checkout Session
+      const response = await axiosClient.post("/payments/create-checkout-session", {
+        planId: planId,
+        successUrl: successUrl,
+        cancelUrl: cancelUrl,
+      });
+
+      if (response.data?.success && response.data?.data?.url) {
+        // Redirect to Stripe Checkout
+        window.location.href = response.data.data.url;
+      } else {
+        throw new Error("Failed to create checkout session");
+      }
+    } catch (err) {
+      console.error("Error creating checkout session:", err);
+      setError(
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to start subscription. Please try again."
+      );
+      setLoading(false);
     }
   };
 
@@ -102,6 +138,8 @@ const SubscriptionModal = ({
               <input
                 type="checkbox"
                 className="mt-0.5 w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                defaultChecked
+                readOnly
               />
               <span>
                 Providing false or inaccurate information can lead to inaccurate billing and/or
@@ -110,14 +148,24 @@ const SubscriptionModal = ({
             </label>
           </div>
 
+          {/* Error Message */}
+          {error && (
+            <div className="pt-2">
+              <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3">
+                {error}
+              </p>
+            </div>
+          )}
+
           {/* Actions */}
           <div className="space-y-3 pt-2">
             <button
               type="button"
-              className="w-full h-11 md:h-12 rounded-full bg-[#2e1570] text-white font-semibold text-sm md:text-base hover:from-purple-600 hover:to-purple-800 transition shadow-md"
+              className="w-full h-11 md:h-12 rounded-full bg-[#2e1570] text-white font-semibold text-sm md:text-base hover:from-purple-600 hover:to-purple-800 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleStart}
+              disabled={loading}
             >
-              Start My Subscription Plan
+              {loading ? "Processing..." : "Start My Subscription Plan"}
             </button>
 
             <button
