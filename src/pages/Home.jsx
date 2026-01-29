@@ -35,6 +35,7 @@ const HomePage = () => {
   const [sizeError, setSizeError] = useState("");
   const [stateError, setStateError] = useState("");
   const [cityError, setCityError] = useState("");
+  const [billAmountError, setBillAmountError] = useState("");
   const [existingBill, setExistingBill] = useState("");
   const [billAmount, setBillAmount] = useState("");
   const [recaptchaToken, setRecaptchaToken] = useState("");
@@ -134,6 +135,7 @@ const HomePage = () => {
     setSizeError("");
     setStateError("");
     setCityError("");
+    setBillAmountError("");
     setRecaptchaError("");
 
     let hasError = false;
@@ -170,9 +172,9 @@ const HomePage = () => {
       hasError = true;
     }
 
-    // Validate billAmount if existingBill is "yes"
+    // Validate billAmount when existing bill is "yes" (required)
     if (existingBill === "yes" && (!billAmount || Number(billAmount) <= 0)) {
-      setEligibilityError("Please enter a valid bill amount.");
+      setBillAmountError("Please enter a valid bill amount.");
       hasError = true;
     }
 
@@ -326,7 +328,10 @@ const HomePage = () => {
                 ref={existingBillRef}
                 className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat"
                 value={existingBill}
-                onChange={(e) => setExistingBill(e.target.value)}
+                onChange={(e) => {
+                  setExistingBill(e.target.value);
+                  setBillAmountError("");
+                }}
               >
                 <option value="" disabled>
                   Select
@@ -337,7 +342,7 @@ const HomePage = () => {
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm md:text-base font-medium text-gray-900">
-                State
+                State <span className="text-red-500">*</span>
               </label>
               <select
                 className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat"
@@ -362,7 +367,7 @@ const HomePage = () => {
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm md:text-base font-medium text-gray-900">
-                City
+                City <span className="text-red-500">*</span>
               </label>
               <select
                 className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat"
@@ -390,7 +395,7 @@ const HomePage = () => {
           <div className="grid gap-4 md:gap-6 md:grid-cols-2">
             <div className="flex flex-col gap-2 w-full">
               <label className="text-sm md:text-base font-medium text-gray-900">
-                Local Hospital
+                Local Hospital <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <button
@@ -454,7 +459,7 @@ const HomePage = () => {
             {existingBill === "yes" && (
               <div className="flex flex-col gap-2">
                 <label className="text-sm md:text-base font-medium text-gray-900">
-                  Bill Amount
+                  Bill Amount <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <span className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 text-base">
@@ -465,9 +470,15 @@ const HomePage = () => {
                     className="h-14 w-full rounded-full border border-purple-200 bg-white pl-10 pr-6 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300"
                     placeholder="Enter bill amount"
                     value={billAmount}
-                    onChange={(e) => setBillAmount(e.target.value)}
+                    onChange={(e) => {
+                      setBillAmount(e.target.value);
+                      setBillAmountError("");
+                    }}
                   />
                 </div>
+                {billAmountError && (
+                  <p className="mt-1 text-xs text-red-600">{billAmountError}</p>
+                )}
               </div>
             )}
           </div>
@@ -476,7 +487,7 @@ const HomePage = () => {
           <div className="grid gap-4 md:gap-6 md:grid-cols-2">
             <div className="flex flex-col gap-2">
               <label className="text-sm md:text-base font-medium text-gray-900">
-                Annual Household Income
+                Annual Household Income <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <span className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 text-base">
@@ -496,7 +507,7 @@ const HomePage = () => {
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm md:text-base font-medium text-gray-900">
-                Household Family Size
+                Household Family Size <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
