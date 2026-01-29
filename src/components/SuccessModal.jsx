@@ -7,6 +7,8 @@ const SuccessModal = ({
   hospitalName,
   eligibilityResponse,
   eligibilityError,
+  hasExistingBill = false,
+  billAmount,
 }) => {
   if (!isOpen) return null;
 
@@ -26,15 +28,28 @@ const SuccessModal = ({
       : eligibilityType === "free_care"
       ? 100
       : null;
+  // Dollar savings: from API or computed from bill amount and discount
+  const savingsAmount =
+    typeof details?.estimatedSavings === "number"
+      ? details.estimatedSavings
+      : typeof details?.savingsAmount === "number"
+      ? details.savingsAmount
+      : hasExistingBill &&
+        typeof billAmount === "number" &&
+        typeof discountPercent === "number"
+      ? Math.round((billAmount * discountPercent) / 100 * 100) / 100
+      : null;
+  const showExistingBillMessage =
+    hasExistingBill && isEligible && savingsAmount != null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Blurred Background Overlay */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/20 backdrop-blur-sm"
         onClick={onClose}
       />
-      
+
       {/* Modal */}
       <div className="relative bg-white rounded-2xl border-2 border-purple-200/60 shadow-2xl max-w-lg w-full p-6 md:p-8 lg:p-10 mx-4">
         {/* Icon */}
@@ -54,7 +69,10 @@ const SuccessModal = ({
 
         {/* Heading */}
         <h2 className="text-center text-[24px] md:text-[32px] lg:text-[36px] font-extrabold text-gray-900 mb-3 md:mb-4 tracking-[0.64px]">
-          {isEligible && (eligibilityType === "free_care" || eligibilityType === "discounted_care")
+          {showExistingBillMessage ||
+          (isEligible &&
+            (eligibilityType === "free_care" ||
+              eligibilityType === "discounted_care"))
             ? "Congratulations"
             : isEligible
             ? "Eligibility Result"
@@ -62,10 +80,13 @@ const SuccessModal = ({
         </h2>
 
         {/* Short message based on eligibility */}
-        {details && (
+        {details && !eligibilityError && (
           <p className="text-center text-[13px] md:text-[14px] text-gray-800 mb-4 md:mb-6 leading-relaxed px-2">
-            {isEligible
-              ? eligibilityType === "free_care" || eligibilityType === "discounted_care"
+            {showExistingBillMessage
+              ? `Your current bill from ${hospitalDisplayName} is eligible for a savings of $${Number(savingsAmount).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}.`
+              : isEligible
+              ? eligibilityType === "free_care" ||
+                eligibilityType === "discounted_care"
                 ? `You qualify! You will save ${discountPercent ?? 0}% on future out-of-pocket expenses billed by ${hospitalDisplayName}.`
                 : `Based on your information, you may qualify for financial assistance at ${hospitalDisplayName}.`
               : `Based on the information provided, it appears you do not qualify for financial assistance from ${hospitalDisplayName}.`}
@@ -78,10 +99,12 @@ const SuccessModal = ({
           </p>
         )}
 
-        {/* Call to Action Link */}
+        {/* Call to Action */}
         <p className="text-center text-[12px] md:text-[14px] text-purple-700 mb-6 md:mb-8 px-2">
-          {isEligible
-            ? "Create an account to Subcribe."
+          {showExistingBillMessage
+            ? "Create an account to upload your current hospital bill."
+            : isEligible
+            ? "Create an account to Subscribe."
             : ""}
         </p>
 

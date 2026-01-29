@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import primaryLogo from "../assets/primary-logo.png";
 import axiosClient from "../api/axiosClient";
 
@@ -133,6 +133,27 @@ const Login = () => {
           </a>
           .
         </p>
+
+        {/* Sign up link */}
+        <p className="mt-4 md:mt-5 text-center text-sm md:text-[15px] text-gray-700">
+          Don&apos;t have an account?{" "}
+          <Link to="/signup" className="text-[#4B24C7] font-semibold hover:underline underline-offset-2">
+            Sign up
+          </Link>
+        </p>
+
+        {/* Back to Home - bottom of card */}
+        <div className="mt-6 flex justify-center">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 rounded-full border border-purple-200 bg-[#F7F5FF]/80 px-4 py-2 text-[13px] md:text-[14px] font-medium text-[#4B24C7] hover:bg-purple-50 hover:border-purple-300 transition-colors"
+          >
+            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Home
+          </Link>
+        </div>
       </div>
     </div>
   );

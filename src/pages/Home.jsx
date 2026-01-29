@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
 import heroImg from "../assets/hero-img.jpg";
 import Navbar from "../components/Navbar";
@@ -34,6 +35,10 @@ const HomePage = () => {
   const [sizeError, setSizeError] = useState("");
   const [existingBill, setExistingBill] = useState("");
   const [billAmount, setBillAmount] = useState("");
+  const [recaptchaToken, setRecaptchaToken] = useState("");
+  const [recaptchaError, setRecaptchaError] = useState("");
+  const formSectionRef = useRef(null);
+  const existingBillRef = useRef(null);
 
   const dispatch = useDispatch();
   const {
@@ -42,6 +47,7 @@ const HomePage = () => {
     totalPages,
     status,
   } = useSelector((state) => state.hospitals);
+  const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
   // Build dropdown options for states and cities
   const stateOptions = useMemo(() => {
@@ -124,6 +130,7 @@ const HomePage = () => {
     setHospitalError("");
     setIncomeError("");
     setSizeError("");
+    setRecaptchaError("");
 
     let hasError = false;
 
@@ -166,6 +173,11 @@ const HomePage = () => {
     }
 
     if (hasError) {
+      return;
+    }
+
+    if (!recaptchaToken) {
+      setRecaptchaError("Please complete the CAPTCHA.");
       return;
     }
 
@@ -270,14 +282,29 @@ const HomePage = () => {
           <p className="mt-4 text-black/90 text-[11px] md:text-[14px] leading-relaxed px-2">
             All backed by our money back Guarantee
           </p>
-          <button className="mt-6 md:mt-7 inline-flex items-center border-2 border-purple-700 rounded-full bg-white text-purple-700 hover:bg-purple-50 px-5 md:px-6 py-2.5 md:py-3 text-xs md:text-sm font-semibold shadow">
+          <button
+            type="button"
+            onClick={() => {
+              formSectionRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+              setTimeout(() => {
+                existingBillRef.current?.focus();
+              }, 300);
+            }}
+            className="mt-6 md:mt-7 inline-flex items-center border-2 border-purple-700 rounded-full bg-white text-purple-700 hover:bg-purple-50 px-5 md:px-6 py-2.5 md:py-3 text-xs md:text-sm font-semibold shadow"
+          >
             Check qualification
           </button>
         </div>
       </section>
 
       {/* Qualification Form */}
-      <section className="py-16 md:py-24 bg-[#F7F5FF] text-center">
+      <section
+        ref={formSectionRef}
+        className="py-16 md:py-24 bg-[#F7F5FF] text-center"
+      >
         <h2 className="mb-10 md:mb-14 text-[32px] md:text-[44px] leading-tight font-semibold text-gray-900 tracking-[0.04em] px-4">
           Savings Calculator
         </h2>
@@ -292,6 +319,7 @@ const HomePage = () => {
                 Existing Hospital Bill?
               </label>
               <select
+                ref={existingBillRef}
                 className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat"
                 value={existingBill}
                 onChange={(e) => setExistingBill(e.target.value)}
@@ -485,6 +513,36 @@ const HomePage = () => {
             </div>
           )}
 
+          {/* CAPTCHA Row */}
+          <div className="flex justify-center pt-4">
+            {recaptchaSiteKey ? (
+              <ReCAPTCHA
+                sitekey={recaptchaSiteKey}
+                onChange={(token) => {
+                  setRecaptchaToken(token || "");
+                  setRecaptchaError("");
+                }}
+                onExpired={() => {
+                  setRecaptchaToken("");
+                  setRecaptchaError("CAPTCHA expired. Please retry.");
+                }}
+                onErrored={() => {
+                  setRecaptchaToken("");
+                  setRecaptchaError("CAPTCHA failed to load. Please retry.");
+                }}
+              />
+            ) : (
+              <div className="w-full max-w-md rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                Set `VITE_RECAPTCHA_SITE_KEY` to enable CAPTCHA.
+              </div>
+            )}
+          </div>
+          {recaptchaError && (
+            <p className="mt-2 text-center text-xs text-red-600">
+              {recaptchaError}
+            </p>
+          )}
+
           {/* Button Row */}
           <div className="flex justify-center pt-4">
             <button
@@ -506,6 +564,8 @@ const HomePage = () => {
         hospitalName={selectedHospital}
         eligibilityResponse={eligibilityResponse}
         eligibilityError={eligibilityError}
+        hasExistingBill={existingBill === "yes"}
+        billAmount={existingBill === "yes" ? Number(billAmount) : undefined}
       />
 
       {/* How It Works */}

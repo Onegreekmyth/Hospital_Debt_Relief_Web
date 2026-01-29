@@ -89,18 +89,29 @@ const AddFamilyMembersModal = ({ isOpen, onClose }) => {
               </div>
             </div>
 
-            {/* Relationship with Patient */}
+            {/* Relationship to Account Holder */}
             <div className="flex flex-col gap-2">
               <label className="text-xs sm:text-sm font-medium text-gray-700">
-                Relationship with Patient
+                Relationship to Account Holder
               </label>
               <select
                 defaultValue=""
-                className="w-full h-12 rounded-full border border-[#ccc2ea] bg-white px-4 pr-12 text-sm sm:text-base text-gray-800 placeholder:text-purple-200 focus:outline-none focus:ring-1 focus:ring-[#ccc2ea] appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%239C88FF%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:10px] bg-[right_1.5rem_center] bg-no-repeat"
+                className="w-full h-12 rounded-full border border-[#ccc2ea] bg-white px-4 pr-12 text-sm sm:text-base text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#ccc2ea] appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%239C88FF%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:10px] bg-[right_1.5rem_center] bg-no-repeat"
               >
                 <option value="" disabled>
                   Select
                 </option>
+                <option value="spouse">Spouse</option>
+                <option value="child">Child</option>
+                <option value="father">Father</option>
+                <option value="mother">Mother</option>
+                <option value="brother">Brother</option>
+                <option value="sister">Sister</option>
+                <option value="stepchild">Stepchild</option>
+                <option value="half-sibling">Half-sibling</option>
+                <option value="domestic-partner">Domestic Partner</option>
+                <option value="live-in-aunt-uncle-cousin">Live-in Aunt, Uncle or Cousin</option>
+                <option value="live-in-grandparent">Live-in Grandparent</option>
               </select>
             </div>
 
@@ -109,14 +120,11 @@ const AddFamilyMembersModal = ({ isOpen, onClose }) => {
               <label className="text-xs sm:text-sm font-medium text-gray-700">
                 Date of Birth
               </label>
-              <select
-                defaultValue=""
-                  className="w-full h-12 rounded-full border border-[#ccc2ea] bg-white px-4 pr-12 text-sm sm:text-base text-gray-800 placeholder:text-purple-200 focus:outline-none focus:ring-1 focus:ring-purple-300 appearance-none bg-[length:10px] bg-[right_1.5rem_center] bg-no-repeat"
-              >
-                <option value="" disabled>
-                  Select
-                </option>
-              </select>
+              <input
+                type="date"
+                className="w-full h-12 rounded-full border border-[#ccc2ea] bg-white px-4 pr-4 text-sm sm:text-base text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#ccc2ea] [color-scheme:light]"
+                placeholder="Select date"
+              />
             </div>
 
             {/* Checkbox + Save button */}

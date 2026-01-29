@@ -62,7 +62,7 @@ const MonthlyPlansPage = () => {
               <div
                 key={index}
                 className={`relative border-2 border-purple-800 rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-12 ${
-                  plan.popular ? "bg-[#d3c9f2]" : "bg-white"
+                  plan.popular ? "bg-[#d3c9f2] md:-mt-5 mb-5" : "bg-white mt-5"
                 }`}
               >
                 {plan.popular && (

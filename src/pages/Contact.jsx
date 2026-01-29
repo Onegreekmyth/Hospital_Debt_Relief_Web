@@ -91,14 +91,6 @@ const ContactPage = () => {
       {/* Contact Section */}
       <section className="py-12 md:py-20 bg-white">
         <div className="w-full max-w-5xl mx-auto px-4 md:px-6 lg:px-10">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-[24px] md:text-[32px] lg:text-[40px] font-semibold text-gray-900 tracking-[0.64px] leading-tight">
-              Contact Information
-            </h2>
-            <p className="mt-3 text-[13px] md:text-[15px] text-gray-700">
-              Reach out to us through the following methods or fill out the form below.
-            </p>
-          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12 md:mb-16">
             {/* Info Card 1 - Email */}

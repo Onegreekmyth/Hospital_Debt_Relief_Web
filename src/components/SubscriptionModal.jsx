@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import axiosClient from "../api/axiosClient";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { createCheckoutSession, clearCheckoutError } from "../store/payments/paymentsSlice";
 
 const SubscriptionModal = ({
   isOpen,
@@ -12,8 +13,8 @@ const SubscriptionModal = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  if (!isOpen) return null;
+  const dispatch = useDispatch();
+  const { checkoutError } = useSelector((state) => state.payments);
 
   const handleStart = async () => {
     if (!planId) {
@@ -23,6 +24,7 @@ const SubscriptionModal = ({
 
     setLoading(true);
     setError("");
+    dispatch(clearCheckoutError());
 
     try {
       // Get current URL for success/cancel redirects
@@ -32,28 +34,33 @@ const SubscriptionModal = ({
       const cancelUrl = `${baseUrl}/dashboard?subscription=cancelled`;
 
       // Call backend to create Stripe Checkout Session
-      const response = await axiosClient.post("/payments/create-checkout-session", {
-        planId: planId,
-        successUrl: successUrl,
-        cancelUrl: cancelUrl,
-      });
+      const result = await dispatch(
+        createCheckoutSession({
+          planId,
+          successUrl,
+          cancelUrl,
+        })
+      ).unwrap();
 
-      if (response.data?.success && response.data?.data?.url) {
-        // Redirect to Stripe Checkout
-        window.location.href = response.data.data.url;
-      } else {
-        throw new Error("Failed to create checkout session");
-      }
+      // Redirect to Stripe Checkout
+      window.location.href = result;
     } catch (err) {
       console.error("Error creating checkout session:", err);
       setError(
-        err.response?.data?.message ||
-        err.message ||
-        "Failed to start subscription. Please try again."
+        typeof err === "string" ? err : "Failed to start subscription. Please try again."
       );
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (checkoutError) {
+      setError(checkoutError);
+      setLoading(false);
+    }
+  }, [checkoutError]);
+
+  if (!isOpen) return null;
 
   const handleCancel = () => {
     if (onCancelSubscription) {

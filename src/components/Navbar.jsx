@@ -60,9 +60,6 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
               <>
                 <nav className="hidden md:flex items-center space-x-6 text-sm font-medium text-black-800">
                   <button type="button" className="hover:text-purple-700">
-                    Bills
-                  </button>
-                  <button type="button" className="hover:text-purple-700">
                     Help
                   </button>
 
@@ -73,16 +70,6 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
                   >
                     Logout
                   </button>
-
-                  {onOpenAddFamilyMembers && (
-                    <button
-                      type="button"
-                      onClick={onOpenAddFamilyMembers}
-                      className="hover:text-purple-700 text-[#4720b1] border border-[#4720b1] px-4 py-2 rounded-full"
-                    >
-                      <p className="text-sm font-bold">+ Add Family Member </p>
-                    </button>
-                  )}
                 </nav>
                 {isBillHistory ? (
                   <Link
@@ -219,27 +206,8 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
               className="text-sm font-medium text-gray-800 hover:text-purple-700 py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              Bills
-            </a>
-            <a
-              href="#"
-              className="text-sm font-medium text-gray-800 hover:text-purple-700 py-2"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
               Help
             </a>
-            {onOpenAddFamilyMembers && (
-              <button
-                type="button"
-                className="text-left text-sm font-medium text-gray-800 hover:text-purple-700 py-2"
-                onClick={() => {
-                  onOpenAddFamilyMembers();
-                  setIsMobileMenuOpen(false);
-                }}
-              >
-                Family Members Listed
-              </button>
-            )}
             <button
               type="button"
               className="text-left text-sm font-medium text-gray-800 hover:text-purple-700 py-2"

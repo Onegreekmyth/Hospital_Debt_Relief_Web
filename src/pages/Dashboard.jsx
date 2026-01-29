@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import Navbar from "../components/Navbar";
 import SubmissionModal from "../components/SubmissionModal";
 import BillInformationModal from "../components/BillInformationModal";
@@ -9,10 +10,12 @@ import ApplicationSubmittedModal from "../components/ApplicationSubmittedModal";
 import axiosClient from "../api/axiosClient";
 import uploadImg from "../assets/upload-img.png";
 import rightArrow from "../assets/right-arrow.png";
+import { syncStripeSession } from "../store/payments/paymentsSlice";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const dispatch = useDispatch();
   const [isContactInfoOpen, setIsContactInfoOpen] = useState(false);
   const [isFamilyMembersOpen, setIsFamilyMembersOpen] = useState(false);
   const [isFamilyListOpen, setIsFamilyListOpen] = useState(false);
@@ -23,6 +26,7 @@ const Dashboard = () => {
   const [isApplicationSubmittedModalOpen, setIsApplicationSubmittedModalOpen] = useState(false);
   const [submittedBillId, setSubmittedBillId] = useState(null);
   const [submittedBillData, setSubmittedBillData] = useState(null);
+  const [isCancelSubscriptionOpen, setIsCancelSubscriptionOpen] = useState(false);
 
   // Profile state
   const [profile, setProfile] = useState({
@@ -35,11 +39,13 @@ const Dashboard = () => {
   });
   const [householdSize, setHouseholdSize] = useState(1);
   const [familyMembers, setFamilyMembers] = useState([]);
+  const [accountHolderRemoveFromPlan, setAccountHolderRemoveFromPlan] = useState(false);
+  const [familyMembersRemoveFromPlan, setFamilyMembersRemoveFromPlan] = useState([]);
   const [profileLoading, setProfileLoading] = useState(true);
   const [profileError, setProfileError] = useState("");
 
   // High-level onboarding and eligibility state (placeholder for backend data)
-  const [subscriptionStatus, setSubscriptionStatus] = useState("active"); // "inactive" | "active"
+  const [subscriptionStatus, setSubscriptionStatus] = useState("inactive"); // "inactive" | "active"
   const [subscriptionTier, setSubscriptionTier] = useState(null); // "7" | "14" | "21" | null
   const [subscriptionDate, setSubscriptionDate] = useState("10/28/2025");
   const [eligibilityStatus, setEligibilityStatus] = useState("eligible"); // "eligible" | "ineligible"
@@ -54,11 +60,11 @@ const Dashboard = () => {
       // Sync subscription status from Stripe (works in dev when webhook can't reach localhost)
       const syncSession = async () => {
         try {
-          await axiosClient.post("/payments/sync-session", { sessionId });
+          await dispatch(syncStripeSession({ sessionId })).unwrap();
           // Refresh profile to get updated subscription status
           const profileRes = await axiosClient.get("/auth/profile");
           if (profileRes.data?.success && profileRes.data?.data?.subscription) {
-            setSubscriptionStatus(profileRes.data.data.subscription.status || "active");
+            setSubscriptionStatus(profileRes.data.data.subscription.status || "inactive");
             setSubscriptionTier(profileRes.data.data.subscription.planId || null);
           }
         } catch (err) {
@@ -111,6 +117,10 @@ const Dashboard = () => {
               : "",
           });
           setHouseholdSize(Number(fetchedHouseholdSize) > 0 ? Number(fetchedHouseholdSize) : 1);
+          if (userData.subscription?.status) {
+            setSubscriptionStatus(userData.subscription.status);
+            setSubscriptionTier(userData.subscription.planId || null);
+          }
         }
       } catch (error) {
         console.error("Error fetching profile:", error);
@@ -143,6 +153,12 @@ const Dashboard = () => {
       while (next.length < memberCount) {
         next.push("");
       }
+      return next;
+    });
+    setFamilyMembersRemoveFromPlan((prev) => {
+      if (prev.length === memberCount) return prev;
+      const next = [...prev].slice(0, memberCount);
+      while (next.length < memberCount) next.push(false);
       return next;
     });
   }, [householdSize]);
@@ -382,107 +398,138 @@ const Dashboard = () => {
               )}
             </div>
 
-            {/* Family Members Listed Section */}
+            {/* Family Members Section */}
             <div className="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
               <button
                 onClick={() => setIsFamilyListOpen(!isFamilyListOpen)}
                 className="w-full flex items-center justify-between px-4 md:px-6 py-4 md:py-5 text-left"
               >
                 <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900">
-                  Family Members Listed
+                  Family Members
                 </h2>
                 <svg
-                  className={`w-5 h-5 text-gray-600 transition-transform ${isFamilyListOpen ? "" : "rotate-180"
-                    }`}
+                  className={`w-5 h-5 text-gray-600 transition-transform ${isFamilyListOpen ? "" : "rotate-180"}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 15l7-7 7 7"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
                 </svg>
               </button>
 
               {isFamilyListOpen && (
-                <div className="px-4 md:px-6 pb-4 md:pb-6 space-y-3 md:space-y-4">
-                  <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4">
-                    <div className="flex-1 flex items-center gap-4 rounded-full border border-purple-200 bg-white px-4 md:px-5 py-2 md:py-3">
-                      <div className="flex items-center justify-center text-gray-300">
-                        <svg
-                          className="w-5 h-5 md:w-6 md:h-6"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                          />
+                <div className="px-4 md:px-6 pb-4 md:pb-6 space-y-5 md:space-y-6">
+                  {/* Account Holder */}
+                  <div className="space-y-2 relative pt-2">
+                    <div className="absolute -top-3 left-6 bg-white px-2 py-0.5 rounded-b-md z-10">
+                      <span className="text-xs md:text-[13px] font-medium text-gray-900">Account Holder</span>
+                    </div>
+                    <div className="flex items-center gap-3 rounded-full border border-purple-200 bg-[#F7F5FF]/60 px-4 md:px-5 py-2.5 md:py-3">
+                      <div className="flex items-center justify-center text-[#4B24C7] shrink-0">
+                        <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                       </div>
-                      <div className="flex flex-col">
-                        <span className="text-xs md:text-sm font-medium text-purple-900">
-                          Account Holder
-                        </span>
-                        <span className="text-sm md:text-base text-gray-600">
-                          {accountHolderName || (profileLoading ? "Loading..." : "—")}
-                        </span>
-                      </div>
+                      <span className="text-sm md:text-base font-medium text-[#4B24C7]">
+                        {accountHolderName || (profileLoading ? "Loading..." : "—")}
+                      </span>
                     </div>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={accountHolderRemoveFromPlan}
+                        onChange={(e) => setAccountHolderRemoveFromPlan(e.target.checked)}
+                        className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                      />
+                      <span className="text-xs font-sm text-gray-500">Remove from Subscription Plan</span>
+                    </label>
                   </div>
 
+                  {/* Family Member_Spouse / Family Member_Child */}
                   {familyMembers.map((memberName, index) => {
-                    const label = index === 0 ? "Spouse" : "Child";
+                    const label = index === 0 ? "Family Member_Spouse" : "Family Member_Child";
+                    const removeFromPlan = familyMembersRemoveFromPlan[index] ?? false;
                     return (
-                      <div
-                        key={`family-member-${index}`}
-                        className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4"
-                      >
-                        <div className="flex-1 flex items-center gap-4 rounded-full border border-purple-200 bg-white px-4 md:px-5 py-2 md:py-3">
-                          <div className="flex items-center justify-center text-gray-300">
-                            <svg
-                              className="w-5 h-5 md:w-6 md:h-6"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                              />
+                      <div key={`family-member-${index}`} className="space-y-2 relative pt-2">
+                        <div className="absolute -top-3 left-6 bg-white px-2 py-0.5 rounded-b-md z-10">
+                          <span className="text-xs md:text-[13px] font-medium text-gray-900">{label}</span>
+                        </div>
+                        <div className="flex items-center gap-3 rounded-full border border-purple-200 bg-[#F7F5FF]/60 px-4 md:px-5 py-2.5 md:py-3">
+                          <div className="flex items-center justify-center text-[#4B24C7] shrink-0">
+                            <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                           </div>
-                          <div className="flex flex-col gap-1 w-full">
-                            <span className="text-xs md:text-sm font-medium text-purple-900">
-                              {label}
-                            </span>
-                            <input
-                              type="text"
-                              value={memberName}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                setFamilyMembers((prev) => {
-                                  const next = [...prev];
-                                  next[index] = value;
-                                  return next;
-                                });
+                          <input
+                            type="text"
+                            value={memberName}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setFamilyMembers((prev) => {
+                                const next = [...prev];
+                                next[index] = value;
+                                return next;
+                              });
+                            }}
+                            className="flex-1 min-w-0 border-none bg-transparent text-sm md:text-base text-gray-900 placeholder-gray-400 focus:outline-none"
+                            placeholder={index === 0 ? "Spouse name" : "Child name"}
+                          />
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              type="button"
+                              className="p-1.5 rounded-full text-[#4B24C7] hover:bg-purple-100 transition"
+                              aria-label="Edit"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                              </svg>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setFamilyMembers((prev) => prev.filter((_, i) => i !== index));
+                                setFamilyMembersRemoveFromPlan((prev) => prev.filter((_, i) => i !== index));
+                                setHouseholdSize((prev) => Math.max(1, prev - 1));
                               }}
-                              className="w-full border-none bg-transparent text-sm md:text-base text-gray-700 placeholder-gray-400 focus:outline-none"
-                              placeholder={`Enter ${label.toLowerCase()} name`}
-                            />
+                              className="p-1.5 rounded-full text-[#4B24C7] hover:bg-red-50 hover:text-red-600 transition"
+                              aria-label="Delete"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
                           </div>
                         </div>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={removeFromPlan}
+                            onChange={(e) => {
+                              setFamilyMembersRemoveFromPlan((prev) => {
+                                const next = [...prev];
+                                next[index] = e.target.checked;
+                                return next;
+                              });
+                            }}
+                            className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                          />
+                          <span className="text-sm font-medium text-gray-300">Remove from Subscription Plan</span>
+                        </label>
                       </div>
                     );
                   })}
+
+                  {/* Add Family Member button */}
+                  <div className="flex justify-end pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsAddFamilyModalOpen(true)}
+                      className="inline-flex items-center gap-2 rounded-full bg-white border-2 border-[#4B24C7] px-4 py-2.5 text-sm font-semibold text-[#4B24C7] hover:bg-[#F7F5FF] transition shadow-sm"
+                    >
+                      <span className="text-lg leading-none">+</span>
+                      Add Family Member
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -616,9 +663,16 @@ const Dashboard = () => {
                   </button>
 
                   {/* Sign Up Monthly Subscription Card */}
-                  <button
-                    type="button"
+                  <div
+                    role="button"
+                    tabIndex={0}
                     onClick={() => setIsSubscriptionModalOpen(true)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setIsSubscriptionModalOpen(true);
+                      }
+                    }}
                     className="group h-32 md:h-36 hover:bg-[#e2dfec] w-full rounded-[26px] border-2 border-[#5225cc] bg-white px-6 py-5 flex flex-col items-center justify-between hover:shadow-md transition"
                   >
                     {subscriptionStatus === "inactive" && (
@@ -658,8 +712,7 @@ const Dashboard = () => {
                             className="text-[11px] md:text-[12px] font-extrabold text-[#5225cc]"
                             onClick={(e) => {
                               e.stopPropagation();
-                              setSubscriptionStatus("inactive");
-                              setSubscriptionTier(null);
+                              setIsCancelSubscriptionOpen(true);
                             }}
                           >
                             Cancel My Subscription Plan
@@ -676,7 +729,7 @@ const Dashboard = () => {
                         />
                       </div>
                     </div>
-                  </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -728,6 +781,45 @@ const Dashboard = () => {
           // User cancelled - just close the modal
         }}
       />
+
+      {/* Cancel Subscription Confirmation Modal */}
+      {isCancelSubscriptionOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setIsCancelSubscriptionOpen(false)}
+          />
+          <div className="relative w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
+            <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3">
+              Cancel Subscription?
+            </h3>
+            <p className="text-sm md:text-base text-gray-600 mb-6">
+              Are you sure you want to cancel your subscription plan? You can
+              re-subscribe anytime.
+            </p>
+            <div className="flex flex-col md:flex-row gap-3">
+              <button
+                type="button"
+                onClick={() => setIsCancelSubscriptionOpen(false)}
+                className="flex-1 rounded-full border-2 border-[#4e30a2] py-2.5 text-sm md:text-base font-semibold text-[#4e30a2] hover:bg-purple-50 transition"
+              >
+                Keep Subscription
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setSubscriptionStatus("inactive");
+                  setSubscriptionTier(null);
+                  setIsCancelSubscriptionOpen(false);
+                }}
+                className="flex-1 rounded-full bg-[#2e1570] py-2.5 text-sm md:text-base font-semibold text-white hover:bg-[#241053] transition"
+              >
+                Yes, Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Submission Success Modal */}
       <SubmissionModal

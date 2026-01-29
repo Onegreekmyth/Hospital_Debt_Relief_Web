@@ -13,10 +13,13 @@ const Footer = () => {
           </span>{" "}
           much you can save on your hospital bill.
         </h2>
-        <button className="mt-6 md:mt-8 inline-flex items-center gap-2 md:gap-3 rounded-full border-2 border-purple-700 px-6 md:px-8 py-2 text-[14px] md:text-[18px] font-semibold text-purple-700 hover:bg-purple-50 transition">
+        <Link
+          to="/signup"
+          className="mt-6 md:mt-8 inline-flex items-center gap-2 md:gap-3 rounded-full border-2 border-purple-700 px-6 md:px-8 py-2 text-[14px] md:text-[18px] font-semibold text-purple-700 hover:bg-purple-50 transition"
+        >
           Get Started Here
           <span className="-mr-1">→</span>
-        </button>
+        </Link>
       </footer>
       <footer className="bg-gradient-to-b from-white to-[#ECE7FF] border-t border-purple-200/40">
         {/* Top row: logo + social icons */}
@@ -30,26 +33,10 @@ const Footer = () => {
           </div>
           <div className="flex items-center gap-4">
             <a
-              href="#"
-              aria-label="Call"
-              className="w-10 h-10 rounded-full border-2 border-[#3D0BBE] text-[#3D0BBE] flex items-center justify-center hover:bg-[#F4F0FF] transition"
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-              </svg>
-            </a>
-            <a
-              href="#"
+              href="https://www.facebook.com/share/1JyeDne4GP/?mibextid=wwXIfr"
               aria-label="Facebook"
+              target="_blank"
+              rel="noreferrer"
               className="w-10 h-10 rounded-full border-2 border-[#3D0BBE] text-[#3D0BBE] flex items-center justify-center hover:bg-[#F4F0FF] transition"
             >
               <svg
@@ -62,8 +49,10 @@ const Footer = () => {
               </svg>
             </a>
             <a
-              href="#"
-              aria-label="X"
+              href="https://www.linkedin.com/company/111537095"
+              aria-label="LinkedIn"
+              target="_blank"
+              rel="noreferrer"
               className="w-10 h-10 rounded-full border-2 border-[#3D0BBE] text-[#3D0BBE] flex items-center justify-center hover:bg-[#F4F0FF] transition"
             >
               <svg
@@ -72,12 +61,14 @@ const Footer = () => {
                 viewBox="0 0 24 24"
                 fill="currentColor"
               >
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+                <path d="M4.98 3.5C3.33 3.5 2 4.83 2 6.48c0 1.63 1.32 2.98 2.95 2.98h.03c1.66 0 2.98-1.35 2.98-2.98C7.96 4.83 6.64 3.5 4.98 3.5zM2.5 21h5V9.5h-5V21zM9.5 9.5V21h5v-6.2c0-1.66.32-3.27 2.38-3.27 2.03 0 2.06 1.9 2.06 3.38V21h5v-7.06c0-3.47-.74-6.14-4.8-6.14-1.95 0-3.25 1.07-3.78 2.08h-.06V9.5h-4.8z"></path>
               </svg>
             </a>
             <a
-              href="#"
-              aria-label="Email"
+              href="https://www.instagram.com/hospitaldebtrelief?igsh=cmpydTlkaHI1ZDBt&utm_source=qr"
+              aria-label="Instagram"
+              target="_blank"
+              rel="noreferrer"
               className="w-10 h-10 rounded-full border-2 border-[#3D0BBE] text-[#3D0BBE] flex items-center justify-center hover:bg-[#F4F0FF] transition"
             >
               <svg
@@ -90,8 +81,9 @@ const Footer = () => {
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                <polyline points="22,6 12,13 2,6"></polyline>
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37a4 4 0 1 1-7.74 1.26 4 4 0 0 1 7.74-1.26z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
               </svg>
             </a>
           </div>

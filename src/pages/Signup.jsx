@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import primaryLogo from "../assets/primary-logo.png";
 import axiosClient from "../api/axiosClient";
 
 const Signup = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     phone: "",
     email: "",
   });
@@ -20,7 +21,6 @@ const Signup = () => {
       ...prev,
       [name]: value,
     }));
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -32,8 +32,11 @@ const Signup = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "First name is required";
+    }
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = "Last name is required";
     }
 
     if (!formData.email.trim()) {
@@ -45,7 +48,6 @@ const Signup = () => {
     if (!formData.phone.trim()) {
       newErrors.phone = "Phone number is required";
     }
-
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -62,14 +64,14 @@ const Signup = () => {
     setErrorMessage("");
 
     try {
-      // Get eligibility request ID from localStorage
       const eligibilityRequestId = localStorage.getItem("pendingEligibilityRequestId");
+      const fullName = [formData.firstName.trim(), formData.lastName.trim()].filter(Boolean).join(" ");
 
       const payload = {
-        name: formData.name.trim(),
+        name: fullName,
         email: formData.email.trim(),
         phone: formData.phone.trim(),
-        ...(eligibilityRequestId && { eligibilityRequestId }), // Include if exists
+        ...(eligibilityRequestId && { eligibilityRequestId }),
       };
 
       const response = await axiosClient.post("/auth/register", payload);
@@ -102,10 +104,10 @@ const Signup = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-[#F7F5FF] flex items-center justify-center px-4 md:px-6 py-4 md:py-6">
       <div className="w-full max-w-xl bg-white rounded-[36px] border border-purple-200/70 shadow-[0_18px_60px_rgba(82,37,205,0.08)] px-6 md:px-8 lg:px-10 py-6 md:py-8">
-        {/* Heading with logo */}
+        {/* Heading: Welcome to + logo */}
         <div className="flex items-center justify-center gap-2 mb-6">
           <h1 className="text-[24px] md:text-[30px] lg:text-[32px] font-semibold text-[#4B24C7] tracking-[0.04em]">
-            Create Account
+            Welcome to
           </h1>
           <img
             src={primaryLogo}
@@ -123,51 +125,88 @@ const Signup = () => {
 
         {/* Form */}
         <form className="space-y-4 md:space-y-5" onSubmit={handleSubmit}>
-          {/* Name Field */}
-          <div className="relative pt-2">
-            <div className="absolute -top-3 left-6 bg-white px-2 py-0.5 rounded-b-md">
-              <span className="text-xs md:text-[13px] font-medium text-gray-900">
-                Name
-              </span>
-            </div>
-            <div className="flex items-center gap-3 rounded-full border border-purple-200 bg-white px-3.5 md:px-4 py-2 md:py-3">
-              <div className="flex items-center justify-center text-[#C9B6FF]">
-                <svg
-                  className="w-4 h-4 md:w-5 md:h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5.121 17.804A9 9 0 1118.88 7.5M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
+          {/* First Name & Last Name - side by side */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+            <div className="relative pt-2">
+              <div className="absolute -top-3 left-6 bg-white px-2 py-0.5 rounded-b-md">
+                <span className="text-xs md:text-[13px] font-medium text-gray-900">
+                  First Name
+                </span>
               </div>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="flex-1 border-none bg-transparent text-sm md:text-[15px] text-gray-800 placeholder-[#D3C2FF] focus:outline-none focus:ring-0 py-0.5"
-                placeholder="First & last name"
-              />
+              <div className="flex items-center gap-3 rounded-full border border-purple-200 bg-white px-3.5 md:px-4 py-3 md:py-4">
+                <div className="flex items-center justify-center text-[#C9B6FF] shrink-0">
+                  <svg
+                    className="w-4 h-4 md:w-5 md:h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  className="flex-1 min-w-0 border-none bg-transparent text-sm md:text-[15px] text-gray-800 placeholder-[#D3C2FF] focus:outline-none focus:ring-0 py-0.5"
+                  placeholder="John"
+                />
+              </div>
+              {errors.firstName && (
+                <p className="text-xs text-red-600 mt-1 ml-6">{errors.firstName}</p>
+              )}
             </div>
-            {errors.name && (
-              <p className="text-xs text-red-600 mt-1 ml-6">{errors.name}</p>
-            )}
+            <div className="relative pt-2">
+              <div className="absolute -top-3 left-6 bg-white px-2 py-0.5 rounded-b-md">
+                <span className="text-xs md:text-[13px] font-medium text-gray-900">
+                  Last Name
+                </span>
+              </div>
+              <div className="flex items-center gap-3 rounded-full border border-purple-200 bg-white px-3.5 md:px-4 py-3 md:py-4">
+                <div className="flex items-center justify-center text-[#C9B6FF] shrink-0">
+                  <svg
+                    className="w-4 h-4 md:w-5 md:h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  className="flex-1 min-w-0 border-none bg-transparent text-sm md:text-[15px] text-gray-800 placeholder-[#D3C2FF] focus:outline-none focus:ring-0 py-0.5"
+                  placeholder="Cina"
+                />
+              </div>
+              {errors.lastName && (
+                <p className="text-xs text-red-600 mt-1 ml-6">{errors.lastName}</p>
+              )}
+            </div>
           </div>
 
-          {/* Number Field */}
+          {/* Phone Number */}
           <div className="relative pt-2">
             <div className="absolute -top-3 left-6 bg-white px-2 py-0.5 rounded-b-md">
               <span className="text-xs md:text-[13px] font-medium text-gray-900">
-                Number
+                Phone Number
               </span>
             </div>
-            <div className="flex items-center gap-3 rounded-full border border-purple-200 bg-white px-3.5 md:px-4 py-2 md:py-3">
+            <div className="flex items-center gap-3 rounded-full border border-purple-200 bg-white px-3.5 md:px-4 py-3 md:py-4">
               <div className="flex items-center justify-center text-[#C9B6FF]">
                 <svg
                   className="w-4 h-4 md:w-5 md:h-5"
@@ -189,7 +228,7 @@ const Signup = () => {
                 value={formData.phone}
                 onChange={handleChange}
                 className="flex-1 border-none bg-transparent text-sm md:text-[15px] text-gray-800 placeholder-[#D3C2FF] focus:outline-none focus:ring-0 py-0.5"
-                placeholder="Enter your mobile number"
+                placeholder="Enter phone number"
               />
             </div>
             {errors.phone && (
@@ -197,14 +236,14 @@ const Signup = () => {
             )}
           </div>
 
-          {/* Email Field */}
+          {/* Email */}
           <div className="relative pt-2">
             <div className="absolute -top-3 left-6 bg-white px-2 py-0.5 rounded-b-md">
               <span className="text-xs md:text-[13px] font-medium text-gray-900">
                 Email
               </span>
             </div>
-            <div className="flex items-center gap-3 rounded-full border border-purple-200 bg-white px-3.5 md:px-4 py-2 md:py-3 md:mb-5">
+            <div className="flex items-center gap-3 rounded-full border border-purple-200 bg-white px-3.5 md:px-4 py-3 md:py-4">
               <div className="flex items-center justify-center text-[#C9B6FF]">
                 <svg
                   className="w-4 h-4 md:w-5 md:h-5"
@@ -226,7 +265,7 @@ const Signup = () => {
                 value={formData.email}
                 onChange={handleChange}
                 className="flex-1 border-none bg-transparent text-sm md:text-[15px] text-gray-800 placeholder-[#D3C2FF] focus:outline-none focus:ring-0 py-0.5"
-                placeholder="Enter your email address"
+                placeholder="email@gmail.com"
               />
             </div>
             {errors.email && (
@@ -245,24 +284,24 @@ const Signup = () => {
         </form>
 
         {/* Legal Text */}
-        <p className="mt-4 md:mt-5 text-start text-[11px] md:text-[13px] text-gray-600 leading-relaxed">
+        <p className="mt-4 md:mt-5 text-center text-[11px] md:text-[13px] text-gray-600 leading-relaxed">
           By continuing, you agree to our{" "}
-          <a href="#" className="text-purple-700 hover:text-purple-800 font-medium underline underline-offset-2">
+          <Link to="/terms-and-conditions" className="text-purple-700 hover:text-purple-800 font-medium underline underline-offset-2">
             Terms of Service
-          </a>{" "}
+          </Link>{" "}
           and our{" "}
-          <a href="#" className="text-purple-700 hover:text-purple-800 font-medium underline underline-offset-2">
+          <Link to="/privacy-policy" className="text-purple-700 hover:text-purple-800 font-medium underline underline-offset-2">
             Privacy Policy
-          </a>
+          </Link>
           .
         </p>
 
-        {/* Login Link */}
-        <p className="mt-3 md:mt-4 text-start text-sm md:text-[15px] text-[#4B24C7]">
+        {/* Login Link - bottom of card */}
+        <p className="mt-4 md:mt-5 text-center text-sm md:text-[15px] text-gray-700">
           Already have an account?{" "}
-          <a href="/login" className="font-semibold hover:underline">
+          <Link to="/login" className="text-[#4B24C7] font-semibold hover:underline underline-offset-2">
             Login
-          </a>
+          </Link>
         </p>
       </div>
     </div>
