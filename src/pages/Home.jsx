@@ -33,6 +33,8 @@ const HomePage = () => {
   const [hospitalError, setHospitalError] = useState("");
   const [incomeError, setIncomeError] = useState("");
   const [sizeError, setSizeError] = useState("");
+  const [stateError, setStateError] = useState("");
+  const [cityError, setCityError] = useState("");
   const [existingBill, setExistingBill] = useState("");
   const [billAmount, setBillAmount] = useState("");
   const [recaptchaToken, setRecaptchaToken] = useState("");
@@ -130,6 +132,8 @@ const HomePage = () => {
     setHospitalError("");
     setIncomeError("");
     setSizeError("");
+    setStateError("");
+    setCityError("");
     setRecaptchaError("");
 
     let hasError = false;
@@ -155,14 +159,14 @@ const HomePage = () => {
       hasError = true;
     }
 
-    // Validate state and city (required by backend)
+    // Validate state and city
     if (!selectedState) {
-      setEligibilityError("Please select a state.");
+      setStateError("Please select a state.");
       hasError = true;
     }
 
     if (!selectedCity) {
-      setEligibilityError("Please select a city.");
+      setCityError("Please select a city.");
       hasError = true;
     }
 
@@ -341,6 +345,8 @@ const HomePage = () => {
                 onChange={(e) => {
                   setSelectedState(e.target.value);
                   setSelectedCity("");
+                  setStateError("");
+                  setCityError("");
                 }}
               >
                 <option value="">Select</option>
@@ -350,6 +356,9 @@ const HomePage = () => {
                   </option>
                 ))}
               </select>
+              {stateError && (
+                <p className="mt-1 text-xs text-red-600">{stateError}</p>
+              )}
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm md:text-base font-medium text-gray-900">
@@ -358,7 +367,10 @@ const HomePage = () => {
               <select
                 className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat"
                 value={selectedCity}
-                onChange={(e) => setSelectedCity(e.target.value)}
+                onChange={(e) => {
+                  setSelectedCity(e.target.value);
+                  setCityError("");
+                }}
                 disabled={cityOptions.length === 0}
               >
                 <option value="">Select</option>
@@ -368,6 +380,9 @@ const HomePage = () => {
                   </option>
                 ))}
               </select>
+              {cityError && (
+                <p className="mt-1 text-xs text-red-600">{cityError}</p>
+              )}
             </div>
           </div>
 
