@@ -27,7 +27,7 @@ const BillInformationModal = ({
   }
   familyMembers.forEach((member, index) => {
     if (member && member.trim()) {
-      const label = index === 0 ? "Spouse" : `Child ${index}`;
+      const label = index === 0 ? "Spouse" : "Child";
       patientOptions.push({ value: member.trim(), label: `${label}: ${member.trim()}` });
     }
   });

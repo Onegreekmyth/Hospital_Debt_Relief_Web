@@ -134,11 +134,11 @@ const Login = () => {
           .
         </p>
 
-        {/* Sign up link */}
+        {/* No account - Savings Calculator CTA */}
         <p className="mt-4 md:mt-5 text-center text-sm md:text-[15px] text-gray-700">
-          Don&apos;t have an account?{" "}
-          <Link to="/signup" className="text-[#4B24C7] font-semibold hover:underline underline-offset-2">
-            Sign up
+          Don&apos;t have an Account?{" "}
+          <Link to="/" className="text-[#4B24C7] font-semibold hover:underline underline-offset-2">
+            Visit our Savings Calculator to determine eligibility.
           </Link>
         </p>
 
