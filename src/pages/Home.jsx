@@ -513,35 +513,40 @@ const HomePage = () => {
             </div>
           )}
 
-          {/* CAPTCHA Row */}
-          <div className="flex justify-center pt-4">
-            {recaptchaSiteKey ? (
-              <ReCAPTCHA
-                sitekey={recaptchaSiteKey}
-                onChange={(token) => {
-                  setRecaptchaToken(token || "");
-                  setRecaptchaError("");
-                }}
-                onExpired={() => {
-                  setRecaptchaToken("");
-                  setRecaptchaError("CAPTCHA expired. Please retry.");
-                }}
-                onErrored={() => {
-                  setRecaptchaToken("");
-                  setRecaptchaError("CAPTCHA failed to load. Please retry.");
-                }}
-              />
-            ) : (
-              <div className="w-full max-w-md rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                Set `VITE_RECAPTCHA_SITE_KEY` to enable CAPTCHA.
-              </div>
+          {/* CAPTCHA Row - required, left-aligned */}
+          <div className="pt-4">
+            <p className="text-sm font-medium text-gray-900 mb-2">
+              Verification <span className="text-red-600">*</span>
+            </p>
+            <div className="flex justify-start pt-1">
+              {recaptchaSiteKey ? (
+                <ReCAPTCHA
+                  sitekey={recaptchaSiteKey}
+                  onChange={(token) => {
+                    setRecaptchaToken(token || "");
+                    setRecaptchaError("");
+                  }}
+                  onExpired={() => {
+                    setRecaptchaToken("");
+                    setRecaptchaError("CAPTCHA expired. Please retry.");
+                  }}
+                  onErrored={() => {
+                    setRecaptchaToken("");
+                    setRecaptchaError("CAPTCHA failed to load. Please retry.");
+                  }}
+                />
+              ) : (
+                <div className="w-full max-w-md rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  Set `VITE_RECAPTCHA_SITE_KEY` to enable CAPTCHA.
+                </div>
+              )}
+            </div>
+            {recaptchaError && (
+              <p className="mt-2 text-left text-xs text-red-600">
+                {recaptchaError}
+              </p>
             )}
           </div>
-          {recaptchaError && (
-            <p className="mt-2 text-center text-xs text-red-600">
-              {recaptchaError}
-            </p>
-          )}
 
           {/* Button Row */}
           <div className="flex justify-center pt-4">
