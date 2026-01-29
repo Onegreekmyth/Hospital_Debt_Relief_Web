@@ -10,13 +10,19 @@ const SubscriptionModal = ({
   planId,
   onStartSubscription,
   onCancelSubscription,
+  hasActiveSubscription = false,
 }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [agreementChecked, setAgreementChecked] = useState(false);
   const dispatch = useDispatch();
   const { checkoutError } = useSelector((state) => state.payments);
 
   const handleStart = async () => {
+    if (!agreementChecked) {
+      setError("You must acknowledge the notice above before starting your subscription.");
+      return;
+    }
     if (!planId) {
       setError("Invalid subscription plan. Please try again.");
       return;
@@ -60,6 +66,13 @@ const SubscriptionModal = ({
     }
   }, [checkoutError]);
 
+  useEffect(() => {
+    if (isOpen) {
+      setAgreementChecked(false);
+      setError("");
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const handleCancel = () => {
@@ -89,7 +102,7 @@ const SubscriptionModal = ({
           {/* Number of Family Members */}
           <div className="space-y-1">
             <p className="text-xs md:text-sm font-semibold text-gray-900">
-              Number of Family Household Members
+              Number of Household Members Selected
             </p>
             <div className="rounded-full border border-gray-200 px-5 py-2 flex items-center gap-4">
               <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-gray-400 shadow-sm">
@@ -109,7 +122,7 @@ const SubscriptionModal = ({
               </div>
               <div className="flex-1">
                 <p className="text-sm md:text-sm text-[#2e1570] ">
-                  {householdCount} "This number is fed by the dashboard entries"
+                  {householdCount}
                 </p>
               </div>
             </div>
@@ -139,18 +152,22 @@ const SubscriptionModal = ({
             </div>
           </div>
 
-          {/* Warning Checkbox */}
+          {/* Required acknowledgment checkbox */}
           <div className="pt-2">
-            <label className="inline-flex items-start gap-2 text-[11px] md:text-xs text-gray-600">
+            <label className="inline-flex items-start gap-2 text-[11px] md:text-xs text-gray-700 cursor-pointer">
               <input
                 type="checkbox"
-                className="mt-0.5 w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                defaultChecked
-                readOnly
+                checked={agreementChecked}
+                onChange={(e) => {
+                  setAgreementChecked(e.target.checked);
+                  if (error) setError("");
+                }}
+                className="mt-0.5 w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 shrink-0"
               />
               <span>
-                Providing false or inaccurate information can lead to inaccurate billing and/or
-                denied financial assistance applications.
+                I acknowledge that providing false or inaccurate information can lead to
+                inaccurate billing and/or denied financial assistance applications.{" "}
+                <span className="text-red-600">*</span>
               </span>
             </label>
           </div>
@@ -170,18 +187,28 @@ const SubscriptionModal = ({
               type="button"
               className="w-full h-11 md:h-12 rounded-full bg-[#2e1570] text-white font-semibold text-sm md:text-base hover:from-purple-600 hover:to-purple-800 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleStart}
-              disabled={loading}
+              disabled={loading || !agreementChecked}
             >
               {loading ? "Processing..." : "Start My Subscription Plan"}
             </button>
 
-            <button
-              type="button"
-              className="w-full h-11 md:h-12 rounded-full text-[#4e30a2] font-semibold text-sm md:text-base hover:from-purple-600/80 hover:to-purple-800/80 transition border-2 border-[#4e30a2]"
-              onClick={handleCancel}
-            >
-              Cancel My Subscription Plan
-            </button>
+            {hasActiveSubscription ? (
+              <button
+                type="button"
+                className="w-full h-11 md:h-12 rounded-full text-[#4e30a2] font-semibold text-sm md:text-base hover:from-purple-600/80 hover:to-purple-800/80 transition border-2 border-[#4e30a2]"
+                onClick={handleCancel}
+              >
+                Cancel My Subscription Plan
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="w-full h-11 md:h-12 rounded-full text-[#4e30a2] font-semibold text-sm md:text-base border-2 border-[#4e30a2] hover:bg-purple-50 transition"
+                onClick={onClose}
+              >
+                Close
+              </button>
+            )}
           </div>
         </div>
       </div>

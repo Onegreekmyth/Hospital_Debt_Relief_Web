@@ -773,6 +773,7 @@ const Dashboard = () => {
         householdCount={householdCount}
         subscriptionInfo={subscriptionInfo}
         planId={subscriptionInfo?.planId}
+        hasActiveSubscription={subscriptionStatus === "active"}
         onStartSubscription={() => {
           // This will be called after successful redirect from Stripe
           // The webhook will update the subscription status in the database
