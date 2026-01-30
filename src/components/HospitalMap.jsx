@@ -148,7 +148,7 @@ const HospitalMap = ({ hospitalInfo, className = "", height = "280px" }) => {
   }
 
   const { lat, lon } = coords;
-  const delta = 0.001; // Tighter zoom so hospital label is visible
+  const delta = 0.003; // Tighter zoom so hospital label is visible
   const bbox = `${lon - delta},${lat - delta},${lon + delta},${lat + delta}`;
   const embedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`;
 
