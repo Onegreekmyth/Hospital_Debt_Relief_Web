@@ -8,6 +8,7 @@ import SubscriptionModal from "../components/SubscriptionModal";
 import AddFamilyMembersModal from "../components/AddFamilyMembersModal";
 import ApplicationSubmittedModal from "../components/ApplicationSubmittedModal";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
+import HospitalMap from "../components/HospitalMap";
 import uploadImg from "../assets/upload-img.png";
 import rightArrow from "../assets/right-arrow.png";
 import { syncStripeSession } from "../store/payments/paymentsSlice";
@@ -297,9 +298,17 @@ const Dashboard = () => {
           <div className="space-y-6">
             {/* Contact Info Section */}
             <div className="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
-              <button
+              <div
+                role="button"
+                tabIndex={0}
                 onClick={() => setIsContactInfoOpen(!isContactInfoOpen)}
-                className="w-full flex items-center justify-between px-4 md:px-6 py-4 md:py-5 text-left"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setIsContactInfoOpen((prev) => !prev);
+                  }
+                }}
+                className="w-full flex items-center justify-between px-4 md:px-6 py-4 md:py-5 text-left cursor-pointer"
               >
                 <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900">Account Profile</h2>
                 <div className="flex items-center gap-1">
@@ -350,7 +359,7 @@ const Dashboard = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
                   </svg>
                 </div>
-              </button>
+              </div>
 
               {isContactInfoOpen && (
                 <div className="px-4 md:px-6 pb-4 md:pb-6 space-y-3 md:space-y-4">
@@ -701,25 +710,15 @@ const Dashboard = () => {
 
             {/* Hospital & Billing Card */}
             <div className="relative bg-white rounded-[32px] md:rounded-[40px] shadow-sm border border-gray-200 overflow-hidden">
-              {/* Map */}
-              <div
-                className="relative bg-gray-100 overflow-hidden"
-                style={{ height: "200px" }}
-              >
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.184132576782!2d-73.98784468459418!3d40.75889597932681!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25855c6480299%3A0x55194ec5a1ae4e8!2sTimes%20Square!5e0!3m2!1sen!2sus!4v1234567890123!5m2!1sen!2sus"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen=""
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="Hospital Location Map"
-                ></iframe>
-              </div>
+              {/* Hospital location map - geocoded from name, city, state */}
+              <HospitalMap
+                hospitalInfo={profile.hospitalInfo}
+                height="280px"
+                className="rounded-t-[32px] md:rounded-t-[40px]"
+              />
 
               {/* Overlapping hospital badge, centered and half over map */}
-              <div className="absolute left-1/2 top-[200px] -translate-x-1/2 -translate-y-1/2">
+              <div className="absolute left-1/2 top-[280px] -translate-x-1/2 -translate-y-1/2">
                 <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-[white] border-[px] border-white flex items-center justify-center shadow-lg">
                   <div className="w-11 h-11 md:w-14 md:h-14 rounded-full bg-white flex items-center justify-center">
                     {/* Four-leaf clover icon */}
