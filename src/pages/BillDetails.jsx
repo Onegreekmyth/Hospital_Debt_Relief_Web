@@ -343,7 +343,7 @@ const BillDetails = () => {
                               <img
                                 src={bill.pdfUrl}
                                 alt="Uploaded bill"
-                                className="w-full max-h-full object-contain rounded-2xl border border-gray-200"
+                                className="w-full max-h-[400px] object-contain rounded-2xl border border-gray-200"
                               />
                               <a
                                 href={bill.pdfUrl}
