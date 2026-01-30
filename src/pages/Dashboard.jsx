@@ -1,16 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Navbar from "../components/Navbar";
 import SubmissionModal from "../components/SubmissionModal";
 import BillInformationModal from "../components/BillInformationModal";
 import SubscriptionModal from "../components/SubscriptionModal";
 import AddFamilyMembersModal from "../components/AddFamilyMembersModal";
 import ApplicationSubmittedModal from "../components/ApplicationSubmittedModal";
+import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import axiosClient from "../api/axiosClient";
 import uploadImg from "../assets/upload-img.png";
 import rightArrow from "../assets/right-arrow.png";
 import { syncStripeSession } from "../store/payments/paymentsSlice";
+import {
+  fetchFamilyMembers,
+  createFamilyMember,
+  updateFamilyMember,
+  deleteFamilyMember,
+  clearError,
+} from "../store/familyMembers/familyMembersSlice";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -27,6 +35,8 @@ const Dashboard = () => {
   const [submittedBillId, setSubmittedBillId] = useState(null);
   const [submittedBillData, setSubmittedBillData] = useState(null);
   const [isCancelSubscriptionOpen, setIsCancelSubscriptionOpen] = useState(false);
+  const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] = useState(false);
+  const [memberToDelete, setMemberToDelete] = useState(null);
 
   // Profile state
   const [profile, setProfile] = useState({
@@ -36,13 +46,24 @@ const Dashboard = () => {
     email: "",
     phone: "",
     annualHouseholdIncome: "",
+    hospitalInfo: null,
   });
   const [householdSize, setHouseholdSize] = useState(1);
-  const [familyMembers, setFamilyMembers] = useState([]);
+  const [editingMember, setEditingMember] = useState(null);
   const [accountHolderRemoveFromPlan, setAccountHolderRemoveFromPlan] = useState(false);
   const [familyMembersRemoveFromPlan, setFamilyMembersRemoveFromPlan] = useState([]);
   const [profileLoading, setProfileLoading] = useState(true);
   const [profileError, setProfileError] = useState("");
+
+  // Redux state for family members
+  const { 
+    items: familyMembers, 
+    status: familyMembersStatus, 
+    error: familyMembersError,
+    operationStatus,
+    operationError,
+  } = useSelector((state) => state.familyMembers);
+  const familyMembersLoading = familyMembersStatus === 'loading';
 
   // High-level onboarding and eligibility state (placeholder for backend data)
   const [subscriptionStatus, setSubscriptionStatus] = useState("inactive"); // "inactive" | "active"
@@ -105,6 +126,7 @@ const Dashboard = () => {
           // Get annual household income from eligibility data
           const annualHouseholdIncome = userData.eligibilityData?.householdIncome;
           const fetchedHouseholdSize = userData.eligibilityData?.householdSize;
+          const hospitalInfo = userData.eligibilityData?.hospitalInfo || null;
           
           setProfile({
             firstName,
@@ -115,6 +137,7 @@ const Dashboard = () => {
             annualHouseholdIncome: annualHouseholdIncome 
               ? annualHouseholdIncome.toLocaleString('en-US') 
               : "",
+            hospitalInfo: hospitalInfo,
           });
           setHouseholdSize(Number(fetchedHouseholdSize) > 0 ? Number(fetchedHouseholdSize) : 1);
           if (userData.subscription?.status) {
@@ -143,25 +166,75 @@ const Dashboard = () => {
     fetchProfile();
   }, [navigate]);
 
+  // Fetch family members from Redux on mount
   useEffect(() => {
-    const memberCount = Math.max(householdSize - 1, 0);
-    setFamilyMembers((prev) => {
-      if (prev.length === memberCount) {
-        return prev;
-      }
-      const next = [...prev].slice(0, memberCount);
-      while (next.length < memberCount) {
-        next.push("");
-      }
-      return next;
-    });
-    setFamilyMembersRemoveFromPlan((prev) => {
-      if (prev.length === memberCount) return prev;
-      const next = [...prev].slice(0, memberCount);
-      while (next.length < memberCount) next.push(false);
-      return next;
-    });
-  }, [householdSize]);
+    dispatch(fetchFamilyMembers());
+  }, [dispatch]);
+
+  // Initialize remove from plan array when family members change
+  useEffect(() => {
+    if (familyMembers.length > 0) {
+      setFamilyMembersRemoveFromPlan(familyMembers.map(() => false));
+    }
+  }, [familyMembers]);
+
+  // Clear errors when component mounts or when modal closes
+  useEffect(() => {
+    if (familyMembersError || operationError) {
+      // Auto-clear errors after 5 seconds
+      const timer = setTimeout(() => {
+        dispatch(clearError());
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [familyMembersError, operationError, dispatch]);
+
+  // Open delete confirmation modal
+  const handleDeleteFamilyMember = (member) => {
+    setMemberToDelete(member);
+    setIsDeleteConfirmModalOpen(true);
+  };
+
+  // Confirm and delete family member using Redux
+  const handleConfirmDelete = async () => {
+    if (!memberToDelete?._id) return;
+
+    try {
+      await dispatch(deleteFamilyMember(memberToDelete._id)).unwrap();
+      setMemberToDelete(null);
+    } catch (error) {
+      alert(error || "Failed to delete family member");
+    }
+  };
+
+  // Close delete confirmation modal
+  const handleCloseDeleteModal = () => {
+    setIsDeleteConfirmModalOpen(false);
+    setMemberToDelete(null);
+  };
+
+  // Handle edit family member
+  const handleEditFamilyMember = (member) => {
+    setEditingMember(member);
+    setIsAddFamilyModalOpen(true);
+  };
+
+  // Handle add family member
+  const handleAddFamilyMember = () => {
+    setEditingMember(null);
+    setIsAddFamilyModalOpen(true);
+  };
+
+  // Handle modal close
+  const handleModalClose = () => {
+    setIsAddFamilyModalOpen(false);
+    setEditingMember(null);
+  };
+
+  // Handle modal success - refresh family members from Redux
+  const handleModalSuccess = () => {
+    dispatch(fetchFamilyMembers());
+  };
 
   // Disable scrolling when any modal is open
   useEffect(() => {
@@ -393,6 +466,36 @@ const Dashboard = () => {
                     </div>
                   </div>
 
+                  {/* Hospital Information */}
+                  {profile.hospitalInfo && (
+                    <div className="flex flex-col gap-2">
+                      <label className="text-xs font-medium text-gray-500">
+                        Hospital
+                      </label>
+                      <div className="relative">
+                        <svg
+                          className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                        <input
+                          type="text"
+                          value={[
+                            profile.hospitalInfo.name,
+                            profile.hospitalInfo.city,
+                            profile.hospitalInfo.state
+                          ].filter(Boolean).join(", ")}
+                          readOnly
+                          className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-gray-100 pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                          placeholder={profileLoading ? "Loading..." : "Hospital name"}
+                        />
+                      </div>
+                    </div>
+                  )}
+
 
                 </div>
               )}
@@ -419,6 +522,13 @@ const Dashboard = () => {
 
               {isFamilyListOpen && (
                 <div className="px-4 md:px-6 pb-4 md:pb-6 space-y-5 md:space-y-6">
+                  {/* Error Messages */}
+                  {(familyMembersError || operationError) && (
+                    <div className="p-3 rounded-lg bg-red-50 border border-red-200">
+                      <p className="text-sm text-red-600">{familyMembersError || operationError}</p>
+                    </div>
+                  )}
+
                   {/* Account Holder */}
                   <div className="space-y-2 relative pt-2">
                     <div className="absolute -top-3 left-6 bg-white px-2 py-0.5 rounded-b-md z-10">
@@ -445,85 +555,87 @@ const Dashboard = () => {
                     </label>
                   </div>
 
-                  {/* Family Member_Spouse / Family Member_Child */}
-                  {familyMembers.map((memberName, index) => {
-                    const label = index === 0 ? "Family Member_Spouse" : "Family Member_Child";
-                    const removeFromPlan = familyMembersRemoveFromPlan[index] ?? false;
-                    return (
-                      <div key={`family-member-${index}`} className="space-y-2 relative pt-2">
-                        <div className="absolute -top-3 left-6 bg-white px-2 py-0.5 rounded-b-md z-10">
-                          <span className="text-xs md:text-[13px] font-medium text-gray-900">{label}</span>
-                        </div>
-                        <div className="flex items-center gap-3 rounded-full border border-purple-200 bg-[#F7F5FF]/60 px-4 md:px-5 py-2.5 md:py-3">
-                          <div className="flex items-center justify-center text-[#4B24C7] shrink-0">
-                            <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
+                  {/* Family Members from API */}
+                  {familyMembersLoading ? (
+                    <div className="text-center py-4">
+                      <p className="text-sm text-gray-500">Loading family members...</p>
+                    </div>
+                  ) : familyMembers.length === 0 ? (
+                    <div className="text-center py-4">
+                      <p className="text-sm text-gray-500">No family members added yet.</p>
+                    </div>
+                  ) : (
+                    familyMembers.map((member, index) => {
+                      const fullName = `${member.firstName || ""} ${member.lastName || ""}`.trim();
+                      const relationshipLabel = member.relationship 
+                        ? member.relationship.charAt(0).toUpperCase() + member.relationship.slice(1).replace(/-/g, " ")
+                        : "Family Member";
+                      const removeFromPlan = familyMembersRemoveFromPlan[index] ?? false;
+                      return (
+                        <div key={member._id || index} className="space-y-2 relative pt-2">
+                          <div className="absolute -top-3 left-6 bg-white px-2 py-0.5 rounded-b-md z-10">
+                            <span className="text-xs md:text-[13px] font-medium text-gray-900">{relationshipLabel}</span>
                           </div>
-                          <input
-                            type="text"
-                            value={memberName}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              setFamilyMembers((prev) => {
-                                const next = [...prev];
-                                next[index] = value;
-                                return next;
-                              });
-                            }}
-                            className="flex-1 min-w-0 border-none bg-transparent text-sm md:text-base text-gray-900 placeholder-gray-400 focus:outline-none"
-                            placeholder={index === 0 ? "Spouse name" : "Child name"}
-                          />
-                          <div className="flex items-center gap-1 shrink-0">
-                            <button
-                              type="button"
-                              className="p-1.5 rounded-full text-[#4B24C7] hover:bg-purple-100 transition"
-                              aria-label="Edit"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                          <div className="flex items-center gap-3 rounded-full border border-purple-200 bg-[#F7F5FF]/60 px-4 md:px-5 py-2.5 md:py-3">
+                            <div className="flex items-center justify-center text-[#4B24C7] shrink-0">
+                              <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                               </svg>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setFamilyMembers((prev) => prev.filter((_, i) => i !== index));
-                                setFamilyMembersRemoveFromPlan((prev) => prev.filter((_, i) => i !== index));
-                                setHouseholdSize((prev) => Math.max(1, prev - 1));
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-sm md:text-base font-medium text-gray-900">
+                                {fullName || "Unnamed"}
+                              </div>
+                         
+                            </div>
+                            <div className="flex items-center gap-1 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => handleEditFamilyMember(member)}
+                                className="p-1.5 rounded-full text-[#4B24C7] hover:bg-purple-100 transition"
+                                aria-label="Edit"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                </svg>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteFamilyMember(member)}
+                                className="p-1.5 rounded-full text-[#4B24C7] hover:bg-red-50 hover:text-red-600 transition"
+                                aria-label="Delete"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                              </button>
+                            </div>
+                          </div>
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={removeFromPlan}
+                              onChange={(e) => {
+                                setFamilyMembersRemoveFromPlan((prev) => {
+                                  const next = [...prev];
+                                  next[index] = e.target.checked;
+                                  return next;
+                                });
                               }}
-                              className="p-1.5 rounded-full text-[#4B24C7] hover:bg-red-50 hover:text-red-600 transition"
-                              aria-label="Delete"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
-                            </button>
-                          </div>
+                              className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                            />
+                            <span className="text-xs font-sm text-gray-500">Remove from Subscription Plan</span>
+                          </label>
                         </div>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={removeFromPlan}
-                            onChange={(e) => {
-                              setFamilyMembersRemoveFromPlan((prev) => {
-                                const next = [...prev];
-                                next[index] = e.target.checked;
-                                return next;
-                              });
-                            }}
-                            className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                          />
-                          <span className="text-sm font-medium text-gray-300">Remove from Subscription Plan</span>
-                        </label>
-                      </div>
-                    );
-                  })}
+                      );
+                    })
+                  )}
 
                   {/* Add Family Member button */}
                   <div className="flex justify-end pt-2">
                     <button
                       type="button"
-                      onClick={() => setIsAddFamilyModalOpen(true)}
+                      onClick={handleAddFamilyMember}
                       className="inline-flex items-center gap-2 rounded-full bg-white border-2 border-[#4B24C7] px-4 py-2.5 text-sm font-semibold text-[#4B24C7] hover:bg-[#F7F5FF] transition shadow-sm"
                     >
                       <span className="text-lg leading-none">+</span>
@@ -614,14 +726,16 @@ const Dashboard = () => {
                 <div className="flex flex-col items-center gap-1.5 md:gap-2 mb-6">
                   <div className="flex items-center gap-3">
                     <h3 className="text-lg md:text-xl font-semibold text-black">
-                      Hospital Name
+                      {profile.hospitalInfo?.name || (profileLoading ? "Loading..." : "Hospital Name")}
                     </h3>
                     <span className="px-4 py-1 rounded-full bg-[#c9f4b8] text-[#1a8c3a] text-[11px] md:text-xs font-medium">
                       Eligible
                     </span>
                   </div>
                   <span className="text-xs md:text-sm text-[#c0bde9]">
-                    1 mile away
+                    {profile.hospitalInfo?.city && profile.hospitalInfo?.state 
+                      ? `${profile.hospitalInfo.city}, ${profile.hospitalInfo.state}`
+                      : profile.hospitalInfo?.city || profile.hospitalInfo?.state || "1 mile away"}
                   </span>
                 </div>
 
@@ -831,7 +945,19 @@ const Dashboard = () => {
       {/* Add Family Members Modal */}
       <AddFamilyMembersModal
         isOpen={isAddFamilyModalOpen}
-        onClose={() => setIsAddFamilyModalOpen(false)}
+        onClose={handleModalClose}
+        editingMember={editingMember}
+        onSuccess={handleModalSuccess}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmDeleteModal
+        isOpen={isDeleteConfirmModalOpen}
+        onClose={handleCloseDeleteModal}
+        onConfirm={handleConfirmDelete}
+        title="Delete Family Member"
+        message="Are you sure you want to delete this family member? This action cannot be undone."
+        memberName={memberToDelete ? `${memberToDelete.firstName || ""} ${memberToDelete.lastName || ""}`.trim() : ""}
       />
 
     </div>

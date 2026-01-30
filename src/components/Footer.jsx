@@ -14,7 +14,7 @@ const Footer = () => {
           much you can save on your hospital bill.
         </h2>
         <Link
-          to="/signup"
+          to="/#savings-calculator"
           className="mt-6 md:mt-8 inline-flex items-center gap-2 md:gap-3 rounded-full border-2 border-purple-700 px-6 md:px-8 py-2 text-[14px] md:text-[18px] font-semibold text-purple-700 hover:bg-purple-50 transition"
         >
           Get Started Here

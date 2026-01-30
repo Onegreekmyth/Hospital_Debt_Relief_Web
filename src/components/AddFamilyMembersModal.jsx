@@ -1,10 +1,100 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { createFamilyMember, updateFamilyMember } from "../store/familyMembers/familyMembersSlice";
 
-const AddFamilyMembersModal = ({ isOpen, onClose }) => {
+const AddFamilyMembersModal = ({ isOpen, onClose, editingMember = null, onSuccess }) => {
+  const dispatch = useDispatch();
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    dateOfBirth: "",
+    relationship: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [acknowledgeOnlyHousehold, setAcknowledgeOnlyHousehold] = useState(false);
+
+  useEffect(() => {
+    if (editingMember) {
+      setFormData({
+        firstName: editingMember.firstName || "",
+        lastName: editingMember.lastName || "",
+        dateOfBirth: editingMember.dateOfBirth ? editingMember.dateOfBirth.split('T')[0] : "",
+        relationship: editingMember.relationship || "",
+      });
+    } else {
+      setFormData({
+        firstName: "",
+        lastName: "",
+        dateOfBirth: "",
+        relationship: "",
+      });
+    }
+    setError("");
+    setAcknowledgeOnlyHousehold(false);
+  }, [editingMember, isOpen]);
+
   if (!isOpen) return null;
 
   const handleOverlayClick = () => {
     if (onClose) onClose();
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    // Validation
+    if (!formData.firstName.trim()) {
+      setError("First name is required");
+      return;
+    }
+    if (!formData.lastName.trim()) {
+      setError("Last name is required");
+      return;
+    }
+    if (!formData.dateOfBirth) {
+      setError("Date of birth is required");
+      return;
+    }
+    if (!formData.relationship) {
+      setError("Relationship is required");
+      return;
+    }
+    if (!acknowledgeOnlyHousehold) {
+      setError("Please acknowledge that you're only providing household family members");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const memberData = {
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        dateOfBirth: formData.dateOfBirth,
+        relationship: formData.relationship,
+      };
+
+      if (editingMember) {
+        // Update existing member using Redux
+        await dispatch(updateFamilyMember({ id: editingMember._id, memberData })).unwrap();
+      } else {
+        // Create new member using Redux
+        await dispatch(createFamilyMember(memberData)).unwrap();
+      }
+      
+      if (onSuccess) onSuccess();
+      if (onClose) onClose();
+    } catch (err) {
+      const message =
+        err ||
+        editingMember
+          ? "Failed to update family member"
+          : "Failed to add family member";
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -25,11 +115,27 @@ const AddFamilyMembersModal = ({ isOpen, onClose }) => {
           {/* Header */}
           <div className="flex items-center justify-between mb-4 sm:mb-5">
             <h2 className="w-full text-center text-xl sm:text-2xl font-bold text-gray-900">
-              Add Family Members
+              {editingMember ? "Edit Family Member" : "Add Family Members"}
             </h2>
-            {/* Invisible spacer to keep title centered */}
-            <span className="w-6 sm:w-8" />
+            <button
+              onClick={onClose}
+              className="w-6 sm:w-8 h-6 sm:h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
+              aria-label="Close"
+            >
+              <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200">
+              <p className="text-sm text-red-600">{error}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit}>
 
           <div className="space-y-4 sm:space-y-5">
             {/* First & Last Name */}
@@ -55,8 +161,11 @@ const AddFamilyMembersModal = ({ isOpen, onClose }) => {
                   </svg>
                   <input
                     type="text"
+                    value={formData.firstName}
+                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                     className="w-full h-12 rounded-full border border-[#ccc2ea] bg-white pl-11 pr-4 text-sm sm:text-base text-gray-800 placeholder:text-purple-200 focus:outline-none focus:ring-1 focus:ring-[#ccc2ea]"
                     placeholder="john"
+                    required
                   />
                 </div>
               </div>
@@ -82,8 +191,11 @@ const AddFamilyMembersModal = ({ isOpen, onClose }) => {
                   </svg>
                   <input
                     type="text"
+                    value={formData.lastName}
+                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                     className="w-full h-12 rounded-full border border-[#ccc2ea] bg-white pl-11 pr-4 text-sm sm:text-base text-gray-800 placeholder:text-purple-200 focus:outline-none focus:ring-1 focus:ring-[#ccc2ea]"
                     placeholder="Thomas"
+                    required
                   />
                 </div>
               </div>
@@ -95,8 +207,10 @@ const AddFamilyMembersModal = ({ isOpen, onClose }) => {
                 Relationship to Account Holder
               </label>
               <select
-                defaultValue=""
+                value={formData.relationship}
+                onChange={(e) => setFormData({ ...formData, relationship: e.target.value })}
                 className="w-full h-12 rounded-full border border-[#ccc2ea] bg-white px-4 pr-12 text-sm sm:text-base text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#ccc2ea] appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%239C88FF%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:10px] bg-[right_1.5rem_center] bg-no-repeat"
+                required
               >
                 <option value="" disabled>
                   Select
@@ -122,8 +236,11 @@ const AddFamilyMembersModal = ({ isOpen, onClose }) => {
               </label>
               <input
                 type="date"
+                value={formData.dateOfBirth}
+                onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
                 className="w-full h-12 rounded-full border border-[#ccc2ea] bg-white px-4 pr-4 text-sm sm:text-base text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#ccc2ea] [color-scheme:light]"
                 placeholder="Select date"
+                required
               />
             </div>
 
@@ -132,6 +249,8 @@ const AddFamilyMembersModal = ({ isOpen, onClose }) => {
               <label className="flex items-start gap-3 text-xs sm:text-sm text-gray-700">
                 <input
                   type="checkbox"
+                  checked={acknowledgeOnlyHousehold}
+                  onChange={(e) => setAcknowledgeOnlyHousehold(e.target.checked)}
                   className="mt-0.5 w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                 />
                 <span>I’m only providing household family members.</span>
@@ -142,13 +261,14 @@ const AddFamilyMembersModal = ({ isOpen, onClose }) => {
           {/* Footer button */}
           <div className="mt-6 sm:mt-8 px-2 sm:px-4 pb-2 sm:pb-4">
             <button
-              type="button"
-              onClick={onClose}
-              className="w-full h-12 sm:h-14 rounded-full bg-[#381989] text-white text-sm sm:text-base font-semibold shadow-[0_18px_40px_rgba(80,51,207,0.45)] hover:from-purple-800 hover:via-purple-700 hover:to-indigo-800 transition-all"
+              type="submit"
+              disabled={loading}
+              className="w-full h-12 sm:h-14 rounded-full bg-[#381989] text-white text-sm sm:text-base font-semibold shadow-[0_18px_40px_rgba(80,51,207,0.45)] hover:from-purple-800 hover:via-purple-700 hover:to-indigo-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Save
+              {loading ? "Saving..." : editingMember ? "Update" : "Save"}
             </button>
           </div>
+          </form>
         </div>
       </div>
     </div>

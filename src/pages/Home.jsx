@@ -306,8 +306,9 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Qualification Form */}
+      {/* Qualification Form / Savings Calculator */}
       <section
+        id="savings-calculator"
         ref={formSectionRef}
         className="py-16 md:py-24 bg-[#F7F5FF] text-center"
       >
