@@ -14,6 +14,13 @@ const BillDetails = () => {
   const fileInputRef = useRef(null);
   const [uploadedFileName, setUploadedFileName] = useState("");
 
+  // Check if pdfUrl is an image by extension (API can return PDF or image in pdfUrl)
+  const isImageUrl = (url) => {
+    if (!url || typeof url !== "string") return false;
+    const path = url.split("?")[0].toLowerCase();
+    return /\.(png|jpg|jpeg|webp|heic)$/.test(path);
+  };
+
   // Fetch bill from API and transform to match MOCK_BILLS format
   useEffect(() => {
     const fetchBill = async () => {
@@ -234,20 +241,41 @@ const BillDetails = () => {
                       
                       {bill.pdfUrl ? (
                         <div className="w-full h-full max-h-[360px] mt-5 pt-5 flex flex-col items-center justify-center gap-4 text-center px-4">
-                          <div className="w-16 h-16 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center">
-                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                            </svg>
-                          </div>
-                          <a
-                            href={bill.pdfUrl}
-                            download
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 rounded-full border border-purple-200 px-4 py-2 text-sm text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition"
-                          >
-                            <span>Download bill</span>
-                          </a>
+                          {isImageUrl(bill.pdfUrl) ? (
+                            <>
+                              <img
+                                src={bill.pdfUrl}
+                                alt="Uploaded bill"
+                                className="w-full max-h-[400px] object-contain rounded-2xl border border-gray-200"
+                              />
+                              <a
+                                href={bill.pdfUrl}
+                                download
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 rounded-full border border-purple-200 px-4 py-2 text-sm text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition"
+                              >
+                                <span>Download bill</span>
+                              </a>
+                            </>
+                          ) : (
+                            <>
+                              <div className="w-16 h-16 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center">
+                                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                              </div>
+                              <a
+                                href={bill.pdfUrl}
+                                download
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 rounded-full border border-purple-200 px-4 py-2 text-sm text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition"
+                              >
+                                <span>Download PDF</span>
+                              </a>
+                            </>
+                          )}
                         </div>
                       ) : (
                         <img
@@ -310,30 +338,51 @@ const BillDetails = () => {
 
                       {bill.pdfUrl ? (
                         <div className="w-full h-full max-h-[360px] flex flex-col items-center justify-center gap-4 text-center mt-5  px-4">
-                          <div className="w-16 h-16 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center">
-                            <svg
-                              className="w-8 h-8"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"
+                          {isImageUrl(bill.pdfUrl) ? (
+                            <>
+                              <img
+                                src={bill.pdfUrl}
+                                alt="Uploaded bill"
+                                className="w-full max-h-full object-contain rounded-2xl border border-gray-200"
                               />
-                            </svg>
-                          </div>
-                          <a
-                            href={bill.pdfUrl}
-                            download
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 rounded-full border border-purple-200 px-4 py-2 text-sm text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition"
-                          >
-                            <span>Download bill</span>
-                          </a>
+                              <a
+                                href={bill.pdfUrl}
+                                download
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 rounded-full border border-purple-200 px-4 py-2 text-sm text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition"
+                              >
+                                <span>Download bill</span>
+                              </a>
+                            </>
+                          ) : (
+                            <>
+                              <div className="w-16 h-16 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center">
+                                <svg
+                                  className="w-8 h-8"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                                  />
+                                </svg>
+                              </div>
+                              <a
+                                href={bill.pdfUrl}
+                                download
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 rounded-full border border-purple-200 px-4 py-2 text-sm text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition"
+                              >
+                                <span>Download PDF</span>
+                              </a>
+                            </>
+                          )}
                         </div>
                       ) : (
                         <img
