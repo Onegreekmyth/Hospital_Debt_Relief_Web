@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import primaryLogo from "../assets/primary-logo.png";
-import axiosClient from "../api/axiosClient";
+import { register } from "../store/user/userSlice";
 
 const Signup = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -63,42 +65,38 @@ const Signup = () => {
     setLoading(true);
     setErrorMessage("");
 
-    try {
-      const eligibilityRequestId = localStorage.getItem("pendingEligibilityRequestId");
-      const fullName = [formData.firstName.trim(), formData.lastName.trim()].filter(Boolean).join(" ");
+    const eligibilityRequestId = localStorage.getItem("pendingEligibilityRequestId");
 
-      const payload = {
-        name: fullName,
+    dispatch(
+      register({
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
         email: formData.email.trim(),
         phone: formData.phone.trim(),
-        ...(eligibilityRequestId && { eligibilityRequestId }),
-      };
-
-      const response = await axiosClient.post("/auth/register", payload);
-
-      if (response.data.success) {
-        // Clear the stored eligibility request ID
+        eligibilityRequestId: eligibilityRequestId || undefined,
+      })
+    )
+      .unwrap()
+      .then((userData) => {
         localStorage.removeItem("pendingEligibilityRequestId");
-
-        // Navigate to OTP verification page
         navigate("/otp-verification", {
           state: {
             from: "signup",
             email: formData.email.trim(),
-            userData: response.data.data,
+            userData,
           },
         });
-      }
-    } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        error.response?.data?.error ||
-        error.message ||
-        "Failed to create account. Please try again.";
-      setErrorMessage(message);
-    } finally {
-      setLoading(false);
-    }
+      })
+      .catch((err) => {
+        const message =
+          typeof err === "string"
+            ? err
+            : err?.message || "Failed to create account. Please try again.";
+        setErrorMessage(message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (

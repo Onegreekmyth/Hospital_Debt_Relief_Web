@@ -8,7 +8,6 @@ import SubscriptionModal from "../components/SubscriptionModal";
 import AddFamilyMembersModal from "../components/AddFamilyMembersModal";
 import ApplicationSubmittedModal from "../components/ApplicationSubmittedModal";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
-import axiosClient from "../api/axiosClient";
 import uploadImg from "../assets/upload-img.png";
 import rightArrow from "../assets/right-arrow.png";
 import { syncStripeSession } from "../store/payments/paymentsSlice";
@@ -19,6 +18,12 @@ import {
   clearError,
   setFamilyMembers,
 } from "../store/familyMembers/familyMembersSlice";
+import {
+  fetchProfile,
+  updateProfile,
+  setProfileField,
+  clearUpdateSuccess,
+} from "../store/user/userSlice";
 import PrimaryLogo from "../assets/primary-logo.png";
 
 const Dashboard = () => {
@@ -39,22 +44,23 @@ const Dashboard = () => {
   const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState(null);
 
-  // Profile state
-  const [profile, setProfile] = useState({
-    firstName: "",
-    lastName: "",
-    mailingAddress: "",
-    email: "",
-    phone: "",
-    annualHouseholdIncome: "",
-    hospitalInfo: null,
-  });
   const [householdSize, setHouseholdSize] = useState(1);
   const [editingMember, setEditingMember] = useState(null);
   const [accountHolderRemoveFromPlan, setAccountHolderRemoveFromPlan] = useState(false);
   const [familyMembersRemoveFromPlan, setFamilyMembersRemoveFromPlan] = useState([]);
-  const [profileLoading, setProfileLoading] = useState(true);
-  const [profileError, setProfileError] = useState("");
+  const [isProfileEditing, setIsProfileEditing] = useState(false);
+
+  // Redux state for user profile
+  const {
+    profile,
+    status: profileStatus,
+    error: profileError,
+    updateStatus: profileUpdateStatus,
+    updateError: profileUpdateError,
+    updateSuccess: profileUpdateSuccess,
+  } = useSelector((state) => state.user);
+  const profileLoading = profileStatus === "loading";
+  const profileUpdateLoading = profileUpdateStatus === "loading";
 
   // Redux state for family members
   const { 
@@ -83,11 +89,10 @@ const Dashboard = () => {
       const syncSession = async () => {
         try {
           await dispatch(syncStripeSession({ sessionId })).unwrap();
-          // Refresh profile to get updated subscription status
-          const profileRes = await axiosClient.get("/auth/profile");
-          if (profileRes.data?.success && profileRes.data?.data?.subscription) {
-            setSubscriptionStatus(profileRes.data.data.subscription.status || "inactive");
-            setSubscriptionTier(profileRes.data.data.subscription.planId || null);
+          const { userData } = await dispatch(fetchProfile()).unwrap();
+          if (userData?.subscription) {
+            setSubscriptionStatus(userData.subscription.status || "inactive");
+            setSubscriptionTier(userData.subscription.planId || null);
           }
         } catch (err) {
           console.error("Failed to sync subscription:", err);
@@ -109,69 +114,24 @@ const Dashboard = () => {
 
   // Fetch user profile on component mount
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        setProfileLoading(true);
-        setProfileError("");
-        
-        const response = await axiosClient.get("/auth/profile");
-        
-        if (response.data.success) {
-          const userData = response.data.data;
-          
-          // Split name into first and last name
-          const nameParts = (userData.name || "").trim().split(" ");
-          const firstName = nameParts[0] || "";
-          const lastName = nameParts.slice(1).join(" ") || "";
-          
-          // Get annual household income from eligibility data
-          const annualHouseholdIncome = userData.eligibilityData?.householdIncome;
-          const fetchedHouseholdSize = userData.eligibilityData?.householdSize;
-          const hospitalInfo = userData.eligibilityData?.hospitalInfo || null;
-          
-          // Get family members from profile response
-          const familyMembersFromProfile = userData.familyMembers || [];
-          
-          setProfile({
-            firstName,
-            lastName,
-            mailingAddress: userData.mailingAddress || "",
-            email: userData.email || "",
-            phone: userData.phone || "",
-            annualHouseholdIncome: annualHouseholdIncome 
-              ? annualHouseholdIncome.toLocaleString('en-US') 
-              : "",
-            hospitalInfo: hospitalInfo,
-          });
-          setHouseholdSize(Number(fetchedHouseholdSize) > 0 ? Number(fetchedHouseholdSize) : 1);
-          if (userData.subscription?.status) {
-            setSubscriptionStatus(userData.subscription.status);
-            setSubscriptionTier(userData.subscription.planId || null);
-          }
-          
-          // Update Redux with family members from profile
-          dispatch(setFamilyMembers(familyMembersFromProfile));
+    dispatch(fetchProfile())
+      .unwrap()
+      .then(({ userData }) => {
+        setHouseholdSize(
+          Number(userData?.eligibilityData?.householdSize) > 0
+            ? Number(userData.eligibilityData.householdSize)
+            : 1
+        );
+        if (userData?.subscription?.status) {
+          setSubscriptionStatus(userData.subscription.status);
+          setSubscriptionTier(userData.subscription.planId || null);
         }
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-        const message =
-          error.response?.data?.message ||
-          error.response?.data?.error ||
-          error.message ||
-          "Failed to load profile";
-        setProfileError(message);
-        
-        // If unauthorized, redirect to login
-        if (error.response?.status === 401) {
-          navigate("/login");
-        }
-      } finally {
-        setProfileLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, [navigate]);
+        dispatch(setFamilyMembers(userData?.familyMembers || []));
+      })
+      .catch((err) => {
+        if (err?.status === 401) navigate("/login");
+      });
+  }, [dispatch, navigate]);
 
   // Initialize remove from plan array when family members change
   useEffect(() => {
@@ -204,12 +164,8 @@ const Dashboard = () => {
     try {
       await dispatch(deleteFamilyMember(memberToDelete._id)).unwrap();
       setMemberToDelete(null);
-      // Refresh profile to get updated family members
-      const response = await axiosClient.get("/auth/profile");
-      if (response.data.success) {
-        const familyMembersFromProfile = response.data.data.familyMembers || [];
-        dispatch(setFamilyMembers(familyMembersFromProfile));
-      }
+      const { userData } = await dispatch(fetchProfile()).unwrap();
+      dispatch(setFamilyMembers(userData?.familyMembers || []));
     } catch (error) {
       alert(error || "Failed to delete family member");
     }
@@ -242,15 +198,32 @@ const Dashboard = () => {
   // Handle modal success - refresh profile to get updated family members
   const handleModalSuccess = async () => {
     try {
-      const response = await axiosClient.get("/auth/profile");
-      if (response.data.success) {
-        const familyMembersFromProfile = response.data.data.familyMembers || [];
-        dispatch(setFamilyMembers(familyMembersFromProfile));
-      }
+      const { userData } = await dispatch(fetchProfile()).unwrap();
+      dispatch(setFamilyMembers(userData?.familyMembers || []));
     } catch (error) {
       console.error("Error refreshing profile:", error);
     }
   };
+
+  // Update profile (firstName, lastName, phone, mailing_address) via user slice
+  const handleUpdateProfile = () => {
+    dispatch(
+      updateProfile({
+        firstName: profile.firstName?.trim() ?? "",
+        lastName: profile.lastName?.trim() ?? "",
+        phone: profile.phone?.trim() ?? "",
+        mailing_address: profile.mailingAddress?.trim() ?? "",
+      })
+    );
+  };
+
+  // Clear update success message and exit edit mode after 3 seconds
+  useEffect(() => {
+    if (!profileUpdateSuccess) return;
+    setIsProfileEditing(false);
+    const t = setTimeout(() => dispatch(clearUpdateSuccess()), 3000);
+    return () => clearTimeout(t);
+  }, [profileUpdateSuccess, dispatch]);
 
   // Disable scrolling when any modal is open
   useEffect(() => {
@@ -329,14 +302,54 @@ const Dashboard = () => {
                 className="w-full flex items-center justify-between px-4 md:px-6 py-4 md:py-5 text-left"
               >
                 <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900">Account Profile</h2>
-                <svg
-                  className={`w-5 h-5 text-gray-600 transition-transform ${isContactInfoOpen ? '' : 'rotate-180'}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                </svg>
+                <div className="flex items-center gap-1">
+                  {isContactInfoOpen && !isProfileEditing && (
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); setIsProfileEditing(true); }}
+                      className="p-1.5 rounded-full text-purple-800 hover:text-[#5B2BE4] hover:bg-purple-50 transition"
+                      aria-label="Edit profile"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                      </svg>
+                    </button>
+                  )}
+                  {isContactInfoOpen && isProfileEditing && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); handleUpdateProfile(); }}
+                        disabled={profileUpdateLoading || profileLoading}
+                        className="p-1.5 rounded-full text-green-600 hover:bg-green-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label="Save"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setIsProfileEditing(false); }}
+                        disabled={profileUpdateLoading}
+                        className="p-1.5 rounded-full text-red-500 hover:text-red-600 hover:bg-red-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label="Cancel"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </>
+                  )}
+                  <svg
+                    className={`w-5 h-5 text-gray-600 transition-transform ${isContactInfoOpen ? '' : 'rotate-180'}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                  </svg>
+                </div>
               </button>
 
               {isContactInfoOpen && (
@@ -345,6 +358,16 @@ const Dashboard = () => {
                   {profileError && (
                     <div className="p-3 rounded-lg bg-red-50 border border-red-200">
                       <p className="text-sm text-red-600">{profileError}</p>
+                    </div>
+                  )}
+                  {profileUpdateError && (
+                    <div className="p-3 rounded-lg bg-red-50 border border-red-200">
+                      <p className="text-sm text-red-600">{profileUpdateError}</p>
+                    </div>
+                  )}
+                  {profileUpdateSuccess && (
+                    <div className="p-3 rounded-lg bg-green-50 border border-green-200">
+                      <p className="text-sm text-green-700">Profile updated successfully.</p>
                     </div>
                   )}
                   {/* First Name and Second Name in a row */}
@@ -366,8 +389,9 @@ const Dashboard = () => {
                         <input
                           type="text"
                           value={profile.firstName}
-                          readOnly
-                          className="w-full h-12 rounded-full border border-gray-300 bg-gray-100 pl-12 pr-4 text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                          disabled={!isProfileEditing}
+                          onChange={(e) => dispatch(setProfileField({ field: "firstName", value: e.target.value }))}
+                          className={`w-full h-12 rounded-full border border-gray-300 pl-12 pr-4 text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${isProfileEditing ? "bg-white" : "bg-gray-100 cursor-not-allowed"}`}
                           placeholder={profileLoading ? "Loading..." : "john"}
                         />
                       </div>
@@ -390,8 +414,9 @@ const Dashboard = () => {
                         <input
                           type="text"
                           value={profile.lastName}
-                          readOnly
-                          className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-gray-100 pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                          disabled={!isProfileEditing}
+                          onChange={(e) => dispatch(setProfileField({ field: "lastName", value: e.target.value }))}
+                          className={`w-full h-11 md:h-12 rounded-full border border-gray-300 pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${isProfileEditing ? "bg-white" : "bg-gray-100 cursor-not-allowed"}`}
                           placeholder={profileLoading ? "Loading..." : "Thomas"}
                         />
                       </div>
@@ -414,8 +439,9 @@ const Dashboard = () => {
                       <input
                         type="text"
                         value={profile.mailingAddress}
-                        readOnly
-                        className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-gray-100 pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                        disabled={!isProfileEditing}
+                        onChange={(e) => dispatch(setProfileField({ field: "mailingAddress", value: e.target.value }))}
+                        className={`w-full h-11 md:h-12 rounded-full border border-gray-300 pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${isProfileEditing ? "bg-white" : "bg-gray-100 cursor-not-allowed"}`}
                         placeholder={profileLoading ? "Loading..." : "address"}
                       />
                     </div>
@@ -462,8 +488,9 @@ const Dashboard = () => {
                       <input
                         type="tel"
                         value={profile.phone}
-                        readOnly
-                        className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-gray-100 pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                        disabled={!isProfileEditing}
+                        onChange={(e) => dispatch(setProfileField({ field: "phone", value: e.target.value }))}
+                        className={`w-full h-11 md:h-12 rounded-full border border-gray-300 pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${isProfileEditing ? "bg-white" : "bg-gray-100 cursor-not-allowed"}`}
                         placeholder={profileLoading ? "Loading..." : "+92************"}
                       />
                     </div>
@@ -485,38 +512,6 @@ const Dashboard = () => {
                       />
                     </div>
                   </div>
-
-                  {/* Hospital Information */}
-                  {profile.hospitalInfo && (
-                    <div className="flex flex-col gap-2">
-                      <label className="text-xs font-medium text-gray-500">
-                        Hospital
-                      </label>
-                      <div className="relative">
-                        <svg
-                          className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                        </svg>
-                        <input
-                          type="text"
-                          value={[
-                            profile.hospitalInfo.name,
-                            profile.hospitalInfo.city,
-                            profile.hospitalInfo.state
-                          ].filter(Boolean).join(", ")}
-                          readOnly
-                          className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-gray-100 pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
-                          placeholder={profileLoading ? "Loading..." : "Hospital name"}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-
                 </div>
               )}
             </div>
@@ -736,7 +731,7 @@ const Dashboard = () => {
               {/* Content */}
               <div className="px-6 md:px-8 pb-8 md:pb-9 pt-8 md:pt-9 bg-white justify-start">
                 {/* Hospital Info */}
-                <div className="flex flex-col items-center gap-1.5 md:gap-2 mb-6">
+                <div className="flex flex-col items-center gap-1.5 md:gap-2 mb-6 mt-5">
                   <div className="flex items-center gap-3">
                     <h3 className="text-lg md:text-xl font-semibold text-black">
                       {profile.hospitalInfo?.name || (profileLoading ? "Loading..." : "Hospital Name")}
