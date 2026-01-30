@@ -13,11 +13,11 @@ import uploadImg from "../assets/upload-img.png";
 import rightArrow from "../assets/right-arrow.png";
 import { syncStripeSession } from "../store/payments/paymentsSlice";
 import {
-  fetchFamilyMembers,
   createFamilyMember,
   updateFamilyMember,
   deleteFamilyMember,
   clearError,
+  setFamilyMembers,
 } from "../store/familyMembers/familyMembersSlice";
 
 const Dashboard = () => {
@@ -128,6 +128,9 @@ const Dashboard = () => {
           const fetchedHouseholdSize = userData.eligibilityData?.householdSize;
           const hospitalInfo = userData.eligibilityData?.hospitalInfo || null;
           
+          // Get family members from profile response
+          const familyMembersFromProfile = userData.familyMembers || [];
+          
           setProfile({
             firstName,
             lastName,
@@ -144,6 +147,9 @@ const Dashboard = () => {
             setSubscriptionStatus(userData.subscription.status);
             setSubscriptionTier(userData.subscription.planId || null);
           }
+          
+          // Update Redux with family members from profile
+          dispatch(setFamilyMembers(familyMembersFromProfile));
         }
       } catch (error) {
         console.error("Error fetching profile:", error);
@@ -165,11 +171,6 @@ const Dashboard = () => {
 
     fetchProfile();
   }, [navigate]);
-
-  // Fetch family members from Redux on mount
-  useEffect(() => {
-    dispatch(fetchFamilyMembers());
-  }, [dispatch]);
 
   // Initialize remove from plan array when family members change
   useEffect(() => {
@@ -202,6 +203,12 @@ const Dashboard = () => {
     try {
       await dispatch(deleteFamilyMember(memberToDelete._id)).unwrap();
       setMemberToDelete(null);
+      // Refresh profile to get updated family members
+      const response = await axiosClient.get("/auth/profile");
+      if (response.data.success) {
+        const familyMembersFromProfile = response.data.data.familyMembers || [];
+        dispatch(setFamilyMembers(familyMembersFromProfile));
+      }
     } catch (error) {
       alert(error || "Failed to delete family member");
     }
@@ -231,9 +238,17 @@ const Dashboard = () => {
     setEditingMember(null);
   };
 
-  // Handle modal success - refresh family members from Redux
-  const handleModalSuccess = () => {
-    dispatch(fetchFamilyMembers());
+  // Handle modal success - refresh profile to get updated family members
+  const handleModalSuccess = async () => {
+    try {
+      const response = await axiosClient.get("/auth/profile");
+      if (response.data.success) {
+        const familyMembersFromProfile = response.data.data.familyMembers || [];
+        dispatch(setFamilyMembers(familyMembersFromProfile));
+      }
+    } catch (error) {
+      console.error("Error refreshing profile:", error);
+    }
   };
 
   // Disable scrolling when any modal is open

@@ -109,6 +109,11 @@ const familyMembersSlice = createSlice({
       state.operationError = null;
     },
     resetFamilyMembers: () => initialState,
+    setFamilyMembers: (state, action) => {
+      state.items = action.payload || [];
+      state.status = 'succeeded';
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -174,6 +179,6 @@ const familyMembersSlice = createSlice({
   },
 });
 
-export const { clearError, resetFamilyMembers } = familyMembersSlice.actions;
+export const { clearError, resetFamilyMembers, setFamilyMembers } = familyMembersSlice.actions;
 
 export default familyMembersSlice.reducer;
