@@ -19,6 +19,7 @@ import {
   clearError,
   setFamilyMembers,
 } from "../store/familyMembers/familyMembersSlice";
+import PrimaryLogo from "../assets/primary-logo.png";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -720,17 +721,10 @@ const Dashboard = () => {
 
               {/* Overlapping hospital badge, centered and half over map */}
               <div className="absolute left-1/2 top-[200px] -translate-x-1/2 -translate-y-1/2">
-                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-[#27b652] border-[6px] border-white flex items-center justify-center shadow-lg">
+                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-[white] border-[px] border-white flex items-center justify-center shadow-lg">
                   <div className="w-11 h-11 md:w-14 md:h-14 rounded-full bg-white flex items-center justify-center">
                     {/* Four-leaf clover icon */}
-                    <svg
-                      className="w-7 h-7 md:w-8 md:h-8 text-[#27b652]"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path d="M12 2.75a3.25 3.25 0 0 1 3.25 3.25c0 .46-.1.9-.29 1.3a3.23 3.23 0 0 1 1.04-.18A3.25 3.25 0 1 1 12 10.37 3.25 3.25 0 1 1 8 7.12c.37 0 .72.06 1.05.18a3.22 3.22 0 0 1-.3-1.3A3.25 3.25 0 0 1 12 2.75Z" />
-                      <path d="M11.25 11.5h1.5v7.25a.75.75 0 0 1-1.5 0V11.5Z" />
-                    </svg>
+                    <img src={PrimaryLogo} alt="" />
                   </div>
                 </div>
               </div>

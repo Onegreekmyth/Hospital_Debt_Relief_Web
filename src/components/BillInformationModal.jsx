@@ -25,12 +25,36 @@ const BillInformationModal = ({
   if (accountHolderName) {
     patientOptions.push({ value: accountHolderName, label: `Account Holder: ${accountHolderName}` });
   }
-  familyMembers.forEach((member, index) => {
-    if (member && member.trim()) {
-      const label = index === 0 ? "Spouse" : "Child";
-      patientOptions.push({ value: member.trim(), label: `${label}: ${member.trim()}` });
+  familyMembers.forEach((member) => {
+    const name = typeof member === "string"
+      ? (member || "").trim()
+      : [member?.firstName, member?.lastName].filter(Boolean).join(" ").trim();
+    if (name) {
+      // Use relationship from API (e.g. spouse, child, brother) or fallback for string members
+      const relationship = typeof member === "object" && member?.relationship
+        ? member.relationship.charAt(0).toUpperCase() + member.relationship.slice(1).replace(/-/g, " ")
+        : "Family Member";
+      patientOptions.push({ value: name, label: `${relationship}: ${name}` });
     }
   });
+
+  const ALLOWED_FILE_TYPES = [
+    "application/pdf",
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/webp",
+    "image/heic",
+  ];
+  const ALLOWED_EXTENSIONS = [".pdf", ".jpg", ".jpeg", ".png", ".webp", ".heic"];
+
+  const isValidFileType = (file) => {
+    const typeOk = ALLOWED_FILE_TYPES.some((t) => file.type === t);
+    const extOk = ALLOWED_EXTENSIONS.some((ext) =>
+      file.name.toLowerCase().endsWith(ext)
+    );
+    return typeOk || extOk;
+  };
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
@@ -40,12 +64,8 @@ const BillInformationModal = ({
       return;
     }
 
-    const isPdf =
-      file.type === "application/pdf" ||
-      file.name.toLowerCase().endsWith(".pdf");
-
-    if (!isPdf) {
-      setUploadError("Only PDF files are allowed.");
+    if (!isValidFileType(file)) {
+      setUploadError("Please upload a PDF or image (JPEG, PNG, WebP, HEIC).");
       setUploadedFileName("");
       setSelectedFile(null);
       e.target.value = "";
@@ -64,6 +84,13 @@ const BillInformationModal = ({
     setUploadError("");
     setUploadedFileName(file.name);
     setSelectedFile(file);
+  };
+
+  const clearFileInputs = () => {
+    ["bill-upload", "bill-camera"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.value = "";
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -88,7 +115,7 @@ const BillInformationModal = ({
     }
 
     if (!selectedFile) {
-      setSubmitError("Please upload a PDF file of the bill.");
+      setSubmitError("Please upload an image or PDF of the bill.");
       return;
     }
 
@@ -116,11 +143,7 @@ const BillInformationModal = ({
         setSelectedFile(null);
         setUploadedFileName("");
         
-        // Clear file input
-        const fileInput = document.getElementById("bill-upload");
-        if (fileInput) {
-          fileInput.value = "";
-        }
+        clearFileInputs();
 
         // Call success callback
         if (onSubmitted) {
@@ -248,28 +271,30 @@ const BillInformationModal = ({
             </div>
           </div>
 
-          {/* Upload Bill & Supporting Documents */}
+          {/* Upload Bill – Image or PDF */}
           <div className="flex flex-col gap-2">
             <label className="text-xs md:text-sm font-medium text-gray-700">
               Upload Bill
             </label>
-            <div className="relative">
+           
+            <div className="flex flex-col sm:flex-row gap-2">
+              {/* File picker – gallery / files */}
               <input
                 type="file"
                 id="bill-upload"
                 className="hidden"
-                accept=".pdf,application/pdf"
+                accept=".pdf,application/pdf,image/jpeg,image/jpg,image/png,image/webp,image/heic"
                 onChange={handleFileChange}
               />
               <label
                 htmlFor="bill-upload"
-                className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white px-3 md:px-4 pr-10 md:pr-12 flex items-center text-sm md:text-base text-gray-500 cursor-pointer hover:bg-purple-50 transition relative"
+                className="flex-1 min-h-[52px] py-3.5 md:min-h-0 md:py-0 md:h-12 rounded-full border border-gray-300 bg-white px-3 md:px-4 pr-10 md:pr-12 flex items-center text-sm md:text-base text-gray-600 cursor-pointer hover:bg-purple-50 transition relative"
               >
-                <span className="flex-1">
-                  {uploadedFileName || "Upload PDF"}
+                <span className="flex-1 truncate">
+                  {uploadedFileName || "Upload Image or PDF"}
                 </span>
                 <svg
-                  className="w-4 h-4 md:w-5 md:h-5 text-purple-400 absolute right-3 md:right-4"
+                  className="w-4 h-4 md:w-5 md:h-5 text-purple-400 absolute right-3 md:right-4 shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -281,6 +306,47 @@ const BillInformationModal = ({
                     d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                   />
                 </svg>
+              </label>
+              {/* Camera capture – mobile only: opens camera on small screens */}
+              <input
+                type="file"
+                id="bill-camera"
+                className="hidden"
+                accept="image/*"
+                capture="environment"
+                onChange={handleFileChange}
+                aria-hidden="true"
+              />
+              <label
+                htmlFor="bill-camera"
+                className="sm:hidden h-11 md:h-12 rounded-full border-2 border-purple-500 bg-purple-50 text-purple-700 px-4 flex items-center justify-center gap-2 text-sm md:text-base font-medium cursor-pointer hover:bg-purple-100 transition"
+              >
+                <svg
+                  className="w-5 h-5 shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 13v7a2 2 0 01-2 2H7a2 2 0 01-2-2v-7"
+                  />
+                </svg>
+                Take photo
               </label>
             </div>
             {uploadError && (
