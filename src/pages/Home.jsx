@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import heroImg from "../assets/hero-img.jpg";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -16,6 +16,7 @@ import usStateNameToCode from "../data/usStateNameToCode.json";
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [openIndex, setOpenIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -75,6 +76,17 @@ const HomePage = () => {
     });
     return Array.from(set).sort();
   }, [hospitals, apiStateCode]);
+
+  // Scroll to savings calculator when hash is #savings-calculator (from footer "Get Started Here" on any page or when already on home)
+  useEffect(() => {
+    if (location.hash !== "#savings-calculator") return;
+    const el = document.getElementById("savings-calculator");
+    if (!el) return;
+    const t = setTimeout(() => {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+    return () => clearTimeout(t);
+  }, [location.hash]);
 
   // Load hospitals whenever filters change (including initial load with no filters)
   useEffect(() => {

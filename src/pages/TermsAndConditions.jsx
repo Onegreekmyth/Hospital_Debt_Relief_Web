@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -8,8 +9,7 @@ const TermsAndConditionsPage = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative flex flex-col items-center justify-center text-center px-4 md:px-6 pt-32 md:pt-40 pb-16 md:pb-24 min-h-[60vh] md:min-h-[70vh] bg-white overflow-hidden">
-        {/* Soft gradient background behind the banner content */}
+      <section className="relative flex flex-col items-center justify-center text-center px-4 md:px-6 pt-32 md:pt-40 pb-16 md:pb-24 min-h-[50vh] md:min-h-[55vh] bg-white overflow-hidden">
         <div
           className="pointer-events-none absolute inset-0"
           aria-hidden="true"
@@ -23,275 +23,245 @@ const TermsAndConditionsPage = () => {
             Terms and Conditions
           </h1>
           <p className="mt-4 text-black text-[13px] md:text-[15px] lg:text-[18px] leading-relaxed px-2">
-            Please read these terms and conditions carefully before using our
-            website and services.
+            Agreement between User and www.HospitalDebtRelief.com. Please read these terms carefully.
           </p>
         </div>
       </section>
 
       {/* Content Section */}
       <section className="py-12 md:py-20 bg-white">
-        <div className="w-full max-w-5xl mx-auto px-4 md:px-6 lg:px-10">
-          <div className="prose prose-lg max-w-none">
-            {/* 1. Acceptance of Terms */}
+        <div className="w-full max-w-4xl mx-auto px-4 md:px-6 lg:px-10">
+          <div className="prose prose-lg max-w-none text-gray-700">
+            {/* Agreement between User and www.HospitalDebtRelief.com */}
             <div className="mb-8 md:mb-12">
-              <h2 className="text-[24px] md:text-[32px] font-bold text-gray-900 mb-4">
-                1. Acceptance of Terms
+              <h2 className="text-[20px] md:text-[26px] font-bold text-gray-900 mb-4">
+                Agreement between User and www.HospitalDebtRelief.com
               </h2>
-              <p className="text-[14px] md:text-[16px] leading-7 text-gray-700 mb-4">
-                By accessing and using HospitalDebtRelief.com, you accept and
-                agree to be bound by the terms and provision of this agreement.
-                If you do not agree to abide by the above, please do not use
-                this service.
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                Welcome to www.HospitalDebtRelief.com. The www.HospitalDebtRelief.com website (the "Site") is composed of various web pages operated by Uncovered Solutions LLC. www.HospitalDebtRelief.com is offered to you conditioned on your acceptance without modification of the terms, conditions, and notices contained herein (the "Terms"). Your use of www.HospitalDebtRelief.com constitutes your agreement to all such Terms. Please read these terms carefully, and keep a copy of them for your reference.
+              </p>
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                www.HospitalDebtRelief.com is an E-Commerce Site.
+              </p>
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                Purpose is to determine hospital financial assistance or "charity care" eligibility. Users can create an account in order to notify us of their intent to transact business with us by purchasing services intended to submit their application on their behalf.
               </p>
             </div>
 
-            {/* 2. Use License */}
+            {/* Privacy */}
             <div className="mb-8 md:mb-12">
-              <h2 className="text-[24px] md:text-[32px] font-bold text-gray-900 mb-4">
-                2. Use License
+              <h2 className="text-[20px] md:text-[26px] font-bold text-gray-900 mb-4">
+                Privacy
               </h2>
-              <p className="text-[14px] md:text-[16px] leading-7 text-gray-700 mb-4">
-                Permission is granted to temporarily download one copy of the
-                materials (information or software) on HospitalDebtRelief.com
-                for personal, non-commercial transitory viewing only. This is
-                the grant of a license, not a transfer of title, and under this
-                license you may not:
-              </p>
-              <ul className="text-[14px] md:text-[16px] leading-7 text-gray-700 mb-4 list-disc list-inside space-y-2">
-                <li>Modify or copy the materials</li>
-                <li>
-                  Use the materials for any commercial purpose or for any public
-                  display
-                </li>
-                <li>
-                  Attempt to decompile or reverse engineer any software
-                  contained on the website
-                </li>
-                <li>
-                  Remove any copyright or other proprietary notations from the
-                  materials
-                </li>
-                <li>
-                  Transfer the materials to another person or "mirror" the
-                  materials on any other server
-                </li>
-                <li>Violate any applicable laws or regulations</li>
-              </ul>
-            </div>
-
-            {/* 3. Disclaimer of Warranties */}
-            <div className="mb-8 md:mb-12">
-              <h2 className="text-[24px] md:text-[32px] font-bold text-gray-900 mb-4">
-                3. Disclaimer of Warranties
-              </h2>
-              <p className="text-[14px] md:text-[16px] leading-7 text-gray-700 mb-4">
-                The materials on HospitalDebtRelief.com are provided on an "as
-                is" basis. HospitalDebtRelief.com makes no warranties, expressed
-                or implied, and hereby disclaims and negates all other
-                warranties including, without limitation, implied warranties or
-                conditions of merchantability, fitness for a particular purpose,
-                or non-infringement of intellectual property or other violation
-                of rights.
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                Your use of www.HospitalDebtRelief.com is subject to Uncovered Solutions LLC's Privacy Policy. Please review our{" "}
+                <Link to="/privacy-policy" className="text-purple-600 hover:text-purple-700 font-semibold">Privacy Policy</Link>, which also governs the Site and informs users of our data collection practices.
               </p>
             </div>
 
-            {/* 4. Limitations of Liability */}
+            {/* Electronic Communications */}
             <div className="mb-8 md:mb-12">
-              <h2 className="text-[24px] md:text-[32px] font-bold text-gray-900 mb-4">
-                4. Limitations of Liability
+              <h2 className="text-[20px] md:text-[26px] font-bold text-gray-900 mb-4">
+                Electronic Communications
               </h2>
-              <p className="text-[14px] md:text-[16px] leading-7 text-gray-700 mb-4">
-                In no event shall HospitalDebtRelief.com or its suppliers be
-                liable for any damages (including, without limitation, damages
-                for loss of data or profit, or due to business interruption)
-                arising out of the use or inability to use the materials on
-                HospitalDebtRelief.com, even if we or an authorized
-                representative has been notified of the possibility of such
-                damage.
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                Visiting www.HospitalDebtRelief.com or sending emails to Uncovered Solutions LLC constitutes electronic communications. You consent to receive electronic communications and you agree that all agreements, notices, disclosures and other communications that we provide to you electronically, via email and on the Site, satisfy any legal requirement that such communications be in writing.
               </p>
             </div>
 
-            {/* 5. Accuracy of Materials */}
+            {/* Your Account */}
             <div className="mb-8 md:mb-12">
-              <h2 className="text-[24px] md:text-[32px] font-bold text-gray-900 mb-4">
-                5. Accuracy of Materials
+              <h2 className="text-[20px] md:text-[26px] font-bold text-gray-900 mb-4">
+                Your Account
               </h2>
-              <p className="text-[14px] md:text-[16px] leading-7 text-gray-700 mb-4">
-                The materials appearing on HospitalDebtRelief.com could include
-                technical, typographical, or photographic errors.
-                HospitalDebtRelief.com does not warrant that any of the
-                materials on our website are accurate, complete, or current. We
-                may make changes to the materials contained on our website at
-                any time without notice.
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                If you use this site, you are responsible for maintaining the confidentiality of your account and password and for restricting access to your computer, and you agree to accept responsibility for all activities that occur under your account or password. You may not assign or otherwise transfer your account to any other person or entity. You acknowledge that Uncovered Solutions LLC is not responsible for third party access to your account that results from theft or misappropriation of your account. Uncovered Solutions LLC and its associates reserve the right to refuse or cancel service, terminate accounts, or remove or edit content in our sole discretion.
               </p>
             </div>
 
-            {/* 6. Materials and Services */}
+            {/* Children Under Thirteen */}
             <div className="mb-8 md:mb-12">
-              <h2 className="text-[24px] md:text-[32px] font-bold text-gray-900 mb-4">
-                6. Materials and Services
+              <h2 className="text-[20px] md:text-[26px] font-bold text-gray-900 mb-4">
+                Children Under Thirteen
               </h2>
-              <p className="text-[14px] md:text-[16px] leading-7 text-gray-700 mb-4">
-                HospitalDebtRelief.com has not reviewed all of the sites linked
-                to our website and is not responsible for the contents of any
-                such linked site. The inclusion of any link does not imply
-                endorsement by us of the site. Use of any such linked website is
-                at the user's own risk.
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                Uncovered Solutions LLC collects personally identifiable information from children under the age of thirteen. Uncovered Solutions LLC collects this information for the following reason(s):
+              </p>
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                Children under the age of 13 may be a patient of a hospital. That child will be listed in the account dashboard for processing purposes.
+              </p>
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                We provide information about our personal data practices for children on our home page and wherever we knowingly collect personal data from children on our Web site. If you are under the age of thirteen, you must ask your parent or guardian for permission to use this website. If you are a parent and you have questions regarding our data collection practices, please contact us using the information provided at the end of this Agreement. If you are under 18, you may use www.HospitalDebtRelief.com only with permission of a parent or guardian.
               </p>
             </div>
 
-            {/* 7. Modifications */}
+            {/* Cancellation/Refund Policy */}
             <div className="mb-8 md:mb-12">
-              <h2 className="text-[24px] md:text-[32px] font-bold text-gray-900 mb-4">
-                7. Modifications
+              <h2 className="text-[20px] md:text-[26px] font-bold text-gray-900 mb-4">
+                Cancellation/Refund Policy
               </h2>
-              <p className="text-[14px] md:text-[16px] leading-7 text-gray-700 mb-4">
-                HospitalDebtRelief.com may revise these terms of service for our
-                website at any time without notice. By using this website you
-                are agreeing to be bound by the then current version of these
-                terms of service.
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                Refunds are only issued if the amount saved is less than the fees paid to www.hospitalDebtRelief.com.
+              </p>
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                For users who paid a flat-fee rate: you may request a refund if you believe that the amount you saved is less than that fee paid to us. You will be required to process a refund request which will require an approval from our team prior to issuing that refund. Providing false or inaccurate information may result in the denial of the refund request.
+              </p>
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                For subscription paid users: You may cancel your subscription at any time. Once a subscription has been canceled, you will not be billed for any future monthly charges.
+              </p>
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                Subscription paid users may also request a refund if you believe that the amount you saved is less then the monthly subscriptions paid for that calendar year. You will be required to process a refund request which will require an approval from our team prior to issuing that refund.
               </p>
             </div>
 
-            {/* 8. Governing Law */}
+            {/* Links to Third Party Sites/Third Party Services */}
             <div className="mb-8 md:mb-12">
-              <h2 className="text-[24px] md:text-[32px] font-bold text-gray-900 mb-4">
-                8. Governing Law
+              <h2 className="text-[20px] md:text-[26px] font-bold text-gray-900 mb-4">
+                Links to Third Party Sites/Third Party Services
               </h2>
-              <p className="text-[14px] md:text-[16px] leading-7 text-gray-700 mb-4">
-                These terms and conditions are governed by and construed in
-                accordance with the laws of the United States, and you
-                irrevocably submit to the exclusive jurisdiction of the courts
-                in that location.
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                www.HospitalDebtRelief.com may contain links to other websites ("Linked Sites"). The Linked Sites are not under the control of Uncovered Solutions LLC and Uncovered Solutions LLC is not responsible for the contents of any Linked Site, including without limitation any link contained in a Linked Site, or any changes or updates to a Linked Site. Uncovered Solutions LLC is providing these links to you only as a convenience, and the inclusion of any link does not imply endorsement by Uncovered Solutions LLC of the site or any association with its operators.
+              </p>
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                Certain services made available via www.HospitalDebtRelief.com are delivered by third party sites and organizations. By using any product, service or functionality originating from the www.HospitalDebtRelief.com domain, you hereby acknowledge and consent that Uncovered Solutions LLC may share such information and data with any third party with whom Uncovered Solutions LLC has a contractual relationship to provide the requested product, service or functionality on behalf of www.HospitalDebtRelief.com users and customers.
               </p>
             </div>
 
-            {/* 9. User Accounts */}
+            {/* No Unlawful or Prohibited Use/Intellectual Property */}
             <div className="mb-8 md:mb-12">
-              <h2 className="text-[24px] md:text-[32px] font-bold text-gray-900 mb-4">
-                9. User Accounts
+              <h2 className="text-[20px] md:text-[26px] font-bold text-gray-900 mb-4">
+                No Unlawful or Prohibited Use/Intellectual Property
               </h2>
-              <p className="text-[14px] md:text-[16px] leading-7 text-gray-700 mb-4">
-                If you create an account on our website, you are responsible for
-                maintaining the confidentiality of your account information and
-                password. You agree to accept responsibility for all activities
-                that occur under your account. You must notify us immediately of
-                any unauthorized use of your account.
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                You are granted a non-exclusive, non-transferable, revocable license to access and use www.HospitalDebtRelief.com strictly in accordance with these terms of use. As a condition of your use of the Site, you warrant to Uncovered Solutions LLC that you will not use the Site for any purpose that is unlawful or prohibited by these Terms. You may not use the Site in any manner which could damage, disable, overburden, or impair the Site or interfere with any other party's use and enjoyment of the Site. You may not obtain or attempt to obtain any materials or information through any means not intentionally made available or provided for through the Site.
+              </p>
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                All content included as part of the Service, such as text, graphics, logos, images, as well as the compilation thereof, and any software used on the Site, is the property of Uncovered Solutions LLC or its suppliers and protected by copyright and other laws that protect intellectual property and proprietary rights. You agree to observe and abide by all copyright and other proprietary notices, legends or other restrictions contained in any such content and will not make any changes thereto.
+              </p>
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                You will not modify, publish, transmit, reverse engineer, participate in the transfer or sale, create derivative works, or in any way exploit any of the content, in whole or in part, found on the Site. Uncovered Solutions LLC content is not for resale. Your use of the Site does not entitle you to make any unauthorized use of any protected content, and in particular you will not delete or alter any proprietary rights or attribution notices in any content. You will use protected content solely for your personal use, and will make no other use of the content without the express written permission of Uncovered Solutions LLC and the copyright owner. You agree that you do not acquire any ownership rights in any protected content. We do not grant you any licenses, express or implied, to the intellectual property of Uncovered Solutions LLC or our licensors except as expressly authorized by these Terms.
               </p>
             </div>
 
-            {/* 10. User Conduct */}
+            {/* International Users */}
             <div className="mb-8 md:mb-12">
-              <h2 className="text-[24px] md:text-[32px] font-bold text-gray-900 mb-4">
-                10. User Conduct
+              <h2 className="text-[20px] md:text-[26px] font-bold text-gray-900 mb-4">
+                International Users
               </h2>
-              <p className="text-[14px] md:text-[16px] leading-7 text-gray-700 mb-4">
-                You agree not to:
-              </p>
-              <ul className="text-[14px] md:text-[16px] leading-7 text-gray-700 mb-4 list-disc list-inside space-y-2">
-                <li>
-                  Post or transmit unlawful, threatening, abusive, defamatory,
-                  obscene, or otherwise objectionable material
-                </li>
-                <li>Harass, threaten, or intimidate other users</li>
-                <li>
-                  Post or transmit any material that violates any laws or
-                  regulations
-                </li>
-                <li>Disrupt the normal flow of dialogue within our platform</li>
-                <li>
-                  Engage in any form of automated data collection or scraping
-                </li>
-              </ul>
-            </div>
-
-            {/* 11. Money Back Guarantee */}
-            <div className="mb-8 md:mb-12">
-              <h2 className="text-[24px] md:text-[32px] font-bold text-gray-900 mb-4">
-                11. Money Back Guarantee
-              </h2>
-              <p className="text-[14px] md:text-[16px] leading-7 text-gray-700 mb-4">
-                HospitalDebtRelief.com offers a Money Back Guarantee. If we are
-                unable to save you more than what you paid us for our services,
-                we will refund your service fee. Please refer to the detailed
-                Money Back Guarantee terms for specific conditions and
-                requirements.
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                The Service is controlled, operated and administered by Uncovered Solutions LLC from our offices within the USA. If you access the Service from a location outside the USA, you are responsible for compliance with all local laws. You agree that you will not use the Uncovered Solutions LLC Content accessed through www.HospitalDebtRelief.com in any country or in any manner prohibited by any applicable laws, restrictions or regulations.
               </p>
             </div>
 
-            {/* 12. Service Fees */}
+            {/* Indemnification */}
             <div className="mb-8 md:mb-12">
-              <h2 className="text-[24px] md:text-[32px] font-bold text-gray-900 mb-4">
-                12. Service Fees
+              <h2 className="text-[20px] md:text-[26px] font-bold text-gray-900 mb-4">
+                Indemnification
               </h2>
-              <p className="text-[14px] md:text-[16px] leading-7 text-gray-700 mb-4">
-                Our service fees are clearly disclosed before you commit to
-                using our services. By proceeding with an application, you
-                acknowledge and agree to pay the stated service fee.
-                Subscription plans can be canceled at any time without further
-                charges.
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                You agree to indemnify, defend and hold harmless Uncovered Solutions LLC, its officers, directors, employees, agents and third parties, for any losses, costs, liabilities and expenses (including reasonable attorney's fees) relating to or arising out of your use of or inability to use the Site or services, any user postings made by you, your violation of any terms of this Agreement or your violation of any rights of a third party, or your violation of any applicable laws, rules or regulations. Uncovered Solutions LLC reserves the right, at its own cost, to assume the exclusive defense and control of any matter otherwise subject to indemnification by you, in which event you will fully cooperate with Uncovered Solutions LLC in asserting any available defenses.
               </p>
             </div>
 
-            {/* 13. Medical Disclaimer */}
+            {/* Arbitration */}
             <div className="mb-8 md:mb-12">
-              <h2 className="text-[24px] md:text-[32px] font-bold text-gray-900 mb-4">
-                13. Medical Disclaimer
+              <h2 className="text-[20px] md:text-[26px] font-bold text-gray-900 mb-4">
+                Arbitration
               </h2>
-              <p className="text-[14px] md:text-[16px] leading-7 text-gray-700 mb-4">
-                HospitalDebtRelief.com is not a medical provider and does not
-                provide medical advice. We assist with hospital billing and
-                payment matters only. For medical concerns, please consult with
-                your healthcare provider.
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                In the event the parties are not able to resolve any dispute between them arising out of or concerning these Terms and Conditions, or any provisions hereof, whether in contract, tort, or otherwise at law or in equity for damages or any other relief, then such dispute shall be resolved only by final and binding arbitration pursuant to the Federal Arbitration Act, conducted by a single neutral arbitrator and administered by the American Arbitration Association, or a similar arbitration service selected by the parties, in a location mutually agreed upon by the parties. The arbitrator's award shall be final, and judgment may be entered upon it in any court having jurisdiction. In the event that any legal or equitable action, proceeding or arbitration arises out of or concerns these Terms and Conditions, the prevailing party shall be entitled to recover its costs and reasonable attorney's fees. The parties agree to arbitrate all disputes and claims in regards to these Terms and Conditions or any disputes arising as a result of these Terms and Conditions, whether directly or indirectly, including Tort claims that are a result of these Terms and Conditions. The parties agree that the Federal Arbitration Act governs the interpretation and enforcement of this provision. The entire dispute, including the scope and enforceability of this arbitration provision shall be determined by the Arbitrator. This arbitration provision shall survive the termination of these Terms and Conditions.
               </p>
             </div>
 
-            {/* 14. Indemnification */}
+            {/* Class Action Waiver */}
             <div className="mb-8 md:mb-12">
-              <h2 className="text-[24px] md:text-[32px] font-bold text-gray-900 mb-4">
-                14. Indemnification
+              <h2 className="text-[20px] md:text-[26px] font-bold text-gray-900 mb-4">
+                Class Action Waiver
               </h2>
-              <p className="text-[14px] md:text-[16px] leading-7 text-gray-700 mb-4">
-                You agree to indemnify, defend, and hold harmless
-                HospitalDebtRelief.com and its officers, directors, employees,
-                and agents from any claims, damages, losses, liabilities, and
-                expenses (including attorney's fees) arising out of your use of
-                the website or violation of these terms.
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                Any arbitration under these Terms and Conditions will take place on an individual basis; class arbitrations and class/representative/collective actions are not permitted. THE PARTIES AGREE THAT A PARTY MAY BRING CLAIMS AGAINST THE OTHER ONLY IN EACH'S INDIVIDUAL CAPACITY, AND NOT AS A PLAINTIFF OR CLASS MEMBER IN ANY PUTATIVE CLASS, COLLECTIVE AND/ OR REPRESENTATIVE PROCEEDING, SUCH AS IN THE FORM OF A PRIVATE ATTORNEY GENERAL ACTION AGAINST THE OTHER. Further, unless both you and Uncovered Solutions LLC agree otherwise, the arbitrator may not consolidate more than one person's claims, and may not otherwise preside over any form of a representative or class proceeding.
               </p>
             </div>
 
-            {/* 15. Contact Information */}
+            {/* Liability Disclaimer */}
             <div className="mb-8 md:mb-12">
-              <h2 className="text-[24px] md:text-[32px] font-bold text-gray-900 mb-4">
-                15. Contact Information
+              <h2 className="text-[20px] md:text-[26px] font-bold text-gray-900 mb-4">
+                Liability Disclaimer
               </h2>
-              <p className="text-[14px] md:text-[16px] leading-7 text-gray-700 mb-4">
-                If you have any questions about these Terms and Conditions,
-                please contact us:
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                THE INFORMATION, SOFTWARE, PRODUCTS, AND SERVICES INCLUDED IN OR AVAILABLE THROUGH THE SITE MAY INCLUDE INACCURACIES OR TYPOGRAPHICAL ERRORS. CHANGES ARE PERIODICALLY ADDED TO THE INFORMATION HEREIN. UNCOVERED SOLUTIONS LLC AND/OR ITS SUPPLIERS MAY MAKE IMPROVEMENTS AND/OR CHANGES IN THE SITE AT ANY TIME.
+              </p>
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                UNCOVERED SOLUTIONS LLC AND/OR ITS SUPPLIERS MAKE NO REPRESENTATIONS ABOUT THE SUITABILITY, RELIABILITY, AVAILABILITY, TIMELINESS, AND ACCURACY OF THE INFORMATION, SOFTWARE, PRODUCTS, SERVICES AND RELATED GRAPHICS CONTAINED ON THE SITE FOR ANY PURPOSE. TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, ALL SUCH INFORMATION, SOFTWARE, PRODUCTS, SERVICES AND RELATED GRAPHICS ARE PROVIDED "AS IS" WITHOUT WARRANTY OR CONDITION OF ANY KIND. UNCOVERED SOLUTIONS LLC AND/OR ITS SUPPLIERS HEREBY DISCLAIM ALL WARRANTIES AND CONDITIONS WITH REGARD TO THIS INFORMATION, SOFTWARE, PRODUCTS, SERVICES AND RELATED GRAPHICS, INCLUDING ALL IMPLIED WARRANTIES OR CONDITIONS OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT.
+              </p>
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL UNCOVERED SOLUTIONS LLC AND/OR ITS SUPPLIERS BE LIABLE FOR ANY DIRECT, INDIRECT, PUNITIVE, INCIDENTAL, SPECIAL, CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER INCLUDING, WITHOUT LIMITATION, DAMAGES FOR LOSS OF USE, DATA OR PROFITS, ARISING OUT OF OR IN ANY WAY CONNECTED WITH THE USE OR PERFORMANCE OF THE SITE, WITH THE DELAY OR INABILITY TO USE THE SITE OR RELATED SERVICES, THE PROVISION OF OR FAILURE TO PROVIDE SERVICES, OR FOR ANY INFORMATION, SOFTWARE, PRODUCTS, SERVICES AND RELATED GRAPHICS OBTAINED THROUGH THE SITE, OR OTHERWISE ARISING OUT OF THE USE OF THE SITE, WHETHER BASED ON CONTRACT, TORT, NEGLIGENCE, STRICT LIABILITY OR OTHERWISE, EVEN IF UNCOVERED SOLUTIONS LLC OR ANY OF ITS SUPPLIERS HAS BEEN ADVISED OF THE POSSIBILITY OF DAMAGES. BECAUSE SOME STATES/JURISDICTIONS DO NOT ALLOW THE EXCLUSION OR LIMITATION OF LIABILITY FOR CONSEQUENTIAL OR INCIDENTAL DAMAGES, THE ABOVE LIMITATION MAY NOT APPLY TO YOU. IF YOU ARE DISSATISFIED WITH ANY PORTION OF THE SITE, OR WITH ANY OF THESE TERMS OF USE, YOUR SOLE AND EXCLUSIVE REMEDY IS TO DISCONTINUE USING THE SITE.
+              </p>
+            </div>
+
+            {/* Termination/Access Restriction */}
+            <div className="mb-8 md:mb-12">
+              <h2 className="text-[20px] md:text-[26px] font-bold text-gray-900 mb-4">
+                Termination/Access Restriction
+              </h2>
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                Uncovered Solutions LLC reserves the right, in its sole discretion, to terminate your access to the Site and the related services or any portion thereof at any time, without notice. To the maximum extent permitted by law, this agreement is governed by the laws of the State of Texas and you hereby consent to the exclusive jurisdiction and venue of courts in Texas in all disputes arising out of or relating to the use of the Site. Use of the Site is unauthorized in any jurisdiction that does not give effect to all provisions of these Terms, including, without limitation, this section.
+              </p>
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                You agree that no joint venture, partnership, employment, or agency relationship exists between you and Uncovered Solutions LLC as a result of this agreement or use of the Site. Uncovered Solutions LLC's performance of this agreement is subject to existing laws and legal process, and nothing contained in this agreement is in derogation of Uncovered Solutions LLC's right to comply with governmental, court and law enforcement requests or requirements relating to your use of the Site or information provided to or gathered by Uncovered Solutions LLC with respect to such use. If any part of this agreement is determined to be invalid or unenforceable pursuant to applicable law including, but not limited to, the warranty disclaimers and liability limitations set forth above, then the invalid or unenforceable provision will be deemed superseded by a valid, enforceable provision that most closely matches the intent of the original provision and the remainder of the agreement shall continue in effect.
+              </p>
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                Unless otherwise specified herein, this agreement constitutes the entire agreement between the user and Uncovered Solutions LLC with respect to the Site and it supersedes all prior or contemporaneous communications and proposals, whether electronic, oral or written, between the user and Uncovered Solutions LLC with respect to the Site. A printed version of this agreement and of any notice given in electronic form shall be admissible in judicial or administrative proceedings based upon or relating to this agreement to the same extent and subject to the same conditions as other business documents and records originally generated and maintained in printed form. It is the express wish to the parties that this agreement and all related documents be written in English.
+              </p>
+            </div>
+
+            {/* Changes to Terms */}
+            <div className="mb-8 md:mb-12">
+              <h2 className="text-[20px] md:text-[26px] font-bold text-gray-900 mb-4">
+                Changes to Terms
+              </h2>
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                Uncovered Solutions LLC reserves the right, in its sole discretion, to change the Terms under which www.HospitalDebtRelief.com is offered. The most current version of the Terms will supersede all previous versions. Uncovered Solutions LLC encourages you to periodically review the Terms to stay informed of our updates.
+              </p>
+            </div>
+
+            {/* Contact Us */}
+            <div className="mb-8 md:mb-12">
+              <h2 className="text-[20px] md:text-[26px] font-bold text-gray-900 mb-4">
+                Contact Us
+              </h2>
+              <p className="text-[14px] md:text-[16px] leading-7 mb-4">
+                Uncovered Solutions LLC welcomes your questions or comments regarding the Terms:
               </p>
               <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 mt-4">
                 <p className="text-[14px] md:text-[16px] text-gray-700 mb-2">
-                  <strong>Email:</strong>{" "}
-                  <a
-                    href="mailto:support@hospitaldebtrelief.com"
-                    className="text-purple-600 hover:text-purple-700"
-                  >
-                    support@hospitaldebtrelief.com
-                  </a>
+                  <strong>Uncovered Solutions LLC</strong>
                 </p>
-                <p className="text-[14px] md:text-[16px] text-gray-700">
-                  <strong>Address:</strong> HospitalDebtRelief.com, United
-                  States
+                <p className="text-[14px] md:text-[16px] text-gray-700 mb-2">
+                  _________________
                 </p>
+                <p className="text-[14px] md:text-[16px] text-gray-700 mb-2">
+                  Frisco, Texas 75036
+                </p>
+                <p className="text-[14px] md:text-[16px] text-gray-700 mt-4 mb-1">
+                  <strong>Email Address:</strong>
+                </p>
+                <a
+                  href="mailto:info@hospitaldebtrelief.com"
+                  className="text-purple-600 hover:text-purple-700 font-medium block mb-4"
+                >
+                  info@hospitaldebtrelief.com
+                </a>
+                <p className="text-[14px] md:text-[16px] text-gray-700 mb-1">
+                  <strong>Telephone number:</strong>
+                </p>
+                <a
+                  href="tel:5863377750"
+                  className="text-purple-600 hover:text-purple-700 font-medium"
+                >
+                  5863377750
+                </a>
               </div>
-            </div>
-
-            {/* Last Modified */}
-            <div className="border-t border-gray-200 pt-6 md:pt-8">
-              <p className="text-[12px] md:text-[14px] text-gray-500">
-                <strong>Last Modified:</strong> January 13, 2026
-              </p>
             </div>
           </div>
         </div>
