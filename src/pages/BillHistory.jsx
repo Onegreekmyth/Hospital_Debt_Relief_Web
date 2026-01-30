@@ -87,6 +87,7 @@ const BillHistory = () => {
     saving: "$0.00", // Placeholder - can be calculated later
     status: mapStatusToUI(bill.status),
     rawStatus: bill.status, // Keep for filtering
+    pdfUrl: bill.pdfUrl || bill.pdf, // Can be PDF or image from API
   }));
 
   const filteredBills = transformedBills.filter((bill) => {
@@ -234,7 +235,7 @@ const BillHistory = () => {
                   {filteredBills.length === 0 && (
                     <tr>
                       <td
-                        colSpan={4}
+                        colSpan={5}
                         className="px-6 md:px-10 py-10 text-center text-sm text-gray-500"
                       >
                         No bills found for this filter.

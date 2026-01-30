@@ -93,6 +93,58 @@ const BillInformationModal = ({
     });
   };
 
+  // Compress large images (e.g. from camera) so uploads succeed on mobile/slow networks
+  const MAX_IMAGE_SIZE_BEFORE_COMPRESS = 1.5 * 1024 * 1024; // 1.5MB
+  const COMPRESSED_MAX_WIDTH = 1920;
+  const COMPRESSED_JPEG_QUALITY = 0.85;
+
+  const compressImageIfNeeded = (file) => {
+    return new Promise((resolve) => {
+      const isImage = file.type === "image/jpeg" || file.type === "image/jpg" || file.type === "image/png" || file.type === "image/webp";
+      if (!isImage || file.size <= MAX_IMAGE_SIZE_BEFORE_COMPRESS) {
+        resolve(file);
+        return;
+      }
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const canvas = document.createElement("canvas");
+        let { width, height } = img;
+        if (width > COMPRESSED_MAX_WIDTH || height > COMPRESSED_MAX_WIDTH) {
+          if (width > height) {
+            height = Math.round((height * COMPRESSED_MAX_WIDTH) / width);
+            width = COMPRESSED_MAX_WIDTH;
+          } else {
+            width = Math.round((width * COMPRESSED_MAX_WIDTH) / height);
+            height = COMPRESSED_MAX_WIDTH;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const compressed = new File([blob], file.name.replace(/\.[^.]+$/, ".jpg"), { type: "image/jpeg", lastModified: Date.now() });
+              resolve(compressed);
+            } else {
+              resolve(file);
+            }
+          },
+          "image/jpeg",
+          COMPRESSED_JPEG_QUALITY
+        );
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        resolve(file);
+      };
+      img.src = url;
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitError("");
@@ -122,17 +174,22 @@ const BillInformationModal = ({
     setLoading(true);
 
     try {
+      // Compress large images (e.g. from camera) so uploads work on mobile/slow networks
+      const fileToUpload = await compressImageIfNeeded(selectedFile);
+
       // Create FormData for multipart/form-data upload
       const formData = new FormData();
       formData.append("patientName", patientName);
       formData.append("serviceDate", serviceDate || new Date().toISOString().split('T')[0]);
       formData.append("billAmount", parseFloat(billAmount));
-      formData.append("pdf", selectedFile);
+      formData.append("pdf", fileToUpload);
 
+      // Longer timeout for uploads (mobile/slow networks and large files)
       const response = await axiosClient.post("/bills", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        timeout: 60000, // 60 seconds for camera/large uploads
       });
 
       if (response.data.success) {
@@ -154,11 +211,16 @@ const BillInformationModal = ({
       }
     } catch (error) {
       console.error("Error submitting bill:", error);
-      const message =
+      const isTimeout = error.code === "ECONNABORTED" || error.message?.toLowerCase().includes("timeout");
+      const isNetworkError = error.message === "Network Error" || !error.response;
+      let message =
         error.response?.data?.message ||
         error.response?.data?.error ||
         error.message ||
         "Failed to upload bill. Please try again.";
+      if (isTimeout || isNetworkError) {
+        message = "Upload failed. Try Wi‑Fi, a smaller image, or try again in a moment.";
+      }
       setSubmitError(message);
     } finally {
       setLoading(false);
@@ -307,47 +369,8 @@ const BillInformationModal = ({
                   />
                 </svg>
               </label>
-              {/* Camera capture – mobile only: opens camera on small screens */}
-              <input
-                type="file"
-                id="bill-camera"
-                className="hidden"
-                accept="image/*"
-                capture="environment"
-                onChange={handleFileChange}
-                aria-hidden="true"
-              />
-              <label
-                htmlFor="bill-camera"
-                className="sm:hidden h-11 md:h-12 rounded-full border-2 border-purple-500 bg-purple-50 text-purple-700 px-4 flex items-center justify-center gap-2 text-sm md:text-base font-medium cursor-pointer hover:bg-purple-100 transition"
-              >
-                <svg
-                  className="w-5 h-5 shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 13v7a2 2 0 01-2 2H7a2 2 0 01-2-2v-7"
-                  />
-                </svg>
-                Take photo
-              </label>
+          
+            
             </div>
             {uploadError && (
               <p className="text-xs text-red-600">{uploadError}</p>
