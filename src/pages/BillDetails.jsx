@@ -240,28 +240,28 @@ const BillDetails = () => {
                     <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px]">
                       
                       {bill.pdfUrl ? (
-                        <div className="w-full h-full max-h-[360px] mt-5 pt-5 flex flex-col items-center justify-center gap-4 text-center px-4">
+                        <div className="w-full h-full max-h-[280px] sm:max-h-[340px] md:max-h-[400px] mt-4 md:mt-5 pt-4 md:pt-5 flex flex-col items-center justify-center gap-3 md:gap-4 text-center px-3 md:px-4">
                           {isImageUrl(bill.pdfUrl) ? (
                             <>
                               <img
                                 src={bill.pdfUrl}
                                 alt="Uploaded bill"
-                                className="w-full max-h-[400px] object-contain rounded-2xl border border-gray-200"
+                                className="w-full max-h-[300px] sm:max-h-[380px] md:max-h-[460px] object-contain"
                               />
                               <a
                                 href={bill.pdfUrl}
                                 download
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 rounded-full border border-purple-200 px-4 py-2 text-sm text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition"
+                                className="inline-flex items-center gap-2 rounded-full border border-purple-200 px-3 py-2 sm:px-4 text-xs sm:text-sm text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition min-h-[44px] items-center justify-center touch-manipulation"
                               >
                                 <span>Download bill</span>
                               </a>
                             </>
                           ) : (
                             <>
-                              <div className="w-16 h-16 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center">
-                                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center">
+                                <svg className="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                 </svg>
                               </div>
@@ -337,29 +337,29 @@ const BillDetails = () => {
                     
 
                       {bill.pdfUrl ? (
-                        <div className="w-full h-full max-h-[360px] flex flex-col items-center justify-center gap-4 text-center mt-5  px-4">
+                        <div className="w-full h-full max-h-[280px] sm:max-h-[340px] md:max-h-[400px] flex flex-col items-center justify-center gap-3 md:gap-4 text-center mt-4 md:mt-5 px-3 md:px-4">
                           {isImageUrl(bill.pdfUrl) ? (
                             <>
                               <img
                                 src={bill.pdfUrl}
                                 alt="Uploaded bill"
-                                className="w-full max-h-[400px] object-contain rounded-2xl border border-gray-200"
+                                className="w-full max-h-[300px] sm:max-h-[380px] md:max-h-[460px] object-contain"
                               />
                               <a
                                 href={bill.pdfUrl}
                                 download
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 rounded-full border border-purple-200 px-4 py-2 text-sm text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition"
+                                className="inline-flex items-center gap-2 rounded-full border border-purple-200 px-3 py-2 sm:px-4 text-xs sm:text-sm text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition min-h-[44px] items-center justify-center touch-manipulation"
                               >
                                 <span>Download bill</span>
                               </a>
                             </>
                           ) : (
                             <>
-                              <div className="w-16 h-16 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center">
+                              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center">
                                 <svg
-                                  className="w-8 h-8"
+                                  className="w-7 h-7 sm:w-8 sm:h-8"
                                   fill="none"
                                   stroke="currentColor"
                                   viewBox="0 0 24 24"
