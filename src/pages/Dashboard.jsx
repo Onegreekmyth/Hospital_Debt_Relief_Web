@@ -281,7 +281,11 @@ const Dashboard = () => {
     .filter(Boolean)
     .join(" ")
     .trim();
-  const householdCount = Math.max(householdSize, 1);
+  // Subscription plan count: only people NOT excluded by "Remove from plan" checkbox
+  const effectivePlanCount =
+    (accountHolderRemoveFromPlan ? 0 : 1) +
+    familyMembers.reduce((sum, _, i) => sum + (familyMembersRemoveFromPlan[i] ? 0 : 1), 0);
+  const householdCount = Math.max(effectivePlanCount, 1);
 
   const getSubscriptionInfoForHousehold = (count) => {
     if (count <= 3) {
