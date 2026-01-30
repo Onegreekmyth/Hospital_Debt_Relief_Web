@@ -47,6 +47,7 @@ const BillInformationModal = ({
     "image/heic",
   ];
   const ALLOWED_EXTENSIONS = [".pdf", ".jpg", ".jpeg", ".png", ".webp", ".heic"];
+  const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
 
   const isValidFileType = (file) => {
     const typeOk = ALLOWED_FILE_TYPES.some((t) => file.type === t);
@@ -72,9 +73,9 @@ const BillInformationModal = ({
       return;
     }
 
-    // Check file size (10MB max)
-    if (file.size > 10 * 1024 * 1024) {
-      setUploadError("File size must be less than 10MB.");
+    // Check file size (10 MB max)
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      setUploadError("File size must not exceed 10 MB.");
       setUploadedFileName("");
       setSelectedFile(null);
       e.target.value = "";
@@ -168,6 +169,12 @@ const BillInformationModal = ({
 
     if (!selectedFile) {
       setSubmitError("Please upload an image or PDF of the bill.");
+      return;
+    }
+
+    // Enforce 10 MB limit again before upload (e.g. if file was set elsewhere)
+    if (selectedFile.size > MAX_FILE_SIZE_BYTES) {
+      setSubmitError("File size must not exceed 10 MB. Please choose a smaller file.");
       return;
     }
 
