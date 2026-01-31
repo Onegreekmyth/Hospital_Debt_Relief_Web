@@ -13,6 +13,7 @@ import {
 } from "../store/hospitals/hospitalsSlice";
 import usStates from "../data/usStates.json";
 import usStateNameToCode from "../data/usStateNameToCode.json";
+import usCitiesByState from "../data/usCitiesByState.json";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -53,29 +54,26 @@ const HomePage = () => {
   } = useSelector((state) => state.hospitals);
   const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
-  // Build dropdown options for states and cities
+  // When nothing selected: show ALL US states (usStates.json = 50) and ALL cities (usCitiesByState = every city in JSON). When state selected: show that state's cities only.
   const stateOptions = useMemo(() => {
     if (!usStates || usStates.length === 0) return [];
     return [...usStates].sort();
   }, []);
 
-  // Map selected state name to API state code (e.g. "New York" -> "NY")
   const apiStateCode = useMemo(() => {
     if (!selectedState) return undefined;
     return usStateNameToCode[selectedState] || selectedState;
   }, [selectedState]);
 
-  // Derive available cities for the selected state from hospitals API data
   const cityOptions = useMemo(() => {
-    if (!hospitals || hospitals.length === 0) return [];
-    const set = new Set();
-    hospitals.forEach((h) => {
-      if (!h.City) return;
-      if (apiStateCode && h.State !== apiStateCode) return;
-      set.add(h.City);
-    });
-    return Array.from(set).sort();
-  }, [hospitals, apiStateCode]);
+    if (!usCitiesByState || typeof usCitiesByState !== "object") return [];
+    if (!selectedState) {
+      const all = Object.values(usCitiesByState).flat();
+      return [...new Set(all)].sort();
+    }
+    const stateCities = usCitiesByState[selectedState];
+    return Array.isArray(stateCities) ? [...stateCities].sort() : [];
+  }, [selectedState]);
 
   // Scroll to savings calculator when hash is #savings-calculator (from footer "Get Started Here" on any page or when already on home)
   useEffect(() => {
