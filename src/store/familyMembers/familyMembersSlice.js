@@ -92,6 +92,16 @@ export const deleteFamilyMember = createAsyncThunk(
   }
 );
 
+// Sort by order of addition: oldest first, newest last (newest at bottom)
+const sortByCreationOrder = (items) => {
+  if (!Array.isArray(items) || items.length === 0) return items;
+  return [...items].sort((a, b) => {
+    const aTime = a.createdAt ? new Date(a.createdAt).getTime() : (a.created_at ? new Date(a.created_at).getTime() : 0);
+    const bTime = b.createdAt ? new Date(b.createdAt).getTime() : (b.created_at ? new Date(b.created_at).getTime() : 0);
+    return aTime - bTime;
+  });
+};
+
 const initialState = {
   items: [],
   status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
@@ -110,7 +120,7 @@ const familyMembersSlice = createSlice({
     },
     resetFamilyMembers: () => initialState,
     setFamilyMembers: (state, action) => {
-      state.items = action.payload || [];
+      state.items = sortByCreationOrder(action.payload || []);
       state.status = 'succeeded';
       state.error = null;
     },
@@ -124,7 +134,7 @@ const familyMembersSlice = createSlice({
       })
       .addCase(fetchFamilyMembers.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.items = action.payload;
+        state.items = sortByCreationOrder(action.payload || []);
         state.error = null;
       })
       .addCase(fetchFamilyMembers.rejected, (state, action) => {
