@@ -1,5 +1,5 @@
 import React from "react";
-import nickKristinImg from "../assets/about-img.png";
+import nickKristinImg from "../assets/Nick-Kristin.png";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
