@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import axiosClient from "../api/axiosClient";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { uploadBill, clearUploadError } from "../store/bills/billsSlice";
 
 const BillInformationModal = ({ 
   isOpen, 
@@ -9,14 +10,23 @@ const BillInformationModal = ({
   accountHolderName = "",
   familyMembers = []
 }) => {
+  const dispatch = useDispatch();
+  const { uploadLoading, uploadError: reduxUploadError } = useSelector(
+    (state) => state.bills
+  );
   const [uploadError, setUploadError] = useState("");
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [patientName, setPatientName] = useState("");
   const [serviceDate, setServiceDate] = useState("");
   const [billAmount, setBillAmount] = useState("");
-  const [loading, setLoading] = useState(false);
   const [submitError, setSubmitError] = useState("");
+
+  useEffect(() => {
+    if (isOpen) {
+      dispatch(clearUploadError());
+    }
+  }, [isOpen, dispatch]);
 
   if (!isOpen) return null;
 
@@ -47,7 +57,7 @@ const BillInformationModal = ({
     "image/heic",
   ];
   const ALLOWED_EXTENSIONS = [".pdf", ".jpg", ".jpeg", ".png", ".webp", ".heic"];
-  const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
+  const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB
 
   const isValidFileType = (file) => {
     const typeOk = ALLOWED_FILE_TYPES.some((t) => file.type === t);
@@ -75,7 +85,7 @@ const BillInformationModal = ({
 
     // Check file size (10 MB max)
     if (file.size > MAX_FILE_SIZE_BYTES) {
-      setUploadError("File size must not exceed 10 MB.");
+      setUploadError("File size must not exceed 50 MB.");
       setUploadedFileName("");
       setSelectedFile(null);
       e.target.value = "";
@@ -172,65 +182,42 @@ const BillInformationModal = ({
       return;
     }
 
-    // Enforce 10 MB limit again before upload (e.g. if file was set elsewhere)
+    // Enforce 50 MB limit again before upload (e.g. if file was set elsewhere)
     if (selectedFile.size > MAX_FILE_SIZE_BYTES) {
-      setSubmitError("File size must not exceed 10 MB. Please choose a smaller file.");
+      setSubmitError("File size must not exceed 50 MB. Please choose a smaller file.");
       return;
     }
 
-    setLoading(true);
+    setSubmitError("");
+    dispatch(clearUploadError());
 
     try {
-      // Compress large images (e.g. from camera) so uploads work on mobile/slow networks
       const fileToUpload = await compressImageIfNeeded(selectedFile);
+      const result = await dispatch(
+        uploadBill({
+          patientName,
+          serviceDate,
+          billAmount,
+          file: fileToUpload,
+        })
+      ).unwrap();
 
-      // Create FormData for multipart/form-data upload
-      const formData = new FormData();
-      formData.append("patientName", patientName);
-      formData.append("serviceDate", serviceDate || new Date().toISOString().split('T')[0]);
-      formData.append("billAmount", parseFloat(billAmount));
-      formData.append("pdf", fileToUpload);
-
-      // Longer timeout for uploads (mobile/slow networks and large files)
-      const response = await axiosClient.post("/bills", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        timeout: 60000, // 60 seconds for camera/large uploads
-      });
-
-      if (response.data.success) {
-        // Reset form
+      if (result?.success && result?.data) {
         setPatientName("");
         setServiceDate("");
         setBillAmount("");
         setSelectedFile(null);
         setUploadedFileName("");
-        
         clearFileInputs();
-
-        // Call success callback
         if (onSubmitted) {
-          onSubmitted(response.data.data);
+          onSubmitted(result.data);
         } else if (onClose) {
           onClose();
         }
       }
-    } catch (error) {
-      console.error("Error submitting bill:", error);
-      const isTimeout = error.code === "ECONNABORTED" || error.message?.toLowerCase().includes("timeout");
-      const isNetworkError = error.message === "Network Error" || !error.response;
-      let message =
-        error.response?.data?.message ||
-        error.response?.data?.error ||
-        error.message ||
-        "Failed to upload bill. Please try again.";
-      if (isTimeout || isNetworkError) {
-        message = "Upload failed. Try Wi‑Fi, a smaller image, or try again in a moment.";
-      }
-      setSubmitError(message);
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      // Error is already in Redux (uploadError); optionally set local message for inline validation
+      if (err?.message) setSubmitError(err.message);
     }
   };
 
@@ -385,19 +372,19 @@ const BillInformationModal = ({
           </div>
 
           {/* Error Message */}
-          {submitError && (
+          {(submitError || reduxUploadError) && (
             <div className="p-3 rounded-lg bg-red-50 border border-red-200">
-              <p className="text-xs text-red-600">{submitError}</p>
+              <p className="text-xs text-red-600">{submitError || reduxUploadError}</p>
             </div>
           )}
 
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={loading}
+            disabled={uploadLoading}
             className="w-full h-11 md:h-12 rounded-full bg-gradient-to-r from-purple-900 to-blue-800 text-white font-bold text-sm md:text-base hover:from-purple-600 hover:to-purple-800 transition-all shadow-lg mt-4 md:mt-6 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {loading ? "Uploading..." : "Continue"}
+            {uploadLoading ? "Uploading..." : "Continue"}
           </button>
         </form>
       </div>

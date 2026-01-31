@@ -3,6 +3,7 @@ import hospitalsReducer from './hospitals/hospitalsSlice';
 import paymentsReducer from './payments/paymentsSlice';
 import familyMembersReducer from './familyMembers/familyMembersSlice';
 import userReducer from './user/userSlice';
+import billsReducer from './bills/billsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     payments: paymentsReducer,
     familyMembers: familyMembersReducer,
     user: userReducer,
+    bills: billsReducer,
   },
 });
 
