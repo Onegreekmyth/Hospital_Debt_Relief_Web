@@ -164,7 +164,7 @@ const AddFamilyMembersModal = ({ isOpen, onClose, editingMember = null, onSucces
                     value={formData.firstName}
                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                     className="w-full h-12 rounded-full border border-[#ccc2ea] bg-white pl-11 pr-4 text-sm sm:text-base text-gray-800 placeholder:text-purple-200 focus:outline-none focus:ring-1 focus:ring-[#ccc2ea]"
-                    placeholder="john"
+                    placeholder="First name"
                     required
                   />
                 </div>
@@ -194,7 +194,7 @@ const AddFamilyMembersModal = ({ isOpen, onClose, editingMember = null, onSucces
                     value={formData.lastName}
                     onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                     className="w-full h-12 rounded-full border border-[#ccc2ea] bg-white pl-11 pr-4 text-sm sm:text-base text-gray-800 placeholder:text-purple-200 focus:outline-none focus:ring-1 focus:ring-[#ccc2ea]"
-                    placeholder="Thomas"
+                    placeholder="Last name"
                     required
                   />
                 </div>

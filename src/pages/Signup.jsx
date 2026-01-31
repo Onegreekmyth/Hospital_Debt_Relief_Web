@@ -153,7 +153,7 @@ const Signup = () => {
                   value={formData.firstName}
                   onChange={handleChange}
                   className="flex-1 min-w-0 border-none bg-transparent text-sm md:text-[15px] text-gray-800 placeholder-[#D3C2FF] focus:outline-none focus:ring-0 py-0.5"
-                  placeholder="John"
+                  placeholder="First name"
                 />
               </div>
               {errors.firstName && (
@@ -188,7 +188,7 @@ const Signup = () => {
                   value={formData.lastName}
                   onChange={handleChange}
                   className="flex-1 min-w-0 border-none bg-transparent text-sm md:text-[15px] text-gray-800 placeholder-[#D3C2FF] focus:outline-none focus:ring-0 py-0.5"
-                  placeholder="Cina"
+                  placeholder="Last name"
                 />
               </div>
               {errors.lastName && (
