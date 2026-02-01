@@ -1,18 +1,27 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import Navbar from "../components/Navbar";
+import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
+import ApplicationSubmittedModal from "../components/ApplicationSubmittedModal";
 import uploadImg from "../assets/upload-circle.png";
 import billPlaceholder from "../assets/bill-history.png";
 import axiosClient from "../api/axiosClient";
+import { deleteHipaaForm } from "../store/bills/billsSlice";
 
 const BillDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { hipaaDeleteLoading: deletingHipaa, hipaaDeleteError: hipaaDeleteErrorFromSlice } = useSelector((state) => state.bills);
+  const profile = useSelector((state) => state.user?.profile) || {};
   const [bill, setBill] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const fileInputRef = useRef(null);
   const [uploadedFileName, setUploadedFileName] = useState("");
+  const [showHipaaDeleteConfirm, setShowHipaaDeleteConfirm] = useState(false);
+  const [showApplicationModal, setShowApplicationModal] = useState(false);
 
   // Check if pdfUrl is an image by extension (API can return PDF or image in pdfUrl)
   const isImageUrl = (url) => {
@@ -21,91 +30,97 @@ const BillDetails = () => {
     return /\.(png|jpg|jpeg|webp|heic)$/.test(path);
   };
 
-  // Fetch bill from API and transform to match MOCK_BILLS format
+  // Map backend bill to UI format
+  const transformApiBill = (apiBill) => {
+    const mapStatusToUI = (backendStatus) => {
+      const statusMap = {
+        pending: "Pending",
+        submitted: "Submitted",
+        processing: "Submitted",
+        approved: "Refunded",
+        rejected: "Pending",
+      };
+      return statusMap[backendStatus] || "Pending";
+    };
+    const formatCurrency = (amount) => {
+      if (!amount && amount !== 0) return "$0.00";
+      return `$${Number(amount).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}`;
+    };
+    const formatDate = (dateString) => {
+      if (!dateString) return "N/A";
+      const date = new Date(dateString);
+      return date.toLocaleDateString("en-US", {
+        month: "2-digit",
+        day: "2-digit",
+        year: "numeric",
+      });
+    };
+    return {
+      id: apiBill._id,
+      hospital: apiBill.patientName || "N/A",
+      amount: formatCurrency(apiBill.billAmount),
+      newAmount: formatCurrency(apiBill.billAmount * 0.55),
+      savedAmount: formatCurrency(apiBill.billAmount * 0.45),
+      amountPaidToUs: "$299.00",
+      status: mapStatusToUI(apiBill.status),
+      date: formatDate(apiBill.submittedAt || apiBill.createdAt),
+      billNumber: `BH-${apiBill._id.toString().slice(-4).toUpperCase()}`,
+      pdfUrl: apiBill.pdfUrl || apiBill.pdf,
+      supportingDocuments: apiBill.supportingDocuments || [],
+      hipaaForm: apiBill.hipaaForm || null,
+    };
+  };
+
+  const refetchBill = async () => {
+    if (!id) return;
+    try {
+      const response = await axiosClient.get(`/bills/${id}`);
+      if (response.data.success) {
+        setBill(transformApiBill(response.data.data));
+      }
+    } catch (err) {
+      if (err.response?.status === 401) navigate("/login");
+    }
+  };
+
   useEffect(() => {
     const fetchBill = async () => {
+      if (!id) return;
       try {
         setLoading(true);
         setError("");
-        
         const response = await axiosClient.get(`/bills/${id}`);
-        
         if (response.data.success) {
-          const apiBill = response.data.data;
-          
-          // Map backend status to UI status
-          const mapStatusToUI = (backendStatus) => {
-            const statusMap = {
-              pending: "Pending",
-              submitted: "Submitted",
-              processing: "Submitted",
-              approved: "Refunded",
-              rejected: "Pending",
-            };
-            return statusMap[backendStatus] || "Pending";
-          };
-
-          // Format currency
-          const formatCurrency = (amount) => {
-            if (!amount && amount !== 0) return "$0.00";
-            return `$${Number(amount).toLocaleString("en-US", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}`;
-          };
-
-          // Format date
-          const formatDate = (dateString) => {
-            if (!dateString) return "N/A";
-            const date = new Date(dateString);
-            return date.toLocaleDateString("en-US", {
-              month: "2-digit",
-              day: "2-digit",
-              year: "numeric",
-            });
-          };
-
-          // Transform to match MOCK_BILLS format
-          const transformedBill = {
-            id: apiBill._id,
-            hospital: apiBill.patientName || "N/A",
-            amount: formatCurrency(apiBill.billAmount),
-            newAmount: formatCurrency(apiBill.billAmount * 0.55), // Placeholder calculation (45% discount)
-            savedAmount: formatCurrency(apiBill.billAmount * 0.45), // Placeholder calculation
-            amountPaidToUs: "$299.00", // Placeholder
-            status: mapStatusToUI(apiBill.status),
-            date: formatDate(apiBill.submittedAt || apiBill.createdAt),
-            billNumber: `BH-${apiBill._id.toString().slice(-4).toUpperCase()}`, // Generate from ID
-            pdfUrl: apiBill.pdfUrl || apiBill.pdf, // Can be PDF or image from API
-            supportingDocuments: apiBill.supportingDocuments || [], // Keep for supporting docs
-          };
-
-          setBill(transformedBill);
+          setBill(transformApiBill(response.data.data));
         } else {
           setError("Bill not found");
         }
       } catch (err) {
-        console.error("Error fetching bill:", err);
         const message =
           err.response?.data?.message ||
           err.response?.data?.error ||
           err.message ||
           "Failed to load bill";
         setError(message);
-        
-        // If unauthorized, redirect to login
-        if (err.response?.status === 401) {
-          navigate("/login");
-        }
+        if (err.response?.status === 401) navigate("/login");
       } finally {
         setLoading(false);
       }
     };
-
-    if (id) {
-      fetchBill();
-    }
+    fetchBill();
   }, [id, navigate]);
+
+  const handleEditBillClick = () => {
+    setShowApplicationModal(true);
+  };
+
+  const handleCloseApplicationModal = () => {
+    setShowApplicationModal(false);
+    refetchBill();
+  };
 
   const handleUploadClick = () => {
     if (fileInputRef.current) {
@@ -117,6 +132,18 @@ const BillDetails = () => {
     const file = event.target.files?.[0];
     if (file) {
       setUploadedFileName(file.name);
+    }
+  };
+
+  const handleDeleteHipaaFormClick = () => {
+    setShowHipaaDeleteConfirm(true);
+  };
+
+  const handleConfirmDeleteHipaaForm = async () => {
+    if (!bill?.id || !bill.hipaaForm?.pdfUrl) return;
+    const result = await dispatch(deleteHipaaForm(bill.id));
+    if (deleteHipaaForm.fulfilled.match(result)) {
+      setBill((prev) => (prev ? { ...prev, hipaaForm: null } : null));
     }
   };
 
@@ -186,6 +213,11 @@ const BillDetails = () => {
           </div>
 
           <section className="bg-white border border-[#e0dcff] rounded-[32px] shadow-sm px-4 py-6 md:px-10 md:py-8">
+            {hipaaDeleteErrorFromSlice && (
+              <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200">
+                <p className="text-sm text-red-600">{hipaaDeleteErrorFromSlice}</p>
+              </div>
+            )}
             {isPending ? (
               <>
                 {/* Pending view: only uploaded bill + basic info */}
@@ -197,10 +229,12 @@ const BillDetails = () => {
                       <span className="text-md font-medium text-gray-800">
                         Uploaded Bill
                       </span>
-                      {/* Edit icon */}
+                      {/* Edit icon - opens Application Submitted modal */}
                       <button
                         type="button"
+                        onClick={handleEditBillClick}
                         className="text-purple-500 hover:text-purple-700"
+                        title="Edit / upload documents"
                       >
                         <svg
                           className="w-4 h-4"
@@ -286,6 +320,56 @@ const BillDetails = () => {
                       )}
                     </div>
                   </div>
+
+                  {/* HIPAA Authorization Form - same style as uploaded bill */}
+                  {bill.hipaaForm?.pdfUrl && (
+                    <div className="relative flex flex-col max-w-[360px] w-full mt-8 md:mt-0">
+                      <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md flex items-center gap-3">
+                        <span className="text-md font-medium text-gray-800">
+                          HIPAA Authorization Form
+                        </span>
+                        <button
+                          type="button"
+                          onClick={handleDeleteHipaaFormClick}
+                          disabled={deletingHipaa}
+                          className="text-purple-500 hover:text-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Remove HIPAA form"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m-9 0h10"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                      <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px]">
+                        <div className="w-full h-full max-h-[280px] sm:max-h-[340px] md:max-h-[400px] mt-4 md:mt-5 pt-4 md:pt-5 flex flex-col items-center justify-center gap-3 md:gap-4 text-center px-3 md:px-4">
+                          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center">
+                            <svg className="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                          </div>
+                          <a
+                            href={bill.hipaaForm.pdfUrl}
+                            download={bill.hipaaForm.pdfFileName || "hipaa-form.pdf"}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 rounded-full border border-purple-200 px-4 py-2 text-sm text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition"
+                          >
+                            <span>Download HIPAA form</span>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Bill Amount + Date Submitted */}
@@ -322,17 +406,25 @@ const BillDetails = () => {
             ) : (
               <>
                 {/* Submitted / other view: full layout */}
-                {/* Top 3-column layout */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+                {/* Top layout: 3 or 4 columns when HIPAA form is present */}
+                <div className={`grid grid-cols-1 gap-6 md:gap-8 ${bill.hipaaForm?.pdfUrl ? "lg:grid-cols-4" : "lg:grid-cols-3"}`}>
                   {/* Uploaded Bill */}
                   <div className="relative flex flex-col">
-                    {/* Floating label tab */}
-                    <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md">
+                    <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md flex items-center gap-3">
                       <span className="text-md font-medium text-gray-800">
                         Uploaded Bill
                       </span>
+                      <button
+                        type="button"
+                        onClick={handleEditBillClick}
+                        className="text-purple-500 hover:text-purple-700"
+                        title="Edit / upload documents"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M4 20h4l9.268-9.268a2 2 0 000-2.828l-2.172-2.172a2 2 0 00-2.828 0L4 16v4z" />
+                        </svg>
+                      </button>
                     </div>
-
                     <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px] max-w-[340px] w-full mx-auto">
                     
 
@@ -393,6 +485,56 @@ const BillDetails = () => {
                       )}
                     </div>
                   </div>
+
+                  {/* HIPAA Authorization Form - same style as uploaded bill */}
+                  {bill.hipaaForm?.pdfUrl && (
+                    <div className="relative flex flex-col">
+                      <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md flex items-center gap-3">
+                        <span className="text-md font-medium text-gray-800">
+                          HIPAA Authorization Form
+                        </span>
+                        <button
+                          type="button"
+                          onClick={handleDeleteHipaaFormClick}
+                          disabled={deletingHipaa}
+                          className="text-purple-500 hover:text-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Remove HIPAA form"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m-9 0h10"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                      <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px] max-w-[340px] w-full mx-auto">
+                        <div className="w-full h-full max-h-[280px] sm:max-h-[340px] md:max-h-[400px] flex flex-col items-center justify-center gap-3 md:gap-4 text-center mt-4 md:mt-5 px-3 md:px-4">
+                          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center">
+                            <svg className="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                          </div>
+                          <a
+                            href={bill.hipaaForm.pdfUrl}
+                            download={bill.hipaaForm.pdfFileName || "hipaa-form.pdf"}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 rounded-full border border-purple-200 px-4 py-2 text-sm text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition"
+                          >
+                            <span>Download HIPAA form</span>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Upload New Bill */}
                   <div className="relative flex flex-col">
@@ -517,6 +659,26 @@ const BillDetails = () => {
           </section>
         </div>
       </main>
+
+      <ConfirmDeleteModal
+        isOpen={showHipaaDeleteConfirm}
+        onClose={() => setShowHipaaDeleteConfirm(false)}
+        onConfirm={handleConfirmDeleteHipaaForm}
+        title="Remove HIPAA form"
+        message="Remove HIPAA Authorization Form from this bill? You can upload a new one later."
+      />
+
+      {bill && (
+        <ApplicationSubmittedModal
+          isOpen={showApplicationModal}
+          onClose={handleCloseApplicationModal}
+          billId={bill.id}
+          billData={bill}
+          profile={profile}
+          supportingDocuments={bill.supportingDocuments || []}
+          onBillUpdated={refetchBill}
+        />
+      )}
     </div>
   );
 };

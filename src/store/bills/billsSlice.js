@@ -80,6 +80,85 @@ export const uploadHipaaForm = createAsyncThunk(
   }
 );
 
+export const deleteHipaaForm = createAsyncThunk(
+  "bills/deleteHipaaForm",
+  async (billId, { rejectWithValue }) => {
+    try {
+      const response = await axiosClient.delete(`/bills/${billId}/hipaa-form`);
+      if (response.data?.success === false) {
+        return rejectWithValue(
+          response.data?.message || "Failed to remove HIPAA form."
+        );
+      }
+      return { billId, ...response.data };
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Failed to remove HIPAA form. Please try again.";
+      return rejectWithValue(message);
+    }
+  }
+);
+
+export const uploadSupportingDocument = createAsyncThunk(
+  "bills/uploadSupportingDocument",
+  async ({ billId, file }, { rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      formData.append("pdf", file);
+
+      const response = await axiosClient.post(
+        `/bills/${billId}/supporting-documents`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          timeout: 30000,
+        }
+      );
+
+      if (response.data?.success === false) {
+        return rejectWithValue(
+          response.data?.message || "Failed to upload supporting document."
+        );
+      }
+      return { billId, data: response.data };
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Failed to upload supporting document. Please try again.";
+      return rejectWithValue(message);
+    }
+  }
+);
+
+export const deleteSupportingDocument = createAsyncThunk(
+  "bills/deleteSupportingDocument",
+  async ({ billId, docId }, { rejectWithValue }) => {
+    try {
+      const response = await axiosClient.delete(
+        `/bills/${billId}/supporting-documents/${docId}`
+      );
+      if (response.data?.success === false) {
+        return rejectWithValue(
+          response.data?.message || "Failed to remove supporting document."
+        );
+      }
+      return { billId, docId, ...response.data };
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Failed to remove supporting document. Please try again.";
+      return rejectWithValue(message);
+    }
+  }
+);
+
 const billsSlice = createSlice({
   name: "bills",
   initialState: {
@@ -87,6 +166,12 @@ const billsSlice = createSlice({
     uploadError: "",
     hipaaUploadLoading: false,
     hipaaUploadError: "",
+    hipaaDeleteLoading: false,
+    hipaaDeleteError: "",
+    supportingDocUploadLoading: false,
+    supportingDocUploadError: "",
+    supportingDocDeleteLoading: false,
+    supportingDocDeleteError: "",
   },
   reducers: {
     clearUploadError: (state) => {
@@ -94,6 +179,15 @@ const billsSlice = createSlice({
     },
     clearHipaaUploadError: (state) => {
       state.hipaaUploadError = "";
+    },
+    clearHipaaDeleteError: (state) => {
+      state.hipaaDeleteError = "";
+    },
+    clearSupportingDocUploadError: (state) => {
+      state.supportingDocUploadError = "";
+    },
+    clearSupportingDocDeleteError: (state) => {
+      state.supportingDocDeleteError = "";
     },
   },
   extraReducers: (builder) => {
@@ -120,9 +214,27 @@ const billsSlice = createSlice({
         state.hipaaUploadLoading = false;
         state.hipaaUploadError =
           action.payload || "Failed to upload HIPAA form. Please try again.";
+      })
+      .addCase(deleteHipaaForm.pending, (state) => {
+        state.hipaaDeleteLoading = true;
+        state.hipaaDeleteError = "";
+      })
+      .addCase(deleteHipaaForm.fulfilled, (state) => {
+        state.hipaaDeleteLoading = false;
+      })
+      .addCase(deleteHipaaForm.rejected, (state, action) => {
+        state.hipaaDeleteLoading = false;
+        state.hipaaDeleteError =
+          action.payload || "Failed to remove HIPAA form. Please try again.";
       });
   },
 });
 
-export const { clearUploadError, clearHipaaUploadError } = billsSlice.actions;
+export const {
+  clearUploadError,
+  clearHipaaUploadError,
+  clearHipaaDeleteError,
+  clearSupportingDocUploadError,
+  clearSupportingDocDeleteError,
+} = billsSlice.actions;
 export default billsSlice.reducer;

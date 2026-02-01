@@ -1,22 +1,38 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosClient from "../api/axiosClient";
+import { useDispatch, useSelector } from "react-redux";
 import HipaaAuthorizationModal from "./HipaaAuthorizationModal";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import {
+  uploadSupportingDocument,
+  deleteSupportingDocument,
+} from "../store/bills/billsSlice";
 
-const ApplicationSubmittedModal = ({ 
-  isOpen, 
-  onClose, 
+const ApplicationSubmittedModal = ({
+  isOpen,
+  onClose,
   billId,
   billData,
   profile,
+  supportingDocuments = [],
+  onBillUpdated,
 }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const {
+    supportingDocUploadLoading: uploading,
+    supportingDocUploadError: uploadErrorFromSlice,
+    supportingDocDeleteLoading: deletingDoc,
+  } = useSelector((state) => state.bills);
+
   const [uploadError, setUploadError] = useState("");
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
-  const [uploading, setUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [isHipaaOpen, setIsHipaaOpen] = useState(false);
+  const [docToDelete, setDocToDelete] = useState(null);
+
+  const displayUploadError = uploadErrorFromSlice || uploadError;
 
   if (!isOpen) return null;
 
@@ -45,9 +61,8 @@ const ApplicationSubmittedModal = ({
       return;
     }
 
-    // Check file size (10MB max)
-    if (file.size > 10 * 1024 * 1024) {
-      setUploadError("File size must be less than 10MB.");
+    if (file.size > 50 * 1024 * 1024) {
+      setUploadError("File size must be less than 50MB.");
       setUploadedFileName("");
       setSelectedFile(null);
       e.target.value = "";
@@ -60,53 +75,40 @@ const ApplicationSubmittedModal = ({
   };
 
   const handleUploadSupportingDocument = async () => {
-    if (!selectedFile) {
+    if (!selectedFile || !billId) {
       setUploadError("Please select a PDF file to upload.");
       return;
     }
-
-    setUploading(true);
     setUploadError("");
     setUploadSuccess(false);
+    const result = await dispatch(
+      uploadSupportingDocument({ billId, file: selectedFile })
+    );
+    if (uploadSupportingDocument.fulfilled.match(result)) {
+      setUploadSuccess(true);
+      setSelectedFile(null);
+      setUploadedFileName("");
+      const fileInput = document.getElementById("supporting-doc-upload");
+      if (fileInput) fileInput.value = "";
+      setTimeout(() => setUploadSuccess(false), 3000);
+      onBillUpdated?.();
+    } else if (result.payload) {
+      setUploadError(result.payload);
+    }
+  };
 
-    try {
-      const formData = new FormData();
-      formData.append("pdf", selectedFile);
+  const handleDeleteSupportingDocClick = (doc) => {
+    setDocToDelete(doc);
+  };
 
-      const response = await axiosClient.post(
-        `/bills/${billId}/supporting-documents`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      if (response.data.success) {
-        setUploadSuccess(true);
-        setSelectedFile(null);
-        setUploadedFileName("");
-        // Clear file input
-        const fileInput = document.getElementById("supporting-doc-upload");
-        if (fileInput) {
-          fileInput.value = "";
-        }
-        // Reset success message after 3 seconds
-        setTimeout(() => {
-          setUploadSuccess(false);
-        }, 3000);
-      }
-    } catch (error) {
-      console.error("Error uploading supporting document:", error);
-      const message =
-        error.response?.data?.message ||
-        error.response?.data?.error ||
-        error.message ||
-        "Failed to upload document. Please try again.";
-      setUploadError(message);
-    } finally {
-      setUploading(false);
+  const handleConfirmDeleteSupportingDoc = async () => {
+    if (!docToDelete?._id || !billId) return;
+    const result = await dispatch(
+      deleteSupportingDocument({ billId, docId: docToDelete._id })
+    );
+    setDocToDelete(null);
+    if (deleteSupportingDocument.fulfilled.match(result)) {
+      onBillUpdated?.();
     }
   };
 
@@ -255,9 +257,9 @@ const ApplicationSubmittedModal = ({
             </div>
           )}
 
-          {uploadError && (
+          {displayUploadError && (
             <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-xs md:text-sm text-red-600">{uploadError}</p>
+              <p className="text-xs md:text-sm text-red-600">{displayUploadError}</p>
             </div>
           )}
 
@@ -266,6 +268,67 @@ const ApplicationSubmittedModal = ({
               <p className="text-xs md:text-sm text-green-600">
                 Document uploaded successfully!
               </p>
+            </div>
+          )}
+
+          {/* List of supporting documents with delete icon */}
+          {supportingDocuments && supportingDocuments.length > 0 && (
+            <div className="mb-4 space-y-2">
+              <p className="text-xs md:text-sm font-medium text-gray-700 mb-2">
+                Uploaded supporting documents
+              </p>
+              {supportingDocuments.map((doc) => (
+                <div
+                  key={doc._id || doc.pdfUrl}
+                  className="flex items-center justify-between p-3 rounded-lg border border-purple-200 bg-purple-50/50"
+                >
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <svg
+                      className="w-5 h-5 text-purple-600 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <a
+                      href={doc.pdfUrl}
+                      download={doc.pdfFileName || "supporting-doc.pdf"}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-purple-700 hover:underline truncate"
+                    >
+                      {doc.pdfFileName || "Supporting document"}
+                    </a>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteSupportingDocClick(doc)}
+                    disabled={deletingDoc}
+                    className="text-red-600 hover:text-red-800 p-1 disabled:opacity-50 flex-shrink-0"
+                    title="Remove document"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m-9 0h10"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -299,8 +362,17 @@ const ApplicationSubmittedModal = ({
         billData={billData}
         profile={profile}
         onSuccess={() => {
-          // Optional: refresh or show success; modal closes on success
+          onBillUpdated?.();
         }}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={!!docToDelete}
+        onClose={() => setDocToDelete(null)}
+        onConfirm={handleConfirmDeleteSupportingDoc}
+        title="Remove supporting document"
+        message="Remove this supporting document from the bill? You can upload it again later."
+        memberName={docToDelete?.pdfFileName ? `"${docToDelete.pdfFileName}"` : undefined}
       />
     </div>
   );
