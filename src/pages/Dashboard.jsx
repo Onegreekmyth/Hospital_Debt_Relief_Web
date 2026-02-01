@@ -885,6 +885,7 @@ const Dashboard = () => {
         }}
         billId={submittedBillId}
         billData={submittedBillData}
+        profile={profile}
       />
 
       {/* Monthly Subscription Modal */}

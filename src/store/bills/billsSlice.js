@@ -47,15 +47,53 @@ export const uploadBill = createAsyncThunk(
   }
 );
 
+export const uploadHipaaForm = createAsyncThunk(
+  "bills/uploadHipaaForm",
+  async ({ billId, pdfBlob }, { rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      formData.append("pdf", pdfBlob, "hipaa-form.pdf");
+
+      const response = await axiosClient.post(
+        `/bills/${billId}/hipaa-form`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          timeout: 30000,
+        }
+      );
+
+      if (response.data?.success === false) {
+        return rejectWithValue(
+          response.data?.message || "Failed to upload HIPAA form."
+        );
+      }
+      return response.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Failed to upload HIPAA form. Please try again.";
+      return rejectWithValue(message);
+    }
+  }
+);
+
 const billsSlice = createSlice({
   name: "bills",
   initialState: {
     uploadLoading: false,
     uploadError: "",
+    hipaaUploadLoading: false,
+    hipaaUploadError: "",
   },
   reducers: {
     clearUploadError: (state) => {
       state.uploadError = "";
+    },
+    clearHipaaUploadError: (state) => {
+      state.hipaaUploadError = "";
     },
   },
   extraReducers: (builder) => {
@@ -70,9 +108,21 @@ const billsSlice = createSlice({
       .addCase(uploadBill.rejected, (state, action) => {
         state.uploadLoading = false;
         state.uploadError = action.payload || "Failed to upload bill.";
+      })
+      .addCase(uploadHipaaForm.pending, (state) => {
+        state.hipaaUploadLoading = true;
+        state.hipaaUploadError = "";
+      })
+      .addCase(uploadHipaaForm.fulfilled, (state) => {
+        state.hipaaUploadLoading = false;
+      })
+      .addCase(uploadHipaaForm.rejected, (state, action) => {
+        state.hipaaUploadLoading = false;
+        state.hipaaUploadError =
+          action.payload || "Failed to upload HIPAA form. Please try again.";
       });
   },
 });
 
-export const { clearUploadError } = billsSlice.actions;
+export const { clearUploadError, clearHipaaUploadError } = billsSlice.actions;
 export default billsSlice.reducer;

@@ -7,7 +7,8 @@ const ApplicationSubmittedModal = ({
   isOpen, 
   onClose, 
   billId,
-  billData 
+  billData,
+  profile,
 }) => {
   const navigate = useNavigate();
   const [uploadError, setUploadError] = useState("");
@@ -294,7 +295,12 @@ const ApplicationSubmittedModal = ({
       <HipaaAuthorizationModal
         isOpen={isHipaaOpen}
         onClose={() => setIsHipaaOpen(false)}
+        billId={billId}
         billData={billData}
+        profile={profile}
+        onSuccess={() => {
+          // Optional: refresh or show success; modal closes on success
+        }}
       />
     </div>
   );
