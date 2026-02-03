@@ -156,7 +156,7 @@ const ApplicationSubmittedModal = ({
               </svg>
             </div>
             <span className="text-sm md:text-base font-semibold text-purple-900">
-              View Application
+              View Uploaded Documents
             </span>
           </button>
 

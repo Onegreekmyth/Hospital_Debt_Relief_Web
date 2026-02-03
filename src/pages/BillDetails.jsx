@@ -7,13 +7,17 @@ import ApplicationSubmittedModal from "../components/ApplicationSubmittedModal";
 import uploadImg from "../assets/upload-circle.png";
 import billPlaceholder from "../assets/bill-history.png";
 import axiosClient from "../api/axiosClient";
-import { deleteHipaaForm } from "../store/bills/billsSlice";
+import { deleteHipaaForm, deleteSupportingDocument } from "../store/bills/billsSlice";
 
 const BillDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { hipaaDeleteLoading: deletingHipaa, hipaaDeleteError: hipaaDeleteErrorFromSlice } = useSelector((state) => state.bills);
+  const { 
+    hipaaDeleteLoading: deletingHipaa, 
+    hipaaDeleteError: hipaaDeleteErrorFromSlice,
+    supportingDocDeleteLoading: deletingDoc,
+  } = useSelector((state) => state.bills);
   const profile = useSelector((state) => state.user?.profile) || {};
   const [bill, setBill] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -22,6 +26,7 @@ const BillDetails = () => {
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [showHipaaDeleteConfirm, setShowHipaaDeleteConfirm] = useState(false);
   const [showApplicationModal, setShowApplicationModal] = useState(false);
+  const [docToDelete, setDocToDelete] = useState(null);
 
   // Check if pdfUrl is an image by extension (API can return PDF or image in pdfUrl)
   const isImageUrl = (url) => {
@@ -61,6 +66,7 @@ const BillDetails = () => {
     return {
       id: apiBill._id,
       hospital: apiBill.patientName || "N/A",
+      serviceDate: apiBill.serviceDate || apiBill.submittedAt || apiBill.createdAt || null,
       amount: formatCurrency(apiBill.billAmount),
       newAmount: formatCurrency(apiBill.billAmount * 0.55),
       savedAmount: formatCurrency(apiBill.billAmount * 0.45),
@@ -144,6 +150,21 @@ const BillDetails = () => {
     const result = await dispatch(deleteHipaaForm(bill.id));
     if (deleteHipaaForm.fulfilled.match(result)) {
       setBill((prev) => (prev ? { ...prev, hipaaForm: null } : null));
+    }
+  };
+
+  const handleDeleteSupportingDocClick = (doc) => {
+    setDocToDelete(doc);
+  };
+
+  const handleConfirmDeleteSupportingDoc = async () => {
+    if (!docToDelete?._id || !bill?.id) return;
+    const result = await dispatch(
+      deleteSupportingDocument({ billId: bill.id, docId: docToDelete._id })
+    );
+    setDocToDelete(null);
+    if (deleteSupportingDocument.fulfilled.match(result)) {
+      refetchBill();
     }
   };
 
@@ -370,6 +391,73 @@ const BillDetails = () => {
                       </div>
                     </div>
                   )}
+
+                  {/* Supporting Documents */}
+                  {bill.supportingDocuments && bill.supportingDocuments.length > 0 && (
+                    <div className="relative flex flex-col max-w-[360px] w-full mt-8 md:mt-0">
+                      <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md">
+                        <span className="text-md font-medium text-gray-800">
+                          Supporting Documents
+                        </span>
+                      </div>
+                      <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px]">
+                        <div className="w-full h-full max-h-[400px] overflow-y-auto thin-scrollbar mt-4 md:mt-5 space-y-3">
+                          {bill.supportingDocuments.map((doc) => (
+                            <div
+                              key={doc._id || doc.pdfUrl}
+                              className="flex items-center justify-between p-3 rounded-lg border border-purple-200 bg-purple-50/50"
+                            >
+                              <div className="flex items-center gap-2 min-w-0 flex-1">
+                                <svg
+                                  className="w-5 h-5 text-purple-600 flex-shrink-0"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                                  />
+                                </svg>
+                                <a
+                                  href={doc.pdfUrl}
+                                  download={doc.pdfFileName || "supporting-doc.pdf"}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-sm text-purple-700 hover:underline truncate"
+                                >
+                                  {doc.pdfFileName || "Supporting document"}
+                                </a>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteSupportingDocClick(doc)}
+                                disabled={deletingDoc}
+                                className="text-red-600 hover:text-red-800 p-1 disabled:opacity-50 flex-shrink-0"
+                                title="Remove document"
+                              >
+                                <svg
+                                  className="w-5 h-5"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m-9 0h10"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Bill Amount + Date Submitted */}
@@ -406,8 +494,17 @@ const BillDetails = () => {
             ) : (
               <>
                 {/* Submitted / other view: full layout */}
-                {/* Top layout: 3 or 4 columns when HIPAA form is present */}
-                <div className={`grid grid-cols-1 gap-6 md:gap-8 ${bill.hipaaForm?.pdfUrl ? "lg:grid-cols-4" : "lg:grid-cols-3"}`}>
+                {/* Top layout: 3, 4, or 5 columns depending on HIPAA form and supporting documents */}
+                <div className={`grid grid-cols-1 gap-6 md:gap-8 ${(() => {
+                  const hasHipaa = bill.hipaaForm?.pdfUrl;
+                  const hasSupportingDocs = bill.supportingDocuments && bill.supportingDocuments.length > 0;
+                  if (hasHipaa && hasSupportingDocs) {
+                    return "lg:grid-cols-5"; // Uploaded Bill, HIPAA, Supporting Docs, Upload New Bill, Amounts & CTA
+                  } else if (hasHipaa || hasSupportingDocs) {
+                    return "lg:grid-cols-4"; // Uploaded Bill, HIPAA/Supporting Docs, Upload New Bill, Amounts & CTA
+                  }
+                  return "lg:grid-cols-3"; // Base: Uploaded Bill, Upload New Bill, Amounts & CTA
+                })()}`}>
                   {/* Uploaded Bill */}
                   <div className="relative flex flex-col">
                     <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md flex items-center gap-3">
@@ -531,6 +628,73 @@ const BillDetails = () => {
                           >
                             <span>Download HIPAA form</span>
                           </a>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Supporting Documents */}
+                  {bill.supportingDocuments && bill.supportingDocuments.length > 0 && (
+                    <div className="relative flex flex-col">
+                      <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md">
+                        <span className="text-md font-medium text-gray-800">
+                          Supporting Documents
+                        </span>
+                      </div>
+                      <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px] max-w-[340px] w-full mx-auto">
+                        <div className="w-full h-full max-h-[400px] overflow-y-auto thin-scrollbar mt-4 md:mt-5 space-y-3">
+                          {bill.supportingDocuments.map((doc) => (
+                            <div
+                              key={doc._id || doc.pdfUrl}
+                              className="flex items-center justify-between p-3 rounded-lg border border-purple-200 bg-purple-50/50"
+                            >
+                              <div className="flex items-center gap-2 min-w-0 flex-1">
+                                <svg
+                                  className="w-5 h-5 text-purple-600 flex-shrink-0"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                                  />
+                                </svg>
+                                <a
+                                  href={doc.pdfUrl}
+                                  download={doc.pdfFileName || "supporting-doc.pdf"}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-sm text-purple-700 hover:underline truncate"
+                                >
+                                  {doc.pdfFileName || "Supporting document"}
+                                </a>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteSupportingDocClick(doc)}
+                                disabled={deletingDoc}
+                                className="text-red-600 hover:text-red-800 p-1 disabled:opacity-50 flex-shrink-0"
+                                title="Remove document"
+                              >
+                                <svg
+                                  className="w-5 h-5"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m-9 0h10"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     </div>
@@ -666,6 +830,15 @@ const BillDetails = () => {
         onConfirm={handleConfirmDeleteHipaaForm}
         title="Remove HIPAA form"
         message="Remove HIPAA Authorization Form from this bill? You can upload a new one later."
+      />
+
+      <ConfirmDeleteModal
+        isOpen={!!docToDelete}
+        onClose={() => setDocToDelete(null)}
+        onConfirm={handleConfirmDeleteSupportingDoc}
+        title="Remove supporting document"
+        message="Remove this supporting document from the bill? You can upload it again later."
+        memberName={docToDelete?.pdfFileName ? `"${docToDelete.pdfFileName}"` : undefined}
       />
 
       {bill && (

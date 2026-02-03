@@ -94,7 +94,7 @@ function buildHipaaPdf(hipaaForm, familySignatureDataUrl, guardianSignatureDataU
 
   addParagraph("or");
   addParagraph("Parent or Guardian of Patient:");
-  addParagraph("Print Name: " + (hipaaForm.guardianPrintName || ""));
+  addParagraph( (hipaaForm.guardianPrintName || ""));
   if (guardianSignatureDataUrl) {
     doc.addImage(guardianSignatureDataUrl, "PNG", margin, y, SIG_IMG_W, SIG_IMG_H);
     y += SIG_IMG_H + 5;
@@ -243,12 +243,11 @@ const HipaaAuthorizationModal = ({
       ? new Date(billData.serviceDate).toISOString().slice(0, 10)
       : "";
     const hospitalName = billData?.hospitalName || profileHospitalName || "";
-    const guardianPrintName = profileGuardianName || hipaaForm.guardianPrintName || "";
     setHipaaForm((prev) => ({
       ...prev,
       billDate,
       hospitalName,
-      guardianPrintName: prev.guardianPrintName || guardianPrintName,
+      guardianPrintName: "",
     }));
     setFamilySignatureDataUrl("");
     setGuardianSignatureDataUrl("");
@@ -423,7 +422,6 @@ const HipaaAuthorizationModal = ({
             <p className="font-medium text-gray-800">or</p>
             <p className="font-medium text-gray-800">Parent or Guardian of Patient:</p>
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-gray-700">Print Name</label>
               <input
                 type="text"
                 value={hipaaForm.guardianPrintName}
