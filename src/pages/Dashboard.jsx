@@ -766,10 +766,10 @@ const Dashboard = () => {
                   >
                     <div>
                       <p className="text-base md:text-lg font-semibold text-[#5225cc]">
-                        Upload
+                        Upload New Bill
                       </p>
                       <p className="mt-1 text-xs md:text-sm text-[#5225cc]">
-                        Bills to save money
+                        to save money
                       </p>
                     </div>
                     <div className="flex items-center justify-center mt-2">

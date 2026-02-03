@@ -84,7 +84,7 @@ const faqs = [
   {
     question: "My bill is in collections, can you still lower my bill?",
     answer: [
-      "Unfortunately, we are unable to assist with bills in collections. Please contact your debt collector to negotiate a balance to be paid.",
+      "Yes, We Will do our best to process your application to get that bill reduced."
     ],
   },
   {

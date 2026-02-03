@@ -42,7 +42,7 @@ const AboutPage = () => {
                 Meet Nick & Kristin
               </h2>
               <p className="text-[14px] md:text-[16px] leading-6 md:leading-7 text-gray-800">
-                After experiencing firsthand the frustration of receiving unexpectedly high hospital bills, Nick and Kristin founded Medical Financial Freedom with a mission to help others navigate the complex world of healthcare billing. Their personal journey inspired them to create innovative solutions that empower patients to challenge unfair charges and secure the savings they deserve.
+              We know that sinking feeling when you open a hospital bill and see a number you didn’t expect. We’ve been there. That’s why we founded HospitalDebtRelief.com! We believe a medical crisis shouldn’t be followed by a financial one. Having navigated our own healthcare billing challenges, we’ve dedicated ourselves to being the support we wish we’d had. We’re here to take the weight off your shoulders by using our developed system to fight for the savings you deserve.
               </p>
             </div>
 

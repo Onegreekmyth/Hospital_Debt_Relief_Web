@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import Navbar from "../components/Navbar";
+import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import axiosClient from "../api/axiosClient";
+import { deleteBill } from "../store/bills/billsSlice";
 
 const BillHistory = () => {
   const [filter, setFilter] = useState("All");
@@ -9,7 +12,10 @@ const BillHistory = () => {
   const [bills, setBills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [billToDelete, setBillToDelete] = useState(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { billDeleteLoading } = useSelector((state) => state.bills);
 
   // Fetch bills from API
   useEffect(() => {
@@ -107,6 +113,20 @@ const BillHistory = () => {
     return "bg-[#FFD6DA] text-[#D35662]";
   };
 
+  const handleDeleteBillClick = (bill) => {
+    setBillToDelete(bill);
+  };
+
+  const handleConfirmDeleteBill = async () => {
+    if (!billToDelete?.id) return;
+    const result = await dispatch(deleteBill(billToDelete.id));
+    setBillToDelete(null);
+    if (deleteBill.fulfilled.match(result)) {
+      // Remove the deleted bill from the list
+      setBills((prevBills) => prevBills.filter((b) => b._id !== billToDelete.id));
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#f5f5fb]">
       <Navbar />
@@ -190,12 +210,13 @@ const BillHistory = () => {
                 <table className="min-w-full text-left text-sm md:text-base">
                   <thead>
                     <tr className="border-b border-gray-300 text-xs md:text-lg text-black">
-                      <th className="px-6 md:px-10 py-4 font-large">Hospital Name</th>
+                      <th className="px-6 md:px-10 py-4 font-large">Patient Name</th>
                       <th className="px-4 py-4 font-large">Bill Amount</th>
                       <th className="px-4 py-4 font-large">Calculated Saving</th>
                       <th className="px-6 py-4 font-large text-right pr-8 md:pr-10">
                         Status
                       </th>
+                      <th className="px-6 py-4 font-large text-center">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="text-gray-800">
@@ -229,6 +250,29 @@ const BillHistory = () => {
                             {bill.status}
                           </span>
                         </td>
+                        <td className="px-6 py-4 text-center">
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteBillClick(bill)}
+                            disabled={billDeleteLoading}
+                            className="text-red-600 hover:text-red-800 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                            title="Delete bill"
+                          >
+                            <svg
+                              className="w-5 h-5 md:w-6 md:h-6"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m-9 0h10"
+                              />
+                            </svg>
+                          </button>
+                        </td>
                       </tr>
                     ))}
 
@@ -249,6 +293,15 @@ const BillHistory = () => {
           </section>
         </div>
       </main>
+
+      <ConfirmDeleteModal
+        isOpen={!!billToDelete}
+        onClose={() => setBillToDelete(null)}
+        onConfirm={handleConfirmDeleteBill}
+        title="Delete Bill"
+        message="Are you sure you want to delete this bill? This action cannot be undone."
+        memberName={billToDelete?.hospital ? `"${billToDelete.hospital}"` : undefined}
+      />
     </div>
   );
 };

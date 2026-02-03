@@ -13,13 +13,13 @@ const MonthlyPlansPage = () => {
     {
       name: "My Family Coverage",
       price: 14,
-      description: "Household subscription for a family size up to 3 people",
+      description: "Household subscription for a family size of 4 to 6 people",
       popular: true,
     },
     {
       name: "Big Family Coverage",
       price: 21,
-      description: "Household subscription for a family size up to 3 people",
+      description: "Household subscription for a family size of 7 or more people",
       popular: false,
     },
   ];
@@ -65,11 +65,7 @@ const MonthlyPlansPage = () => {
                   plan.popular ? "bg-[#d3c9f2] md:-mt-5 mb-5" : "bg-white mt-5"
                 }`}
               >
-                {plan.popular && (
-                  <div className="absolute -top-2 md:-top-3 right-4 md:right-6 bg-[#3D0BBE] text-white text-[10px] md:text-xs font-semibold px-2 md:px-3 py-0.5 md:py-1 rounded-full">
-                    Popular
-                  </div>
-                )}
+             
                 <h3 className="text-[18px] md:text-[20px] lg:text-[22px] font-bold text-gray-900 mb-3 md:mb-4">
                   {plan.name}
                 </h3>
@@ -89,14 +85,14 @@ const MonthlyPlansPage = () => {
       </section>
 
       {/* Sign Up Button */}
-      <section className="py-4 bg-white mb-20">
+      {/* <section className="py-4 bg-white mb-20">
         <div className="max-w-6xl mx-auto px-6 md:px-10 flex justify-center">
           <button onClick={() => window.location.href = '/signup'} className="inline-flex items-center gap-2 rounded-full border-2 border-purple-700 bg-white px-8 py-3 text-[16px] md:text-[18px] font-semibold text-purple-700 hover:bg-purple-50 transition">
             Sign Up
             <span>→</span>
           </button>
         </div>
-      </section>
+      </section> */}
 
       <Footer />
     </div>

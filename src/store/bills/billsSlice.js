@@ -159,6 +159,28 @@ export const deleteSupportingDocument = createAsyncThunk(
   }
 );
 
+export const deleteBill = createAsyncThunk(
+  "bills/deleteBill",
+  async (billId, { rejectWithValue }) => {
+    try {
+      const response = await axiosClient.delete(`/bills/${billId}`);
+      if (response.data?.success === false) {
+        return rejectWithValue(
+          response.data?.message || "Failed to delete bill."
+        );
+      }
+      return { billId, ...response.data };
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Failed to delete bill. Please try again.";
+      return rejectWithValue(message);
+    }
+  }
+);
+
 const billsSlice = createSlice({
   name: "bills",
   initialState: {
@@ -172,6 +194,8 @@ const billsSlice = createSlice({
     supportingDocUploadError: "",
     supportingDocDeleteLoading: false,
     supportingDocDeleteError: "",
+    billDeleteLoading: false,
+    billDeleteError: "",
   },
   reducers: {
     clearUploadError: (state) => {
@@ -226,6 +250,18 @@ const billsSlice = createSlice({
         state.hipaaDeleteLoading = false;
         state.hipaaDeleteError =
           action.payload || "Failed to remove HIPAA form. Please try again.";
+      })
+      .addCase(deleteBill.pending, (state) => {
+        state.billDeleteLoading = true;
+        state.billDeleteError = "";
+      })
+      .addCase(deleteBill.fulfilled, (state) => {
+        state.billDeleteLoading = false;
+      })
+      .addCase(deleteBill.rejected, (state, action) => {
+        state.billDeleteLoading = false;
+        state.billDeleteError =
+          action.payload || "Failed to delete bill. Please try again.";
       });
   },
 });
