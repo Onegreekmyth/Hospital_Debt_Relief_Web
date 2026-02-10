@@ -74,6 +74,29 @@ export const updateFamilyMember = createAsyncThunk(
   }
 );
 
+// Update family member subscription plan inclusion (remove from / add to plan)
+export const updateFamilyMemberSubscription = createAsyncThunk(
+  'familyMembers/updateFamilyMemberSubscription',
+  async ({ id, withActiveSubscription }, { rejectWithValue }) => {
+    try {
+      const response = await axiosClient.patch(`/family-members/${id}/subscription`, {
+        withActiveSubscription,
+      });
+      if (response.data?.success) {
+        return { _id: response.data.data._id, withActiveSubscription: response.data.data.withActiveSubscription };
+      }
+      return rejectWithValue('Failed to update');
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        'Failed to update subscription preference';
+      return rejectWithValue(message);
+    }
+  }
+);
+
 // Delete a family member
 export const deleteFamilyMember = createAsyncThunk(
   'familyMembers/deleteFamilyMember',
@@ -185,6 +208,13 @@ const familyMembersSlice = createSlice({
       .addCase(deleteFamilyMember.rejected, (state, action) => {
         state.operationStatus = 'failed';
         state.operationError = action.payload || 'Failed to delete family member';
+      })
+      // Update family member subscription (remove from / add to plan)
+      .addCase(updateFamilyMemberSubscription.fulfilled, (state, action) => {
+        const index = state.items.findIndex((item) => item._id === action.payload._id);
+        if (index !== -1) {
+          state.items[index].withActiveSubscription = action.payload.withActiveSubscription;
+        }
       });
   },
 });

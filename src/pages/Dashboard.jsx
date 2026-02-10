@@ -16,6 +16,7 @@ import {
   createFamilyMember,
   updateFamilyMember,
   deleteFamilyMember,
+  updateFamilyMemberSubscription,
   clearError,
   setFamilyMembers,
 } from "../store/familyMembers/familyMembersSlice";
@@ -134,10 +135,12 @@ const Dashboard = () => {
       });
   }, [dispatch, navigate]);
 
-  // Initialize remove from plan array when family members change
+  // Sync local "remove from plan" state from API (for family members; account holder stays local)
   useEffect(() => {
     if (familyMembers.length > 0) {
-      setFamilyMembersRemoveFromPlan(familyMembers.map(() => false));
+      setFamilyMembersRemoveFromPlan(
+        familyMembers.map((m) => m.withActiveSubscription === false)
+      );
     }
   }, [familyMembers]);
 
@@ -255,10 +258,10 @@ const Dashboard = () => {
     .filter(Boolean)
     .join(" ")
     .trim();
-  // Subscription plan count: only people NOT excluded by "Remove from plan" checkbox
+  // Subscription plan count: account holder + family members with withActiveSubscription !== false
   const effectivePlanCount =
     (accountHolderRemoveFromPlan ? 0 : 1) +
-    familyMembers.reduce((sum, _, i) => sum + (familyMembersRemoveFromPlan[i] ? 0 : 1), 0);
+    familyMembers.filter((m) => m.withActiveSubscription !== false).length;
   const householdCount = Math.max(effectivePlanCount, 1);
 
   const getSubscriptionInfoForHousehold = (count) => {
@@ -568,12 +571,13 @@ const Dashboard = () => {
                         {accountHolderName || (profileLoading ? "Loading..." : "—")}
                       </span>
                     </div>
-                    <label className="flex items-center gap-2 cursor-pointer">
+                    <label className={`flex items-center gap-2 ${subscriptionStatus === "active" ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}>
                       <input
                         type="checkbox"
                         checked={accountHolderRemoveFromPlan}
                         onChange={(e) => setAccountHolderRemoveFromPlan(e.target.checked)}
-                        className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                        disabled={subscriptionStatus === "active"}
+                        className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 disabled:cursor-not-allowed"
                       />
                       <span className="text-xs font-sm text-gray-500">Remove from Subscription Plan</span>
                     </label>
@@ -594,7 +598,7 @@ const Dashboard = () => {
                       const relationshipLabel = member.relationship 
                         ? member.relationship.charAt(0).toUpperCase() + member.relationship.slice(1).replace(/-/g, " ")
                         : "Family Member";
-                      const removeFromPlan = familyMembersRemoveFromPlan[index] ?? false;
+                      const removeFromPlan = member.withActiveSubscription === false;
                       return (
                         <div key={member._id || index} className="space-y-2 relative pt-2">
                           <div className="absolute -top-3 left-6 bg-white px-2 py-0.5 rounded-b-md z-10">
@@ -635,18 +639,21 @@ const Dashboard = () => {
                               </button>
                             </div>
                           </div>
-                          <label className="flex items-center gap-2 cursor-pointer">
+                          <label className={`flex items-center gap-2 ${subscriptionStatus === "active" ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}>
                             <input
                               type="checkbox"
                               checked={removeFromPlan}
-                              onChange={(e) => {
-                                setFamilyMembersRemoveFromPlan((prev) => {
-                                  const next = [...prev];
-                                  next[index] = e.target.checked;
-                                  return next;
-                                });
+                              onChange={() => {
+                                if (subscriptionStatus === "active") return;
+                                dispatch(
+                                  updateFamilyMemberSubscription({
+                                    id: member._id,
+                                    withActiveSubscription: !(member.withActiveSubscription === false),
+                                  })
+                                );
                               }}
-                              className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                              disabled={subscriptionStatus === "active"}
+                              className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 disabled:cursor-not-allowed"
                             />
                             <span className="text-xs font-sm text-gray-500">Remove from Subscription Plan</span>
                           </label>

@@ -19,6 +19,10 @@ const SubscriptionModal = ({
   const { checkoutError } = useSelector((state) => state.payments);
 
   const handleStart = async () => {
+    if (householdCount < 1) {
+      setError("Please include at least one member in your subscription plan. Uncheck \"Remove from Subscription Plan\" for at least one member.");
+      return;
+    }
     if (!agreementChecked) {
       setError("You must acknowledge the notice above before starting your subscription.");
       return;
@@ -128,6 +132,14 @@ const SubscriptionModal = ({
             </div>
           </div>
 
+          {householdCount < 1 && (
+            <div className="p-3 rounded-lg bg-amber-50 border border-amber-200">
+              <p className="text-sm text-amber-800">
+                Please include at least one member in your subscription plan. Uncheck &quot;Remove from Subscription Plan&quot; for the account holder or a family member, then try again.
+              </p>
+            </div>
+          )}
+
           {/* Monthly Subscription Amount */}
           <div className="space-y-1">
             <p className="text-xs md:text-sm font-semibold text-gray-900">
@@ -187,7 +199,7 @@ const SubscriptionModal = ({
               type="button"
               className="w-full h-11 md:h-12 rounded-full bg-[#2e1570] text-white font-semibold text-sm md:text-base hover:from-purple-600 hover:to-purple-800 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleStart}
-              disabled={loading || !agreementChecked}
+              disabled={loading || householdCount < 1 || !agreementChecked}
             >
               {loading ? "Processing..." : "Start My Subscription Plan"}
             </button>

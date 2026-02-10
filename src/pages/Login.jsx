@@ -37,6 +37,12 @@ const Login = () => {
         },
       });
     } catch (error) {
+      navigate("/otp-verification", {
+        state: {
+          from: "login",
+          email: email.trim(),
+        },
+      });
       const message =
         error.response?.data?.message ||
         error.response?.data?.error ||
