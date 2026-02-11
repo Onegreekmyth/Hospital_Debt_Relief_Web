@@ -211,9 +211,15 @@ const familyMembersSlice = createSlice({
       })
       // Update family member subscription (remove from / add to plan)
       .addCase(updateFamilyMemberSubscription.fulfilled, (state, action) => {
-        const index = state.items.findIndex((item) => item._id === action.payload._id);
+        const id = action.payload._id;
+        const index = state.items.findIndex(
+          (item) => (item._id && id && String(item._id) === String(id))
+        );
         if (index !== -1) {
-          state.items[index].withActiveSubscription = action.payload.withActiveSubscription;
+          state.items[index] = {
+            ...state.items[index],
+            withActiveSubscription: action.payload.withActiveSubscription,
+          };
         }
       });
   },

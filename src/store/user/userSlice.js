@@ -9,6 +9,7 @@ const initialProfileState = {
   mailingAddress: '',
   annualHouseholdIncome: '',
   hospitalInfo: null,
+  withActiveSubscription: true,
 };
 
 // Register (signup) - POST /auth/register
@@ -77,6 +78,7 @@ export const fetchProfile = createAsyncThunk(
           ? annualHouseholdIncome.toLocaleString('en-US')
           : '',
         hospitalInfo,
+        withActiveSubscription: userData.withActiveSubscription !== false,
       };
 
       return { profile, userData };
@@ -87,6 +89,29 @@ export const fetchProfile = createAsyncThunk(
         error.message ||
         'Failed to load profile';
       return rejectWithValue({ message, status: error.response?.status });
+    }
+  }
+);
+
+// Update account holder subscription inclusion (remove from / add to plan)
+export const updateAccountHolderSubscription = createAsyncThunk(
+  'user/updateAccountHolderSubscription',
+  async ({ withActiveSubscription }, { rejectWithValue }) => {
+    try {
+      const response = await axiosClient.patch('/auth/profile/subscription-inclusion', {
+        withActiveSubscription,
+      });
+      if (!response.data?.success) {
+        return rejectWithValue(response.data?.message || 'Failed to update');
+      }
+      return { withActiveSubscription: response.data.data?.withActiveSubscription };
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        'Failed to update subscription preference';
+      return rejectWithValue(message);
     }
   }
 );
@@ -188,6 +213,11 @@ const userSlice = createSlice({
         state.updateStatus = 'idle';
         const p = action.payload;
         state.updateError = typeof p === 'string' ? p : p?.message || 'Failed to update profile';
+      })
+      .addCase(updateAccountHolderSubscription.fulfilled, (state, action) => {
+        if (action.payload?.withActiveSubscription !== undefined) {
+          state.profile.withActiveSubscription = action.payload.withActiveSubscription;
+        }
       });
   },
 });

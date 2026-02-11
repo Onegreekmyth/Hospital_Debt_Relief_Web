@@ -14,6 +14,8 @@ const ApplicationSubmittedModal = ({
   billId,
   billData,
   profile,
+  hasActiveSubscription = false,
+  familyMembers = [],
   supportingDocuments = [],
   onBillUpdated,
 }) => {
@@ -33,6 +35,21 @@ const ApplicationSubmittedModal = ({
   const [docToDelete, setDocToDelete] = useState(null);
 
   const displayUploadError = uploadErrorFromSlice || uploadError;
+
+  // Only show $299 flat fee when user has no active subscription, or the bill's patient is not included in the subscription
+  const accountHolderName = [profile?.firstName, profile?.lastName].filter(Boolean).join(" ").trim().toLowerCase();
+  const patientNameNorm = (billData?.patientName || "").trim().toLowerCase();
+  const isAccountHolder = accountHolderName && patientNameNorm && accountHolderName === patientNameNorm;
+  const isBillPatientInSubscription = (() => {
+    if (!billData?.patientName) return true;
+    if (isAccountHolder) return profile?.withActiveSubscription !== false;
+    const member = familyMembers.find(
+      (m) =>
+        [m?.firstName, m?.lastName].filter(Boolean).join(" ").trim().toLowerCase() === patientNameNorm
+    );
+    return member ? member.withActiveSubscription !== false : true;
+  })();
+  const showFlatFeeButton = !hasActiveSubscription || !isBillPatientInSubscription;
 
   if (!isOpen) return null;
 
@@ -333,13 +350,15 @@ const ApplicationSubmittedModal = ({
           )}
         </div>
 
-        {/* Payment Button */}
-        <button
-          type="button"
-          className="w-full py-3 md:py-4 rounded-full bg-gradient-to-r from-purple-700 to-purple-900 text-white font-bold text-sm md:text-base mb-3 md:mb-5 hover:from-purple-600 hover:to-purple-800 transition-all shadow-lg"
-        >
-          Pay $299 Flat Fee
-        </button>
+        {/* Payment Button - only for patients not included in active subscription */}
+        {showFlatFeeButton && (
+          <button
+            type="button"
+            className="w-full py-3 md:py-4 rounded-full bg-gradient-to-r from-purple-700 to-purple-900 text-white font-bold text-sm md:text-base mb-3 md:mb-5 hover:from-purple-600 hover:to-purple-800 transition-all shadow-lg"
+          >
+            Pay $299 Flat Fee
+          </button>
+        )}
 
         {/* Complete Application Button */}
         <button

@@ -51,6 +51,28 @@ export const syncStripeSession = createAsyncThunk(
   }
 );
 
+export const cancelSubscription = createAsyncThunk(
+  "payments/cancelSubscription",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosClient.post("/payments/cancel-subscription");
+      if (!response.data?.success) {
+        return rejectWithValue(
+          response.data?.message || "Failed to cancel subscription"
+        );
+      }
+      return response.data?.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message ||
+          "Failed to cancel subscription"
+      );
+    }
+  }
+);
+
 const paymentsSlice = createSlice({
   name: "payments",
   initialState: {
@@ -59,6 +81,8 @@ const paymentsSlice = createSlice({
     checkoutUrl: "",
     syncLoading: false,
     syncError: "",
+    cancelLoading: false,
+    cancelError: "",
   },
   reducers: {
     clearCheckoutError: (state) => {
@@ -66,6 +90,9 @@ const paymentsSlice = createSlice({
     },
     clearSyncError: (state) => {
       state.syncError = "";
+    },
+    clearCancelError: (state) => {
+      state.cancelError = "";
     },
   },
   extraReducers: (builder) => {
@@ -93,9 +120,20 @@ const paymentsSlice = createSlice({
       .addCase(syncStripeSession.rejected, (state, action) => {
         state.syncLoading = false;
         state.syncError = action.payload || "Failed to sync subscription.";
+      })
+      .addCase(cancelSubscription.pending, (state) => {
+        state.cancelLoading = true;
+        state.cancelError = "";
+      })
+      .addCase(cancelSubscription.fulfilled, (state) => {
+        state.cancelLoading = false;
+      })
+      .addCase(cancelSubscription.rejected, (state, action) => {
+        state.cancelLoading = false;
+        state.cancelError = action.payload || "Failed to cancel subscription.";
       });
   },
 });
 
-export const { clearCheckoutError, clearSyncError } = paymentsSlice.actions;
+export const { clearCheckoutError, clearSyncError, clearCancelError } = paymentsSlice.actions;
 export default paymentsSlice.reducer;

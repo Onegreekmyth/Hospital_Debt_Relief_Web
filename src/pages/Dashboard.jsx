@@ -11,7 +11,7 @@ import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import HospitalMap from "../components/HospitalMap";
 import uploadImg from "../assets/upload-img.png";
 import rightArrow from "../assets/right-arrow.png";
-import { syncStripeSession } from "../store/payments/paymentsSlice";
+import { syncStripeSession, cancelSubscription, clearCancelError } from "../store/payments/paymentsSlice";
 import {
   createFamilyMember,
   updateFamilyMember,
@@ -23,6 +23,7 @@ import {
 import {
   fetchProfile,
   updateProfile,
+  updateAccountHolderSubscription,
   setProfileField,
   clearUpdateSuccess,
 } from "../store/user/userSlice";
@@ -73,6 +74,10 @@ const Dashboard = () => {
     operationError,
   } = useSelector((state) => state.familyMembers);
   const familyMembersLoading = familyMembersStatus === 'loading';
+
+  const { cancelLoading: cancelSubscriptionLoading, cancelError: cancelSubscriptionError } = useSelector(
+    (state) => state.payments
+  );
 
   // High-level onboarding and eligibility state (placeholder for backend data)
   const [subscriptionStatus, setSubscriptionStatus] = useState("inactive"); // "inactive" | "active"
@@ -135,7 +140,7 @@ const Dashboard = () => {
       });
   }, [dispatch, navigate]);
 
-  // Sync local "remove from plan" state from API (for family members; account holder stays local)
+  // Sync local "remove from plan" state from API (family members + account holder from profile)
   useEffect(() => {
     if (familyMembers.length > 0) {
       setFamilyMembersRemoveFromPlan(
@@ -143,6 +148,12 @@ const Dashboard = () => {
       );
     }
   }, [familyMembers]);
+
+  useEffect(() => {
+    if (profile && Object.prototype.hasOwnProperty.call(profile, "withActiveSubscription")) {
+      setAccountHolderRemoveFromPlan(profile.withActiveSubscription === false);
+    }
+  }, [profile?.withActiveSubscription]);
 
   // Clear errors when component mounts or when modal closes
   useEffect(() => {
@@ -575,7 +586,16 @@ const Dashboard = () => {
                       <input
                         type="checkbox"
                         checked={accountHolderRemoveFromPlan}
-                        onChange={(e) => setAccountHolderRemoveFromPlan(e.target.checked)}
+                        onChange={(e) => {
+                          if (subscriptionStatus === "active") return;
+                          const checked = e.target.checked;
+                          setAccountHolderRemoveFromPlan(checked);
+                          dispatch(
+                            updateAccountHolderSubscription({
+                              withActiveSubscription: !checked,
+                            })
+                          );
+                        }}
                         disabled={subscriptionStatus === "active"}
                         className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 disabled:cursor-not-allowed"
                       />
@@ -645,10 +665,11 @@ const Dashboard = () => {
                               checked={removeFromPlan}
                               onChange={() => {
                                 if (subscriptionStatus === "active") return;
+                                const newRemovedFromPlan = !removeFromPlan;
                                 dispatch(
                                   updateFamilyMemberSubscription({
                                     id: member._id,
-                                    withActiveSubscription: !(member.withActiveSubscription === false),
+                                    withActiveSubscription: !newRemovedFromPlan,
                                   })
                                 );
                               }}
@@ -821,12 +842,19 @@ const Dashboard = () => {
                           Subscription Status
                         </span>
                         <span
-                          className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] md:text-xs font-medium ${subscriptionStatus === "active"
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] md:text-xs font-medium ${
+                            subscriptionStatus === "active"
                               ? "bg-green-100 text-green-700"
-                              : "bg-[#ffd7da] text-[#d45360]"
-                            }`}
+                              : subscriptionStatus === "cancelled"
+                                ? "bg-amber-100 text-amber-800"
+                                : "bg-[#ffd7da] text-[#d45360]"
+                          }`}
                         >
-                          {subscriptionStatus === "active" ? "Active" : "Inactive"}
+                          {subscriptionStatus === "active"
+                            ? "Active"
+                            : subscriptionStatus === "cancelled"
+                              ? "Cancelled"
+                              : "Inactive"}
                         </span>
                       </div>
 
@@ -840,13 +868,19 @@ const Dashboard = () => {
                             className="text-[11px] md:text-[12px] font-extrabold text-[#5225cc]"
                             onClick={(e) => {
                               e.stopPropagation();
+                              dispatch(clearCancelError());
                               setIsCancelSubscriptionOpen(true);
                             }}
                           >
                             Cancel My Subscription Plan
                           </button>
-                        
                         </>
+                      )}
+
+                      {subscriptionStatus === "cancelled" && (
+                        <span className="text-[11px] md:text-xs text-gray-600 text-center">
+                          Subscription will end at the end of the current billing period. You can re-subscribe anytime.
+                        </span>
                       )}
 
                       <div className="flex items-center justify-center">
@@ -893,6 +927,8 @@ const Dashboard = () => {
         billId={submittedBillId}
         billData={submittedBillData}
         profile={profile}
+        hasActiveSubscription={subscriptionStatus === "active"}
+        familyMembers={familyMembers}
       />
 
       {/* Monthly Subscription Modal */}
@@ -917,7 +953,7 @@ const Dashboard = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={() => setIsCancelSubscriptionOpen(false)}
+            onClick={() => !cancelSubscriptionLoading && setIsCancelSubscriptionOpen(false)}
           />
           <div className="relative w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
             <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3">
@@ -927,24 +963,35 @@ const Dashboard = () => {
               Are you sure you want to cancel your subscription plan? You can
               re-subscribe anytime.
             </p>
+            {cancelSubscriptionError && (
+              <p className="text-sm text-red-600 mb-3">{cancelSubscriptionError}</p>
+            )}
             <div className="flex flex-col md:flex-row gap-3">
               <button
                 type="button"
+                disabled={cancelSubscriptionLoading}
                 onClick={() => setIsCancelSubscriptionOpen(false)}
-                className="flex-1 rounded-full border-2 border-[#4e30a2] py-2.5 text-sm md:text-base font-semibold text-[#4e30a2] hover:bg-purple-50 transition"
+                className="flex-1 rounded-full border-2 border-[#4e30a2] py-2.5 text-sm md:text-base font-semibold text-[#4e30a2] hover:bg-purple-50 transition disabled:opacity-50"
               >
                 Keep Subscription
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  setSubscriptionStatus("inactive");
-                  setSubscriptionTier(null);
-                  setIsCancelSubscriptionOpen(false);
+                disabled={cancelSubscriptionLoading}
+                onClick={async () => {
+                  try {
+                    await dispatch(cancelSubscription()).unwrap();
+                    const { userData } = await dispatch(fetchProfile()).unwrap();
+                    setSubscriptionStatus(userData?.subscription?.status || "inactive");
+                    setSubscriptionTier(userData?.subscription?.planId || null);
+                    setIsCancelSubscriptionOpen(false);
+                  } catch (e) {
+                    // Error already in cancelSubscriptionError
+                  }
                 }}
-                className="flex-1 rounded-full bg-[#2e1570] py-2.5 text-sm md:text-base font-semibold text-white hover:bg-[#241053] transition"
+                className="flex-1 rounded-full bg-[#2e1570] py-2.5 text-sm md:text-base font-semibold text-white hover:bg-[#241053] transition disabled:opacity-50"
               >
-                Yes, Cancel
+                {cancelSubscriptionLoading ? "Cancelling..." : "Yes, Cancel"}
               </button>
             </div>
           </div>
