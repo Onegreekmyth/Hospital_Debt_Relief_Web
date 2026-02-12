@@ -221,15 +221,6 @@ const SubscriptionModal = ({
               {loading ? "Processing..." : "Start My Subscription Plan"}
             </button>
 
-            {hasActiveSubscription ? (
-              <button
-                type="button"
-                className="w-full h-11 md:h-12 rounded-full text-[#4e30a2] font-semibold text-sm md:text-base hover:from-purple-600/80 hover:to-purple-800/80 transition border-2 border-[#4e30a2]"
-                onClick={handleCancel}
-              >
-                Cancel My Subscription Plan
-              </button>
-            ) : (
               <button
                 type="button"
                 className="w-full h-11 md:h-12 rounded-full text-[#4e30a2] font-semibold text-sm md:text-base border-2 border-[#4e30a2] hover:bg-purple-50 transition"
@@ -237,7 +228,7 @@ const SubscriptionModal = ({
               >
                 Close
               </button>
-            )}
+          
           </div>
         </div>
       </div>

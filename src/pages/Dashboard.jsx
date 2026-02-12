@@ -80,9 +80,51 @@ const Dashboard = () => {
   );
 
   // High-level onboarding and eligibility state (placeholder for backend data)
-  const [subscriptionStatus, setSubscriptionStatus] = useState("inactive"); // "inactive" | "active"
+  const [subscriptionStatus, setSubscriptionStatus] = useState("inactive"); // "inactive" | "active" | "cancelled"
   const [subscriptionTier, setSubscriptionTier] = useState(null); // "7" | "14" | "21" | null
-  const [subscriptionDate, setSubscriptionDate] = useState("10/28/2025");
+  const [subscriptionDate, setSubscriptionDate] = useState("");
+  const [subscriptionEndDate, setSubscriptionEndDate] = useState("");
+  const [subscriptionWillCancel, setSubscriptionWillCancel] = useState(false);
+
+  const applySubscriptionFromData = (sub) => {
+    if (!sub) {
+      setSubscriptionStatus("inactive");
+      setSubscriptionTier(null);
+      setSubscriptionDate("");
+      setSubscriptionEndDate("");
+      setSubscriptionWillCancel(false);
+      return;
+    }
+
+    // Use backend status directly; just track cancelAtPeriodEnd separately
+    const uiStatus = sub.status || "inactive";
+
+    setSubscriptionStatus(uiStatus);
+    setSubscriptionTier(sub.planId || null);
+    setSubscriptionWillCancel(!!sub.cancelAtPeriodEnd);
+
+    const start = sub.currentPeriodStart ? new Date(sub.currentPeriodStart) : null;
+    const end = sub.currentPeriodEnd ? new Date(sub.currentPeriodEnd) : null;
+
+    setSubscriptionDate(
+      start
+        ? start.toLocaleDateString("en-US", {
+            month: "2-digit",
+            day: "2-digit",
+            year: "numeric",
+          })
+        : ""
+    );
+    setSubscriptionEndDate(
+      end
+        ? end.toLocaleDateString("en-US", {
+            month: "2-digit",
+            day: "2-digit",
+            year: "numeric",
+          })
+        : ""
+    );
+  };
   const [eligibilityStatus, setEligibilityStatus] = useState("eligible"); // "eligible" | "ineligible"
   const [discountPercentage, setDiscountPercentage] = useState(40); // Example: calculated by backend
 
@@ -98,8 +140,37 @@ const Dashboard = () => {
           await dispatch(syncStripeSession({ sessionId })).unwrap();
           const { userData } = await dispatch(fetchProfile()).unwrap();
           if (userData?.subscription) {
-            setSubscriptionStatus(userData.subscription.status || "inactive");
-            setSubscriptionTier(userData.subscription.planId || null);
+            const sub = userData.subscription;
+            const isCancelledAtPeriodEnd = sub.cancelAtPeriodEnd;
+            // Treat cancel-at-period-end as "cancelled" in UI even if backend status is still "active"
+            const uiStatus = isCancelledAtPeriodEnd
+              ? "cancelled"
+              : sub.status || "inactive";
+
+            setSubscriptionStatus(uiStatus);
+            setSubscriptionTier(sub.planId || null);
+
+            const start = sub.currentPeriodStart ? new Date(sub.currentPeriodStart) : null;
+            const end = sub.currentPeriodEnd ? new Date(sub.currentPeriodEnd) : null;
+
+            setSubscriptionDate(
+              start
+                ? start.toLocaleDateString("en-US", {
+                    month: "2-digit",
+                    day: "2-digit",
+                    year: "numeric",
+                  })
+                : ""
+            );
+            setSubscriptionEndDate(
+              end
+                ? end.toLocaleDateString("en-US", {
+                    month: "2-digit",
+                    day: "2-digit",
+                    year: "numeric",
+                  })
+                : ""
+            );
           }
         } catch (err) {
           console.error("Failed to sync subscription:", err);
@@ -129,9 +200,8 @@ const Dashboard = () => {
             ? Number(userData.eligibilityData.householdSize)
             : 1
         );
-        if (userData?.subscription?.status) {
-          setSubscriptionStatus(userData.subscription.status);
-          setSubscriptionTier(userData.subscription.planId || null);
+        if (userData?.subscription) {
+          applySubscriptionFromData(userData.subscription);
         }
         dispatch(setFamilyMembers(userData?.familyMembers || []));
       })
@@ -822,12 +892,14 @@ const Dashboard = () => {
                     tabIndex={0}
                     onClick={() => {
                       if (subscriptionStatus === "active") {
-                        // When subscription is active, clicking anywhere on the box
-                        // should open the Cancel Subscription confirmation modal
-                        dispatch(clearCancelError());
-                        setIsCancelSubscriptionOpen(true);
+                        if (!subscriptionWillCancel) {
+                          // Active and not scheduled to cancel: allow user to cancel now
+                          dispatch(clearCancelError());
+                          setIsCancelSubscriptionOpen(true);
+                        }
+                        // Active but already scheduled to cancel: show info only, no modal
                       } else {
-                        // Otherwise open the subscription details/start modal
+                        // No active subscription: open subscription details/start modal
                         setIsSubscriptionModalOpen(true);
                       }
                     }}
@@ -835,14 +907,18 @@ const Dashboard = () => {
                       if (e.key === "Enter" || e.key === " ") {
                         e.preventDefault();
                         if (subscriptionStatus === "active") {
-                          dispatch(clearCancelError());
-                          setIsCancelSubscriptionOpen(true);
+                          if (!subscriptionWillCancel) {
+                            dispatch(clearCancelError());
+                            setIsCancelSubscriptionOpen(true);
+                          }
                         } else {
                           setIsSubscriptionModalOpen(true);
                         }
                       }
                     }}
-                    className="group h-32 md:h-36 hover:bg-[#e2dfec] w-full rounded-[26px] border-2 border-[#5225cc] bg-white px-6 py-5 flex flex-col items-center justify-between hover:shadow-md transition"
+                    className={`group w-full rounded-[26px] border-2 border-[#5225cc] bg-white px-6 py-5 flex flex-col items-center justify-between hover:bg-[#e2dfec] hover:shadow-md transition ${
+                      subscriptionWillCancel ? "min-h-[9.5rem] md:min-h-[9.5rem]" : "min-h-[8rem] md:min-h-[9rem]"
+                    }`}
                   >
                     {subscriptionStatus === "inactive" && (
 
@@ -880,28 +956,36 @@ const Dashboard = () => {
 
                       {subscriptionStatus === "active" && (
                         <>
-                          <span className="text-[11px] md:text-xs  text-[#5225cc]">
+                          <span className="text-[11px] md:text-xs text-[#5225cc]">
                             Subscription Date: {subscriptionDate}
                           </span>
-                          <span className="text-[11px] md:text-[12px] font-extrabold text-[#5225cc]">
-                            Cancel My Subscription Plan
-                          </span>
+                          {!subscriptionWillCancel && (
+                            <span className="text-[11px] md:text-[12px] font-extrabold text-[#5225cc]">
+                              Cancel My Subscription Plan
+                            </span>
+                          )}
                         </>
                       )}
 
-                      {subscriptionStatus === "cancelled" && (
-                        <span className="text-[11px] md:text-xs text-gray-600 text-center">
-                          Subscription will end at the end of the current billing period. You can re-subscribe anytime.
+                      {subscriptionWillCancel && (
+                        <span className="text-[11px] md:text-xs text-amber-600 text-center font-medium">
+                          Your subscription is cancelled and will end on{" "}
+                          <span className="font-semibold">
+                            {subscriptionEndDate || "the end of the current billing period"}
+                          </span>
+                          . You can start a new subscription after this date.
                         </span>
                       )}
 
-                      <div className="flex items-center justify-center">
-                        <img
-                          src={rightArrow}
-                          alt="View subscription"
-                          className="w-6 h-6 md:w-7 md:h-7 object-contain"
-                        />
-                      </div>
+                      {!subscriptionWillCancel && (
+                        <div className="flex items-center justify-center">
+                          <img
+                            src={rightArrow}
+                            alt="View subscription"
+                            className="w-6 h-6 md:w-7 md:h-7 object-contain"
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -957,10 +1041,14 @@ const Dashboard = () => {
         }}
         onCancelSubscription={() => {
           // When user clicks "Cancel My Subscription Plan" inside the subscription box
-          // open the Cancel Subscription confirmation modal.
-          dispatch(clearCancelError());
-          setIsSubscriptionModalOpen(false);
-          setIsCancelSubscriptionOpen(true);
+          // only open the confirmation if it's not already scheduled to cancel
+          if (!subscriptionWillCancel) {
+            dispatch(clearCancelError());
+            setIsSubscriptionModalOpen(false);
+            setIsCancelSubscriptionOpen(true);
+          } else {
+            setIsSubscriptionModalOpen(false);
+          }
         }}
       />
 
