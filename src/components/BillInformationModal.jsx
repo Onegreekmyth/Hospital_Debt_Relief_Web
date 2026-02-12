@@ -223,22 +223,36 @@ const BillInformationModal = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl md:rounded-3xl shadow-xl p-4 md:p-6"
+        className="relative w-full max-w-md sm:max-w-lg bg-white rounded-2xl md:rounded-3xl shadow-xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
-        style={{
-          width: "100%",
-          maxWidth: "520px",
-        }}
       >
-        <h2 className="text-xl md:text-2xl font-bold text-gray-900 text-center mb-3 md:mb-4">
-          Bill Information
-        </h2>
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 sm:px-6 pt-4 sm:pt-5 pb-2">
+          <h2 className="flex-1 text-center text-lg md:text-2xl font-bold text-gray-900">
+            Bill Information
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="ml-2 inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 text-gray-500"
+            aria-label="Close bill information modal"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
 
-        <form className="space-y-3 md:space-y-4" onSubmit={handleSubmit}>
+        <form className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-3 md:space-y-4" onSubmit={handleSubmit}>
           {/* Name of Patient */}
           <div className="flex flex-col gap-2">
             <label className="text-xs md:text-sm font-medium text-gray-700">

@@ -303,21 +303,38 @@ const HipaaAuthorizationModal = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+      className="fixed inset-0 z-50 flex items-start justify-center  p-3 sm:p-4 pt-20 md:pt-24 pb-6"
       onClick={onClose}
     >
       <div
-        className="max-h-[85vh] w-full max-w-3xl overflow-y-auto thin-scrollbar rounded-3xl bg-white p-5 md:p-7 shadow-2xl"
+        className="relative w-full max-w-md sm:max-w-3xl max-h-[80vh] overflow-y-auto thin-scrollbar rounded-3xl bg-white p-4 md:p-7 shadow-2xl mt-2"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-start justify-between gap-4 mb-6">
+        {/* Close button */}
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 md:hidden"
+          aria-label="Close HIPAA form"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+
+        <div className="flex items-start justify-between gap-4 mb-4 md:mb-6">
           <h3 className="text-xl md:text-2xl font-bold text-gray-900">
             HIPAA Authorization Form
           </h3>
           <button
             type="button"
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
+            className="hidden md:inline-flex text-gray-500 hover:text-gray-700"
             aria-label="Close HIPAA form"
           >
             ✕
@@ -349,10 +366,8 @@ const HipaaAuthorizationModal = ({
               <input
                 type="text"
                 value={hipaaForm.hospitalName}
-                onChange={(e) =>
-                  setHipaaForm((prev) => ({ ...prev, hospitalName: e.target.value }))
-                }
-                className="mx-2 inline-flex w-56 rounded-md border border-yellow-300 bg-yellow-50 px-2 py-1 text-gray-900"
+                disabled
+                className="mx-2 inline-flex w-56 rounded-md border border-yellow-200 bg-gray-100 px-2 py-1 text-gray-700 text-xs md:text-sm cursor-not-allowed"
                 placeholder="Hospital Name"
               />
               {" "}is authorized to disclose the following protected health information to my hired third party company, www.HospitalDebtRelief.com of Frisco, Texas 75036.
@@ -382,10 +397,8 @@ const HipaaAuthorizationModal = ({
               <input
                 type="date"
                 value={hipaaForm.billDate}
-                onChange={(e) =>
-                  setHipaaForm((prev) => ({ ...prev, billDate: e.target.value }))
-                }
-                className="mx-2 inline-flex rounded-md border border-yellow-300 bg-yellow-50 px-2 py-1 text-gray-900"
+                disabled
+                className="mx-2 inline-flex rounded-md border border-yellow-200 bg-gray-100 px-2 py-1 text-gray-700 text-xs md:text-sm cursor-not-allowed"
               />{" "}
               and expires one year after the beginning date.
             </p>

@@ -4,7 +4,7 @@ const SubmissionModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
       {/* Background Overlay */}
       <div
         className="absolute inset-0 bg-black bg-opacity-50"
@@ -12,7 +12,24 @@ const SubmissionModal = ({ isOpen, onClose }) => {
       />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-2xl md:rounded-3xl shadow-2xl max-w-lg w-full p-6 md:p-8 lg:p-10 mx-4">
+      <div className="relative bg-white rounded-2xl md:rounded-3xl shadow-2xl max-w-sm sm:max-w-md md:max-w-lg w-full max-h-[90vh] overflow-y-auto p-5 md:p-7 lg:p-8 mx-4">
+        {/* Close button */}
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 text-gray-500"
+          aria-label="Close submission modal"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+
         {/* Green Circle with Checkmark */}
         <div className="flex justify-center mb-4 md:mb-6">
           <div className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full bg-green-500 flex items-center justify-center">

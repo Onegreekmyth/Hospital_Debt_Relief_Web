@@ -127,12 +127,24 @@ const BillHistory = () => {
     }
   };
 
+  // Lock background scroll when delete modal is open
+  useEffect(() => {
+    if (billToDelete) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [billToDelete]);
+
   return (
     <div className="min-h-screen bg-[#f5f5fb]">
       <Navbar />
 
-      <main className="pt-28 md:pt-28 pb-16 mt-10">
-        <div className="w-[92%] md:w-[90%] lg:w-[86%] mx-auto">
+      <main className="pt-24 md:pt-28 pb-16 mt-8 md:mt-10">
+        <div className="w-[94%] md:w-[90%] lg:w-[86%] mx-auto">
           <div className="flex items-center justify-between mb-6 md:mb-8">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
               Bill History
@@ -189,7 +201,7 @@ const BillHistory = () => {
             </div>
           </div>
 
-          <section className="bg-white border border-gray-300 rounded-[32px] shadow-sm overflow-hidden">
+          <section className="bg-white border border-gray-300 rounded-[24px] md:rounded-[32px] shadow-sm">
             {/* Loading State */}
             {loading && (
               <div className="p-10 text-center text-gray-500">
@@ -206,8 +218,9 @@ const BillHistory = () => {
 
             {/* Table */}
             {!loading && !error && (
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-left text-sm md:text-base">
+              <div className="max-h-[70vh] overflow-y-auto">
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-left text-sm md:text-base">
                   <thead>
                     <tr className="border-b border-gray-300 text-xs md:text-lg text-black">
                       <th className="px-6 md:px-10 py-4 font-large">Patient Name</th>
@@ -286,8 +299,9 @@ const BillHistory = () => {
                       </td>
                     </tr>
                   )}
-                </tbody>
-              </table>
+                  </tbody>
+                </table>
+                </div>
               </div>
             )}
           </section>

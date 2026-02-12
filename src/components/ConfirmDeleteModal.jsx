@@ -22,10 +22,12 @@ const ConfirmDeleteModal = ({ isOpen, onClose, onConfirm, title, message, member
 
       {/* Modal card */}
       <div
-        className="relative w-full max-w-md rounded-[32px] bg-white shadow-2xl overflow-hidden"
+        className="relative w-full max-w-md max-h-[90vh] rounded-[32px] bg-white shadow-2xl overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="relative px-5 sm:px-7 pt-6 pb-5 sm:pt-7 sm:pb-6">
+      
+
+        <div className="relative px-5 sm:px-7 pt-9 pb-5 sm:pt-7 sm:pb-6">
           {/* Header */}
           <div className="flex items-center justify-center mb-4 sm:mb-5">
             <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
@@ -61,18 +63,18 @@ const ConfirmDeleteModal = ({ isOpen, onClose, onConfirm, title, message, member
           </p>
 
           {/* Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-2">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 h-12 sm:h-14 rounded-full border-2 border-gray-300 bg-white text-gray-700 text-sm sm:text-base font-semibold hover:bg-gray-50 transition"
+              className="flex-1 h-12 sm:h-14 px-4 rounded-full border-2 border-gray-300 bg-white text-gray-700 text-sm sm:text-base font-semibold hover:bg-gray-50 transition"
             >
               Cancel
             </button>
             <button
               type="button"
               onClick={handleConfirm}
-              className="flex-1 h-12 sm:h-14 rounded-full bg-red-600 text-white text-sm sm:text-base font-semibold shadow-lg hover:bg-red-700 transition"
+              className="flex-1 h-12 sm:h-14 px-4 rounded-full bg-red-600 text-white text-sm sm:text-base font-semibold shadow-lg hover:bg-red-700 transition"
             >
               Delete
             </button>

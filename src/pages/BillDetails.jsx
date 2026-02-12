@@ -92,6 +92,18 @@ const BillDetails = () => {
     }
   };
 
+  // Lock background scroll when bill modals are open
+  useEffect(() => {
+    if (showHipaaDeleteConfirm || showApplicationModal) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [showHipaaDeleteConfirm, showApplicationModal]);
+
   useEffect(() => {
     const fetchBill = async () => {
       if (!id) return;

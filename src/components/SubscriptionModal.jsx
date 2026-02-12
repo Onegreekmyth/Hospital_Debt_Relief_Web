@@ -89,7 +89,7 @@ const SubscriptionModal = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
       {/* Background Overlay */}
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
@@ -97,8 +97,25 @@ const SubscriptionModal = ({
       />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-[32px] shadow-2xl max-w-xl w-full p-6 md:p-8 lg:p-10">
-        <h2 className="text-center text-2xl md:text-3xl font-bold text-gray-900 mb-6">
+      <div className="relative bg-white rounded-[32px] shadow-2xl max-w-md sm:max-w-xl w-full max-h-[90vh] overflow-y-auto p-5 md:p-8 lg:p-10">
+        {/* Close button on small screens */}
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 md:hidden"
+          aria-label="Close subscription modal"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+
+        <h2 className="text-center text-2xl md:text-3xl font-bold text-gray-900 mb-4 md:mb-6 mt-4 md:mt-0">
           Monthly Subscription
         </h2>
 

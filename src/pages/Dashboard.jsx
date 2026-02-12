@@ -247,7 +247,9 @@ const Dashboard = () => {
       isSubmissionModalOpen ||
       isSubscriptionModalOpen ||
       isAddFamilyModalOpen ||
-      isApplicationSubmittedModalOpen
+      isApplicationSubmittedModalOpen ||
+      isCancelSubscriptionOpen ||
+      isDeleteConfirmModalOpen
     ) {
       document.body.style.overflow = "hidden";
     } else {
@@ -263,6 +265,9 @@ const Dashboard = () => {
     isSubmissionModalOpen,
     isSubscriptionModalOpen,
     isAddFamilyModalOpen,
+    isApplicationSubmittedModalOpen,
+    isCancelSubscriptionOpen,
+    isDeleteConfirmModalOpen,
   ]);
 
   const accountHolderName = [profile.firstName, profile.lastName]
@@ -815,11 +820,26 @@ const Dashboard = () => {
                   <div
                     role="button"
                     tabIndex={0}
-                    onClick={() => setIsSubscriptionModalOpen(true)}
+                    onClick={() => {
+                      if (subscriptionStatus === "active") {
+                        // When subscription is active, clicking anywhere on the box
+                        // should open the Cancel Subscription confirmation modal
+                        dispatch(clearCancelError());
+                        setIsCancelSubscriptionOpen(true);
+                      } else {
+                        // Otherwise open the subscription details/start modal
+                        setIsSubscriptionModalOpen(true);
+                      }
+                    }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
                         e.preventDefault();
-                        setIsSubscriptionModalOpen(true);
+                        if (subscriptionStatus === "active") {
+                          dispatch(clearCancelError());
+                          setIsCancelSubscriptionOpen(true);
+                        } else {
+                          setIsSubscriptionModalOpen(true);
+                        }
                       }
                     }}
                     className="group h-32 md:h-36 hover:bg-[#e2dfec] w-full rounded-[26px] border-2 border-[#5225cc] bg-white px-6 py-5 flex flex-col items-center justify-between hover:shadow-md transition"
@@ -863,17 +883,9 @@ const Dashboard = () => {
                           <span className="text-[11px] md:text-xs  text-[#5225cc]">
                             Subscription Date: {subscriptionDate}
                           </span>
-                          <button
-                            type="button"
-                            className="text-[11px] md:text-[12px] font-extrabold text-[#5225cc]"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              dispatch(clearCancelError());
-                              setIsCancelSubscriptionOpen(true);
-                            }}
-                          >
+                          <span className="text-[11px] md:text-[12px] font-extrabold text-[#5225cc]">
                             Cancel My Subscription Plan
-                          </button>
+                          </span>
                         </>
                       )}
 
@@ -944,7 +956,11 @@ const Dashboard = () => {
           // The webhook will update the subscription status in the database
         }}
         onCancelSubscription={() => {
-          // User cancelled - just close the modal
+          // When user clicks "Cancel My Subscription Plan" inside the subscription box
+          // open the Cancel Subscription confirmation modal.
+          dispatch(clearCancelError());
+          setIsSubscriptionModalOpen(false);
+          setIsCancelSubscriptionOpen(true);
         }}
       />
 

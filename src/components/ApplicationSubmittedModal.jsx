@@ -131,29 +131,48 @@ const ApplicationSubmittedModal = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-30 p-3 sm:p-4 pt-24 md:pt-28"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl md:rounded-3xl shadow-xl p-4 md:p-6 max-w-xl w-full"
+        className="relative w-full max-w-md sm:max-w-xl bg-white rounded-2xl md:rounded-3xl shadow-xl mt-2"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Title */}
-        <h2 className="text-xl md:text-2xl font-bold text-gray-900 text-center mb-4 md:mb-6">
-          Application Submitted
-        </h2>
+        {/* Header */}
+        <div className="flex items-center justify-between px-3 sm:px-5 pt-3 sm:pt-4 pb-1">
+          <h2 className="flex-1 text-center text-base md:text-2xl font-bold text-gray-900">
+            Application Submitted
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="ml-2 inline-flex items-center justify-center w-7 h-7 rounded-full hover:bg-gray-100 text-gray-500"
+            aria-label="Close application submitted modal"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <div className="px-3 sm:px-5 pb-3 sm:pb-5">
 
         {/* Two Action Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-4 md:mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 mb-3 md:mb-5">
           {/* View Application Button */}
           <button
             type="button"
             onClick={handleViewApplication}
-            className="flex flex-col items-center justify-center p-4 md:p-5 rounded-2xl border-2 border-purple-200  hover:bg-purple-100 transition-colors"
+            className="flex flex-col items-center justify-center py-3 px-3 md:p-4 rounded-2xl border-2 border-purple-200  hover:bg-purple-100 transition-colors"
           >
-            <div className="mb-2">
+            <div className="mb-1.5">
               <svg
-                className="w-7 h-7 md:w-8 md:h-8 text-purple-700"
+                className="w-6 h-6 md:w-8 md:h-8 text-purple-700"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -172,7 +191,7 @@ const ApplicationSubmittedModal = ({
                 />
               </svg>
             </div>
-            <span className="text-sm md:text-base font-semibold text-purple-900">
+            <span className="text-xs md:text-sm font-semibold text-purple-900">
               View Uploaded Documents
             </span>
           </button>
@@ -186,11 +205,11 @@ const ApplicationSubmittedModal = ({
                 fileInput.click();
               }
             }}
-            className="flex flex-col items-center justify-center p-4 md:p-5 rounded-2xl border-2 border-purple-200  hover:bg-purple-100 transition-colors"
+            className="flex flex-col items-center justify-center py-3 px-3 md:p-4 rounded-2xl border-2 border-purple-200  hover:bg-purple-100 transition-colors"
           >
-            <div className="mb-2">
+            <div className="mb-1.5">
               <svg
-                className="w-7 h-7 md:w-8 md:h-8 text-purple-700"
+                className="w-6 h-6 md:w-8 md:h-8 text-purple-700"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -203,10 +222,10 @@ const ApplicationSubmittedModal = ({
                 />
               </svg>
             </div>
-            <span className="text-sm md:text-base font-semibold text-purple-900">
+            <span className="text-xs md:text-sm font-semibold text-purple-900">
               Complete & Upload
             </span>
-            <span className="text-xs md:text-sm text-purple-700 mt-1">
+            <span className="text-[11px] md:text-sm text-purple-700 mt-0.5">
               Supporting Documents
             </span>
           </button>
@@ -215,13 +234,13 @@ const ApplicationSubmittedModal = ({
         <button
           type="button"
           onClick={() => setIsHipaaOpen(true)}
-          className="w-full mb-6 md:mb-8 rounded-full border-2 border-purple-700 bg-white text-purple-700 font-semibold text-sm md:text-base py-3 md:py-4 hover:bg-purple-50 transition-colors"
+          className="w-full mb-4 md:mb-6 rounded-full border-2 border-purple-700 bg-white text-purple-700 font-semibold text-xs md:text-base py-2.5 md:py-4 hover:bg-purple-50 transition-colors"
         >
           HIPAA Authorization Form
         </button>
 
         {/* Supporting Document Upload Section */}
-        <div className="mb-4 md:mb-6">
+        <div className="mb-3 md:mb-5">
           <input
             type="file"
             id="supporting-doc-upload"
@@ -231,9 +250,9 @@ const ApplicationSubmittedModal = ({
           />
           
           {uploadedFileName && (
-            <div className="mb-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs md:text-sm font-medium text-gray-700">
+            <div className="mb-2.5 p-2.5 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="flex items-center justify-between mb-2.5">
+                <span className="text-[11px] md:text-sm font-medium text-gray-700">
                   Selected: {uploadedFileName}
                 </span>
                 <button
@@ -267,7 +286,7 @@ const ApplicationSubmittedModal = ({
                 type="button"
                 onClick={handleUploadSupportingDocument}
                 disabled={uploading}
-                className="w-full py-2 px-4 bg-purple-700 text-white rounded-lg text-sm font-medium hover:bg-purple-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full py-2 px-3 bg-purple-700 text-white rounded-lg text-xs md:text-sm font-medium hover:bg-purple-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {uploading ? "Uploading..." : "Upload Document"}
               </button>
@@ -275,14 +294,14 @@ const ApplicationSubmittedModal = ({
           )}
 
           {displayUploadError && (
-            <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-xs md:text-sm text-red-600">{displayUploadError}</p>
+            <div className="mb-2.5 p-2.5 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-[11px] md:text-sm text-red-600">{displayUploadError}</p>
             </div>
           )}
 
           {uploadSuccess && (
-            <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-xs md:text-sm text-green-600">
+            <div className="mb-2.5 p-2.5 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-[11px] md:text-sm text-green-600">
                 Document uploaded successfully!
               </p>
             </div>
@@ -290,14 +309,14 @@ const ApplicationSubmittedModal = ({
 
           {/* List of supporting documents with delete icon */}
           {supportingDocuments && supportingDocuments.length > 0 && (
-            <div className="mb-4 space-y-2">
-              <p className="text-xs md:text-sm font-medium text-gray-700 mb-2">
+            <div className="mb-3 space-y-2 max-h-40 overflow-y-auto pr-1">
+              <p className="text-[11px] md:text-sm font-medium text-gray-700 mb-1.5">
                 Uploaded supporting documents
               </p>
               {supportingDocuments.map((doc) => (
                 <div
                   key={doc._id || doc.pdfUrl}
-                  className="flex items-center justify-between p-3 rounded-lg border border-purple-200 bg-purple-50/50"
+                  className="flex items-center justify-between p-2.5 rounded-lg border border-purple-200 bg-purple-50/50"
                 >
                   <div className="flex items-center gap-2 min-w-0 flex-1">
                     <svg
@@ -318,7 +337,7 @@ const ApplicationSubmittedModal = ({
                       download={doc.pdfFileName || "supporting-doc.pdf"}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-purple-700 hover:underline truncate"
+                      className="text-xs md:text-sm text-purple-700 hover:underline truncate"
                     >
                       {doc.pdfFileName || "Supporting document"}
                     </a>
@@ -354,7 +373,7 @@ const ApplicationSubmittedModal = ({
         {showFlatFeeButton && (
           <button
             type="button"
-            className="w-full py-3 md:py-4 rounded-full bg-gradient-to-r from-purple-700 to-purple-900 text-white font-bold text-sm md:text-base mb-3 md:mb-5 hover:from-purple-600 hover:to-purple-800 transition-all shadow-lg"
+            className="w-full py-2.5 md:py-3 rounded-full bg-gradient-to-r from-purple-700 to-purple-900 text-white font-bold text-xs md:text-base mb-2.5 md:mb-4 hover:from-purple-600 hover:to-purple-800 transition-all shadow-lg"
           >
             Pay $299 Flat Fee
           </button>
@@ -363,15 +382,16 @@ const ApplicationSubmittedModal = ({
         {/* Complete Application Button */}
         <button
           type="button"
-          className="w-full py-3 md:py-4 rounded-full border-2 border-purple-700 bg-white text-purple-700 font-bold text-sm md:text-base mb-3 md:mb-5 hover:bg-purple-50 transition-colors"
+          className="w-full py-2.5 md:py-3 rounded-full border-2 border-purple-700 bg-white text-purple-700 font-bold text-xs md:text-base mb-2.5 md:mb-4 hover:bg-purple-50 transition-colors"
         >
           Click to Complete Application
         </button>
 
-        {/* Guarantee Text */}
-        <p className="text-center text-xs md:text-sm text-gray-600">
-          Backed By Our Money Back Guarantee!
-        </p>
+          {/* Guarantee Text */}
+          <p className="text-center text-[11px] md:text-sm text-gray-600 mb-1">
+            Backed By Our Money Back Guarantee!
+          </p>
+        </div>
       </div>
 
       <HipaaAuthorizationModal
