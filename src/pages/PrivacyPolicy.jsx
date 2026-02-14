@@ -165,7 +165,7 @@ const PrivacyPolicyPage = () => {
                 Children Under Thirteen
               </h2>
               <p className="text-[14px] md:text-[16px] leading-7 mb-4">
-                The Company follows the principles of the Children's Online Privacy Protection Act ("COPPA"), the GDPR, and any other local laws pertaining to the collection of children's data. Any accounts or subscriptions created for users known to be children will involve parental notification and/or consent.
+                The Company follows the principles of the Children's Online Privacy Protection Act ("COPPA"), the GDPR, and any other local laws pertaining to the collection of children's data. Any accounts or memberships created for users known to be children will involve parental notification and/or consent.
               </p>
               <p className="text-[14px] md:text-[16px] leading-7 mb-4">
                 The Company collects personally identifiable information from children under the age of 13.

@@ -355,7 +355,7 @@ const Dashboard = () => {
       return {
         price: "7.00",
         tier: "7",
-        type: "Household Subscription for a Family Size of up to 3 People",
+        type: "Household Membership for a Family Size of up to 3 People",
         planId: "monthly_basic",
       };
     }
@@ -363,14 +363,14 @@ const Dashboard = () => {
       return {
         price: "14.00",
         tier: "14",
-        type: "Household Subscription for a Family Size of 4 to 6 People",
+        type: "Household Membership for a Family Size of 4 to 6 People",
         planId: "monthly_standard",
       };
     }
     return {
       price: "21.00",
       tier: "21",
-      type: "Household Subscription for a Family Size of 6 or More People",
+      type: "Household Membership for a Family Size of 6 or More People",
       planId: "monthly_premium",
     };
   };
@@ -674,7 +674,7 @@ const Dashboard = () => {
                         disabled={subscriptionStatus === "active"}
                         className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 disabled:cursor-not-allowed"
                       />
-                      <span className="text-xs font-sm text-gray-500">Remove from Subscription Plan</span>
+                      <span className="text-xs font-sm text-gray-500">Remove from Membership Plan</span>
                     </label>
                   </div>
 
@@ -751,7 +751,7 @@ const Dashboard = () => {
                               disabled={subscriptionStatus === "active"}
                               className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 disabled:cursor-not-allowed"
                             />
-                            <span className="text-xs font-sm text-gray-500">Remove from Subscription Plan</span>
+                            <span className="text-xs font-sm text-gray-500">Remove from Membership Plan</span>
                           </label>
                         </div>
                       );
@@ -927,7 +927,7 @@ const Dashboard = () => {
                           Sign Up
                         </p>
                         <p className="mt-1 text-xs md:text-sm text-[#5225cc]">
-                          Monthly Subscription
+                          Monthly Membership
                         </p>
                       </div>
                     )}
@@ -935,7 +935,7 @@ const Dashboard = () => {
                     <div className="mt-1 flex flex-col items-center gap-1.5">
                       <div className="flex items-center gap-1 whitespace-nowrap">
                         <span className="text-[11px] md:text-xs text-[#5225cc]">
-                          Subscription Status
+                          Membership Status
                         </span>
                         <span
                           className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] md:text-xs font-medium ${
@@ -957,11 +957,11 @@ const Dashboard = () => {
                       {subscriptionStatus === "active" && (
                         <>
                           <span className="text-[11px] md:text-xs text-[#5225cc]">
-                            Subscription Date: {subscriptionDate}
+                            Membership Date: {subscriptionDate}
                           </span>
                           {!subscriptionWillCancel && (
                             <span className="text-[11px] md:text-[12px] font-extrabold text-[#5225cc]">
-                              Cancel My Subscription Plan
+                              Cancel My Membership Plan
                             </span>
                           )}
                         </>
@@ -969,11 +969,11 @@ const Dashboard = () => {
 
                       {subscriptionWillCancel && (
                         <span className="text-[11px] md:text-xs text-amber-600 text-center font-medium">
-                          Your subscription is cancelled and will end on{" "}
+                          Your membership is cancelled and will end on{" "}
                           <span className="font-semibold">
                             {subscriptionEndDate || "the end of the current billing period"}
                           </span>
-                          . You can start a new subscription after this date.
+                          . You can start a new membership after this date.
                         </span>
                       )}
 
@@ -981,7 +981,7 @@ const Dashboard = () => {
                         <div className="flex items-center justify-center">
                           <img
                             src={rightArrow}
-                            alt="View subscription"
+                            alt="View membership"
                             className="w-6 h-6 md:w-7 md:h-7 object-contain"
                           />
                         </div>
@@ -1040,7 +1040,7 @@ const Dashboard = () => {
           // The webhook will update the subscription status in the database
         }}
         onCancelSubscription={() => {
-          // When user clicks "Cancel My Subscription Plan" inside the subscription box
+          // When user clicks "Cancel My Membership Plan" inside the subscription box
           // only open the confirmation if it's not already scheduled to cancel
           if (!subscriptionWillCancel) {
             dispatch(clearCancelError());
@@ -1061,10 +1061,10 @@ const Dashboard = () => {
           />
           <div className="relative w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
             <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3">
-              Cancel Subscription?
+              Cancel Membership?
             </h3>
             <p className="text-sm md:text-base text-gray-600 mb-6">
-              Are you sure you want to cancel your subscription plan? You can
+              Are you sure you want to cancel your membership plan? You can
               re-subscribe anytime.
             </p>
             {cancelSubscriptionError && (
@@ -1077,7 +1077,7 @@ const Dashboard = () => {
                 onClick={() => setIsCancelSubscriptionOpen(false)}
                 className="flex-1 rounded-full border-2 border-[#4e30a2] py-2.5 text-sm md:text-base font-semibold text-[#4e30a2] hover:bg-purple-50 transition disabled:opacity-50"
               >
-                Keep Subscription
+                Keep Membership
               </button>
               <button
                 type="button"

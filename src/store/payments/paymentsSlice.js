@@ -45,7 +45,7 @@ export const syncStripeSession = createAsyncThunk(
         error.response?.data?.message ||
           error.response?.data?.error ||
           error.message ||
-          "Failed to sync subscription"
+          "Failed to sync membership"
       );
     }
   }
@@ -58,7 +58,7 @@ export const cancelSubscription = createAsyncThunk(
       const response = await axiosClient.post("/payments/cancel-subscription");
       if (!response.data?.success) {
         return rejectWithValue(
-          response.data?.message || "Failed to cancel subscription"
+          response.data?.message || "Failed to cancel membership"
         );
       }
       return response.data?.data;
@@ -67,7 +67,7 @@ export const cancelSubscription = createAsyncThunk(
         error.response?.data?.message ||
           error.response?.data?.error ||
           error.message ||
-          "Failed to cancel subscription"
+          "Failed to cancel membership"
       );
     }
   }
@@ -108,7 +108,7 @@ const paymentsSlice = createSlice({
       })
       .addCase(createCheckoutSession.rejected, (state, action) => {
         state.checkoutLoading = false;
-        state.checkoutError = action.payload || "Failed to start subscription.";
+        state.checkoutError = action.payload || "Failed to start membership.";
       })
       .addCase(syncStripeSession.pending, (state) => {
         state.syncLoading = true;
@@ -119,7 +119,7 @@ const paymentsSlice = createSlice({
       })
       .addCase(syncStripeSession.rejected, (state, action) => {
         state.syncLoading = false;
-        state.syncError = action.payload || "Failed to sync subscription.";
+        state.syncError = action.payload || "Failed to sync membership.";
       })
       .addCase(cancelSubscription.pending, (state) => {
         state.cancelLoading = true;
@@ -130,7 +130,7 @@ const paymentsSlice = createSlice({
       })
       .addCase(cancelSubscription.rejected, (state, action) => {
         state.cancelLoading = false;
-        state.cancelError = action.payload || "Failed to cancel subscription.";
+        state.cancelError = action.payload || "Failed to cancel membership.";
       });
   },
 });

@@ -65,6 +65,7 @@ const BillDetails = () => {
     };
     return {
       id: apiBill._id,
+      patientName: apiBill.patientName || null,
       hospital: apiBill.patientName || "N/A",
       serviceDate: apiBill.serviceDate || apiBill.submittedAt || apiBill.createdAt || null,
       amount: formatCurrency(apiBill.billAmount),

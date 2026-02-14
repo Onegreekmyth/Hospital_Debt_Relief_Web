@@ -107,10 +107,10 @@ const TermsAndConditionsPage = () => {
                 For users who paid a flat-fee rate: you may request a refund if you believe that the amount you saved is less than that fee paid to us. You will be required to process a refund request which will require an approval from our team prior to issuing that refund. Providing false or inaccurate information may result in the denial of the refund request.
               </p>
               <p className="text-[14px] md:text-[16px] leading-7 mb-4">
-                For subscription paid users: You may cancel your subscription at any time. Once a subscription has been canceled, you will not be billed for any future monthly charges.
+                For membership paid users: You may cancel your membership at any time. Once a membership has been canceled, you will not be billed for any future monthly charges.
               </p>
               <p className="text-[14px] md:text-[16px] leading-7 mb-4">
-                Subscription paid users may also request a refund if you believe that the amount you saved is less then the monthly subscriptions paid for that calendar year. You will be required to process a refund request which will require an approval from our team prior to issuing that refund.
+                Membership paid users may also request a refund if you believe that the amount you saved is less then the monthly memberships paid for that calendar year. You will be required to process a refund request which will require an approval from our team prior to issuing that refund.
               </p>
             </div>
 

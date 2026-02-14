@@ -20,15 +20,15 @@ const SubscriptionModal = ({
 
   const handleStart = async () => {
     if (householdCount < 1) {
-      setError("Please include at least one member in your subscription plan. Uncheck \"Remove from Subscription Plan\" for at least one member.");
+      setError("Please include at least one member in your membership plan. Uncheck \"Remove from Membership Plan\" for at least one member.");
       return;
     }
     if (!agreementChecked) {
-      setError("You must acknowledge the notice above before starting your subscription.");
+      setError("You must acknowledge the notice above before starting your membership.");
       return;
     }
     if (!planId) {
-      setError("Invalid subscription plan. Please try again.");
+      setError("Invalid membership plan. Please try again.");
       return;
     }
 
@@ -57,7 +57,7 @@ const SubscriptionModal = ({
     } catch (err) {
       console.error("Error creating checkout session:", err);
       setError(
-        typeof err === "string" ? err : "Failed to start subscription. Please try again."
+        typeof err === "string" ? err : "Failed to start membership. Please try again."
       );
       setLoading(false);
     }
@@ -103,7 +103,7 @@ const SubscriptionModal = ({
           type="button"
           onClick={onClose}
           className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 md:hidden"
-          aria-label="Close subscription modal"
+          aria-label="Close membership modal"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -116,7 +116,7 @@ const SubscriptionModal = ({
         </button>
 
         <h2 className="text-center text-2xl md:text-3xl font-bold text-gray-900 mb-4 md:mb-6 mt-4 md:mt-0">
-          Monthly Subscription
+          Monthly Membership
         </h2>
 
         <div className="space-y-5 md:space-y-6">
@@ -152,15 +152,15 @@ const SubscriptionModal = ({
           {householdCount < 1 && (
             <div className="p-3 rounded-lg bg-amber-50 border border-amber-200">
               <p className="text-sm text-amber-800">
-                Please include at least one member in your subscription plan. Uncheck &quot;Remove from Subscription Plan&quot; for the account holder or a family member, then try again.
+                Please include at least one member in your membership plan. Uncheck &quot;Remove from Membership Plan&quot; for the account holder or a family member, then try again.
               </p>
             </div>
           )}
 
-          {/* Monthly Subscription Amount */}
+          {/* Monthly Membership Amount */}
           <div className="space-y-1">
             <p className="text-xs md:text-sm font-semibold text-gray-900">
-              Monthly Subscription
+              Monthly Membership
             </p>
             <div className="rounded-full border border-gray-200 px-5 py-3 flex items-center bg-white">
               <p className="text-base md:text-md text-[#2e1570]  pl-4 md:pl-12">
@@ -169,10 +169,10 @@ const SubscriptionModal = ({
             </div>
           </div>
 
-          {/* Subscription Type */}
+          {/* Membership Type */}
           <div className="space-y-1">
             <p className="text-xs md:text-sm font-semibold text-gray-900">
-              Subscription Type
+              Membership Type
             </p>
             <div className="rounded-full border border-gray-200 px-5 py-4 flex items-center bg-white">
               <p className="text-[11px] md:text-sm font-medium text-gray-700">
@@ -218,7 +218,7 @@ const SubscriptionModal = ({
               onClick={handleStart}
               disabled={loading || householdCount < 1 || !agreementChecked}
             >
-              {loading ? "Processing..." : "Start My Subscription Plan"}
+              {loading ? "Processing..." : "Start My Membership Plan"}
             </button>
 
               <button

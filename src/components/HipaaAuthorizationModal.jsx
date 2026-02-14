@@ -34,8 +34,9 @@ function buildHipaaPdf(hipaaForm, familySignatureDataUrl, guardianSignatureDataU
     y += lines.length * lineHeight;
   };
 
+  const patientName = hipaaForm.patientName || "Patient";
   addParagraph(
-    "I hereby authorize the use or disclosure of Family Members protected information as described below:"
+    `I hereby authorize the use or disclosure of ${patientName}'s protected information as described below:`
   );
   y += 3;
 
@@ -84,7 +85,7 @@ function buildHipaaPdf(hipaaForm, familySignatureDataUrl, guardianSignatureDataU
   );
   y += 5;
 
-  addParagraph("Family Member Signature Line");
+  addParagraph(`${patientName} Signature Line`);
   if (familySignatureDataUrl) {
     doc.addImage(familySignatureDataUrl, "PNG", margin, y, SIG_IMG_W, SIG_IMG_H);
     y += SIG_IMG_H + 5;
@@ -222,6 +223,7 @@ const HipaaAuthorizationModal = ({
     hospitalName: "",
     billDate: "",
     guardianPrintName: "",
+    patientName: "",
     acknowledged: false,
     driverLicenseAcknowledged: false,
   });
@@ -236,6 +238,7 @@ const HipaaAuthorizationModal = ({
 
   const profileHospitalName = profile?.hospitalInfo?.name || "";
   const profileGuardianName = [profile?.firstName, profile?.lastName].filter(Boolean).join(" ").trim() || "";
+  const patientDisplayName = (billData?.patientName || billData?.hospital || "Patient").trim() || "Patient";
 
   useEffect(() => {
     if (!isOpen) return;
@@ -243,17 +246,19 @@ const HipaaAuthorizationModal = ({
       ? new Date(billData.serviceDate).toISOString().slice(0, 10)
       : "";
     const hospitalName = billData?.hospitalName || profileHospitalName || "";
+    const patientName = (billData?.patientName || billData?.hospital || "Patient").trim() || "Patient";
     setHipaaForm((prev) => ({
       ...prev,
       billDate,
       hospitalName,
       guardianPrintName: "",
+      patientName,
     }));
     setFamilySignatureDataUrl("");
     setGuardianSignatureDataUrl("");
     setFormErrors({});
     dispatch(clearHipaaUploadError());
-  }, [isOpen, billData, profileHospitalName, profileGuardianName, dispatch]);
+  }, [isOpen, billData, profileHospitalName, dispatch]);
 
   const validateForm = () => {
     const nextErrors = {};
@@ -266,7 +271,7 @@ const HipaaAuthorizationModal = ({
     const hasFamilySig = !!familySignatureDataUrl;
     const hasGuardianSig = !!guardianSignatureDataUrl;
     if (!hasFamilySig && !hasGuardianSig) {
-      nextErrors.signature = "Please provide at least one signature (Family Member or Parent/Guardian).";
+      nextErrors.signature = "Please provide at least one signature (Patient or Parent/Guardian).";
     }
     if (hasGuardianSig && !hipaaForm.guardianPrintName.trim()) {
       nextErrors.guardianPrintName = "Parent or guardian print name is required when signing as guardian.";
@@ -284,7 +289,7 @@ const HipaaAuthorizationModal = ({
   const handleESignSubmit = async () => {
     if (!validateForm() || !billId) return;
     const pdfBlob = buildHipaaPdf(
-      hipaaForm,
+      { ...hipaaForm, patientName: patientDisplayName },
       familySignatureDataUrl,
       guardianSignatureDataUrl
     );
@@ -355,7 +360,7 @@ const HipaaAuthorizationModal = ({
 
         <div className="space-y-4 text-sm md:text-base text-gray-800">
           <p>
-            I hereby authorize the use or disclosure of <strong>Family Members</strong> protected information as described below:
+            I hereby authorize the use or disclosure of <strong>{patientDisplayName}</strong>&apos;s protected information as described below:
           </p>
 
           <div>
@@ -417,9 +422,9 @@ const HipaaAuthorizationModal = ({
             </p>
           </div>
 
-          {/* Family Member Signature */}
+          {/* Patient Signature */}
           <div className="space-y-2">
-            <p className="font-medium text-gray-800">Family Member Signature Line</p>
+            <p className="font-medium text-gray-800">{patientDisplayName} Signature Line</p>
             <SignaturePad
               canvasRef={canvasFamilyRef}
               dataUrl={familySignatureDataUrl}

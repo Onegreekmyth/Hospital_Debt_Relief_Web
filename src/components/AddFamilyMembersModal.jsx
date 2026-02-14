@@ -217,15 +217,9 @@ const AddFamilyMembersModal = ({ isOpen, onClose, editingMember = null, onSucces
                 </option>
                 <option value="spouse">Spouse</option>
                 <option value="child">Child</option>
-                <option value="father">Father</option>
-                <option value="mother">Mother</option>
-                <option value="brother">Brother</option>
-                <option value="sister">Sister</option>
                 <option value="stepchild">Stepchild</option>
                 <option value="half-sibling">Half-sibling</option>
                 <option value="domestic-partner">Domestic Partner</option>
-                <option value="live-in-aunt-uncle-cousin">Live-in Aunt, Uncle or Cousin</option>
-                <option value="live-in-grandparent">Live-in Grandparent</option>
               </select>
             </div>
 

@@ -3,23 +3,23 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 const MonthlyPlansPage = () => {
-  const plans = [
+  const memberships = [
     {
       name: "Small Family Coverage",
       price: 7,
-      description: "Household subscription for a family size up to 3 people",
+      description: "Household Membership for a family size up to 3 people",
       popular: false,
     },
     {
       name: "My Family Coverage",
       price: 14,
-      description: "Household subscription for a family size of 4 to 6 people",
+      description: "Household Membership for a family size of 4 to 6 people",
       popular: true,
     },
     {
       name: "Big Family Coverage",
       price: 21,
-      description: "Household subscription for a family size of 7 or more people",
+      description: "Household Membership for a family size of 7 or more people",
       popular: false,
     },
   ];
@@ -41,7 +41,7 @@ const MonthlyPlansPage = () => {
         />
         <div className="relative max-w-4xl text-gray-900">
           <h1 className="text-[24px] md:text-[36px] lg:text-[48px] leading-tight font-bold text-center pt-5 mt-5">
-            Plans that could save you
+            Memberships that could save you
             <span className="hidden md:inline">
               <br />
             </span>{" "}
@@ -51,35 +51,66 @@ const MonthlyPlansPage = () => {
             </span>{" "}
             hospital bills.
           </h1>
+          <p className="text-[14px] md:text-[16px] text-gray-600 text-center mt-4 max-w-2xl mx-auto">
+            Choose a membership that fits your family size and get expert help with hospital billing, financial relief, and credit protection.
+          </p>
         </div>
       </section>
 
-      {/* Pricing Plans Section */}
+      {/* Membership Tiers Section */}
       <section className="py-6 md:py-8 bg-white">
         <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-10">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {plans.map((plan, index) => (
+            {memberships.map((membership, index) => (
               <div
                 key={index}
                 className={`relative border-2 border-purple-800 rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-12 ${
-                  plan.popular ? "bg-[#d3c9f2] md:-mt-5 mb-5" : "bg-white mt-5"
+                  membership.popular ? "bg-[#d3c9f2] md:-mt-5 mb-5" : "bg-white mt-5"
                 }`}
               >
              
                 <h3 className="text-[18px] md:text-[20px] lg:text-[22px] font-bold text-gray-900 mb-3 md:mb-4">
-                  {plan.name}
+                  {membership.name}
                 </h3>
                 <div className="mb-3 md:mb-4">
                   <span className="text-[32px] md:text-[36px] lg:text-[48px] font-bold text-[#3D0BBE]">
-                    ${plan.price}
+                    ${membership.price}
                   </span>
                   <span className="text-[12px] md:text-[14px] text-gray-600 ml-2">/ per month</span>
                 </div>
                 <p className="text-[13px] md:text-[14px] lg:text-[16px] text-gray-900 leading-relaxed">
-                  {plan.description}
+                  {membership.description}
                 </p>
               </div>
             ))}
+          </div>
+
+          {/* Membership Benefits */}
+          <div className="mt-12 md:mt-16 max-w-3xl mx-auto">
+            <h2 className="text-[18px] md:text-[20px] font-bold text-gray-900 mb-4">
+              Your Membership Benefits Include:
+            </h2>
+            <ul className="space-y-3 text-[14px] md:text-[16px] text-gray-700">
+              <li className="flex gap-2">
+                <span className="text-[#3D0BBE] font-bold shrink-0">•</span>
+                <span className="text-black"><strong>Direct Financial Relief:</strong> Minimize or eliminate your medical debt.</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-[#3D0BBE] font-bold shrink-0">•</span>
+                <span className="text-black"><strong>Guided Navigation:</strong> Expert help through the maze of hospital billing and paperwork.</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-[#3D0BBE] font-bold shrink-0">•</span>
+                <span className="text-black"><strong>Credit Protection:</strong> Proactive management to keep your accounts out of collections.</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-[#3D0BBE] font-bold shrink-0">•</span>
+                <span className="text-black"><strong>Compassionate Support:</strong> A dignified process that puts your well-being first.</span>
+              </li>
+            </ul>
+            <p className="mt-6 text-[14px] md:text-[16px] text-black">
+              <span  className="font-bold text-black">Stay protected:</span> Submit new or future hospital bills for processing at no additional cost.
+            </p>
           </div>
         </div>
       </section>

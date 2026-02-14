@@ -92,7 +92,7 @@ const ContactPage = () => {
       <section className="py-12 md:py-20 bg-white">
         <div className="w-full max-w-5xl mx-auto px-4 md:px-6 lg:px-10">
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12 md:mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-12 md:mb-16">
             {/* Info Card 1 - Email */}
             <div className="bg-white p-6 md:p-8 rounded-2xl border border-gray-200 text-center hover:shadow-lg transition">
               <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-purple-100 to-blue-100 rounded-full mb-4">
@@ -119,31 +119,7 @@ const ContactPage = () => {
               </a>
             </div>
 
-            {/* Info Card 2 - Hours */}
-            <div className="bg-white p-6 md:p-8 rounded-2xl border border-gray-200 text-center hover:shadow-lg transition">
-              <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-purple-100 to-blue-100 rounded-full mb-4">
-                <svg
-                  className="h-7 w-7 text-purple-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-3">Business Hours</h3>
-              <div className="space-y-2 text-sm">
-                <p className="font-medium text-gray-900">Mon - Fri: <span className="text-purple-600">9:00 AM - 5:00 PM EST</span></p>
-                <p className="font-medium text-gray-900">Sat - Sun: <span className="text-gray-500">Closed</span></p>
-              </div>
-            </div>
-
-            {/* Info Card 3 - Response Time */}
+            {/* Info Card 2 - Response Time */}
             <div className="bg-white p-6 md:p-8 rounded-2xl border border-gray-200 text-center hover:shadow-lg transition">
               <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-purple-100 to-blue-100 rounded-full mb-4">
                 <svg

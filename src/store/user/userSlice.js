@@ -110,7 +110,7 @@ export const updateAccountHolderSubscription = createAsyncThunk(
         error.response?.data?.message ||
         error.response?.data?.error ||
         error.message ||
-        'Failed to update subscription preference';
+        'Failed to update membership preference';
       return rejectWithValue(message);
     }
   }

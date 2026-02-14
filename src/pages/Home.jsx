@@ -284,7 +284,7 @@ const HomePage = () => {
           <h6 className="text-[14px] md:text-[20px] leading-[1.4] md:leading-tight lg:text-[18px]">
             Receive up to a 100% reduction on your current hospital bills,
             whether you have insurance or not. You can also explore our low
-            monthly subscription plans starting at just $7/month to be prepared
+            monthly membership plans starting at just $7/month to be prepared
             for future hospital bills.
           </h6>
           <p className="mt-4 text-black/90 text-[11px] md:text-[14px] leading-relaxed px-2">

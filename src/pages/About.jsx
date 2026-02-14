@@ -21,11 +21,10 @@ const AboutPage = () => {
         />
         <div className="relative max-w-3xl text-gray-900">
           <h1 className="text-[24px] md:text-[28px] leading-[1.2] md:leading-tight lg:text-[40px] font-bold">
-            Innovative technology Driving down hospital costs.
+          Helping You Secure the Financial Relief You Deserve!
           </h1>
           <p className="mt-4 text-black text-[12px] md:text-[14px] leading-relaxed px-2">
-            We believe every health plan and patient should be billed fairly. Our advanced AI solutions detect errors, secure cost savings, and streamline hospital billing processes.
-          </p>
+          We believe that everyone should receive the savings they deserve. Our advanced on-line solutions will quickly determine your eligibility while offering a streamlined process to save money on your hospital bills.          </p>
         </div>
       </section>
 
@@ -42,7 +41,7 @@ const AboutPage = () => {
                 Meet Nick & Kristin
               </h2>
               <p className="text-[14px] md:text-[16px] leading-6 md:leading-7 text-gray-800">
-              We know that sinking feeling when you open a hospital bill and see a number you didn’t expect. We’ve been there. That’s why we founded HospitalDebtRelief.com! We believe a medical crisis shouldn’t be followed by a financial one. Having navigated our own healthcare billing challenges, we’ve dedicated ourselves to being the support we wish we’d had. We’re here to take the weight off your shoulders by using our developed system to fight for the savings you deserve.
+              We know that sinking feeling when you open a hospital bill and see a number you didn’t expect. We’ve been there and that’s why we founded <a href="https://www.hospitaldebtrelief.com" target="_blank" rel="noopener noreferrer" className="text-[#3D0BBE] font-semibold hover:underline focus:underline focus:outline-none">HospitalDebtRelief.com</a>! We believe a medical crisis shouldn’t be followed by a financial one. Having navigated our own healthcare billing challenges, we’ve dedicated ourselves to being the support we wish we’d had. We’re here to take the weight off your shoulders by using our developed system to fight for the savings you deserve.
               </p>
             </div>
 

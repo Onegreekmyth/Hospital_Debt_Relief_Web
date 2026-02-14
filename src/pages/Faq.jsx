@@ -84,7 +84,7 @@ const faqs = [
   {
     question: "My bill is in collections, can you still lower my bill?",
     answer: [
-      "Yes, We Will do our best to process your application to get that bill reduced."
+      "Yes, We will do our best to process your application to get that bill reduced."
     ],
   },
   {
@@ -92,10 +92,10 @@ const faqs = [
     answer: ["Send us an email at help@hospitaldebtrelief.com."],
   },
   {
-    question: "I have a subscription, can I cancel anytime?",
+    question: "I have a membership, can I cancel anytime?",
     answer: [
-      "Yes, subscriptions can be canceled at any time.",
-      "If you cancel your subscription, you will not receive any future billing from us.",
+      "Yes, memberships can be canceled at any time.",
+      "If you cancel your membership, you will not receive any future billing from us.",
     ],
   },
 ];
