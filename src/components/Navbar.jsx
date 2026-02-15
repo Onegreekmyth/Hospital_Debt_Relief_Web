@@ -6,6 +6,8 @@ import uploadImg from "../assets/upload-img.png";
 const Navbar = ({ onOpenAddFamilyMembers }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isResourcesOpen, setIsResourcesOpen] = useState(false);
+  const [resourcesTimeout, setResourcesTimeout] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { pathname, hash } = location;
@@ -19,6 +21,21 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
     localStorage.removeItem("isAuthenticated");
     setIsMobileMenuOpen(false);
     navigate("/login");
+  };
+
+  const handleResourcesMouseEnter = () => {
+    if (resourcesTimeout) {
+      clearTimeout(resourcesTimeout);
+      setResourcesTimeout(null);
+    }
+    setIsResourcesOpen(true);
+  };
+
+  const handleResourcesMouseLeave = () => {
+    const timeout = setTimeout(() => {
+      setIsResourcesOpen(false);
+    }, 150);
+    setResourcesTimeout(timeout);
   };
 
   const navLinkClasses = (isActive) =>
@@ -43,7 +60,7 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
     <>
       <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] md:w-[88%]">
         <div
-          className={`flex items-center justify-between rounded-full border border-purple-300 backdrop-blur-xl px-3 md:px-8 h-16 md:h-16 shadow-lg transition-colors overflow-hidden ${
+          className={`flex items-center justify-between rounded-full border border-purple-300 backdrop-blur-xl px-3 md:px-8 h-16 md:h-16 shadow-lg transition-colors ${
             isScrolled ? "bg-gray-100/90" : "bg-white/90"
           }`}
         >
@@ -121,6 +138,49 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
                   >
                     FAQ
                   </Link>
+                  <div 
+                    className="relative"
+                    onMouseEnter={handleResourcesMouseEnter}
+                    onMouseLeave={handleResourcesMouseLeave}
+                  >
+                    <button
+                      className={`hover:text-purple-700 transition-colors text-gray-800 flex items-center gap-1`}
+                    >
+                      Resources
+                      <svg 
+                        className={`w-4 h-4 transition-transform ${isResourcesOpen ? 'rotate-180' : ''}`} 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    {isResourcesOpen && (
+                      <div className="absolute top-full left-0 mt-1 w-56 z-[60]">
+                        <div className="bg-white rounded-lg shadow-xl border border-gray-200 py-2">
+                          <Link
+                            to="/resources/charity-care"
+                            className="block px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors"
+                          >
+                            What is Charity Care?
+                          </Link>
+                          <Link
+                            to="/resources/committed-solution"
+                            className="block px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors"
+                          >
+                            Our Committed Solution!
+                          </Link>
+                          <Link
+                            to="/resources/state-laws"
+                            className="block px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors"
+                          >
+                            Summary - State Laws
+                          </Link>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                   <Link
                     to="/plans"
                     className={navLinkClasses(pathname === "/plans")}
@@ -177,6 +237,47 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
             >
               FAQ
             </Link>
+            <div className="py-2">
+              <button
+                className="text-sm font-medium text-gray-800 hover:text-purple-700 flex items-center justify-between w-full"
+                onClick={() => setIsResourcesOpen(!isResourcesOpen)}
+              >
+                Resources
+                <svg 
+                  className={`w-4 h-4 transition-transform ${isResourcesOpen ? 'rotate-180' : ''}`} 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {isResourcesOpen && (
+                <div className="mt-2 ml-4 space-y-2">
+                  <Link
+                    to="/resources/charity-care"
+                    className="block text-sm text-gray-600 hover:text-purple-700 py-1"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    What is Charity Care?
+                  </Link>
+                  <Link
+                    to="/resources/committed-solution"
+                    className="block text-sm text-gray-600 hover:text-purple-700 py-1"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Our Committed Solution!
+                  </Link>
+                  <Link
+                    to="/resources/state-laws"
+                    className="block text-sm text-gray-600 hover:text-purple-700 py-1"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Summary - State Laws
+                  </Link>
+                </div>
+              )}
+            </div>
             <Link
               to="/plans"
               className={`text-sm font-medium py-2 ${navLinkClasses(

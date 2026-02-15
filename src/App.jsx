@@ -12,6 +12,9 @@ import BillDetails from "./pages/BillDetails";
 import FAQPage from "./pages/Faq";
 import PrivacyPolicyPage from "./pages/PrivacyPolicy";
 import TermsAndConditionsPage from "./pages/TermsAndConditions";
+import CharityCarePage from "./pages/CharityCare";
+import CommittedSolutionPage from "./pages/CommittedSolution";
+import StateLawsPage from "./pages/StateLaws";
 
 const ProtectedRoute = () => {
   const isAuthenticated =
@@ -34,6 +37,9 @@ function App() {
         element={<TermsAndConditionsPage />}
       />
       <Route path="/plans" element={<MonthlyPlansPage />} />
+      <Route path="/resources/charity-care" element={<CharityCarePage />} />
+      <Route path="/resources/committed-solution" element={<CommittedSolutionPage />} />
+      <Route path="/resources/state-laws" element={<StateLawsPage />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/otp-verification" element={<OTPVerification />} />
       <Route path="/login" element={<Login />} />
