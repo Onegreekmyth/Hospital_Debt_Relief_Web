@@ -173,7 +173,7 @@ const HomePage = () => {
     }
 
  if(!existingBill) {
-  setExistingBillError("Please select if you have an existing hospital bill.");
+  setExistingBillError("Please select if you have an existing hospital bills.");
   hasError = true;
  } else if(existingBill === "yes" && (!billAmount || Number(billAmount) <= 0)) {
   setBillAmountError("Please enter a valid bill amount.");

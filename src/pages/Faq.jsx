@@ -37,13 +37,13 @@ const faqs = [
   {
     question: "What do I have to pay?",
     answer: [
-      "If you allow us to help you save money, we will charge you our $299 flat fee to lower your existing hospital bill.",
-      "That's it! No matter if we save you $1,000 or $10,000, a flat fee is all you pay to use our platform.",
-      "You can also sign up for one of our plans to access tools to help cover you or your family against any future hospital bills at no additional cost.",
+      "Non-Member Rate: A Flat $299 Per Bill We keep it simple: non-members pay a one-time fee of $299 to negotiate an existing bill.",
+      "Whether we save you $1,000 or $10,000, your cost stays exactly the same.",
+      "Want to avoid future fees? Join a plan today to protect your family from future hospital bills at no extra cost.",
     ],
   },
   {
-    question: "Why do you charge for your services?",
+    question: "Why do you charge for your services?", 
     answer: [
       "We use our earnings to grow our services so we can expand and help more people like you save money.",
       "We believe that everyone in America should be able to save money and avoid medical debt.",
@@ -89,7 +89,7 @@ const faqs = [
   },
   {
     question: "Who can I reach out to if I have questions?",
-    answer: ["Send us an email at help@hospitaldebtrelief.com."],
+    answer: ["Send us an email at support@hospitaldebtrelief.com."],
   },
   {
     question: "I have a membership, can I cancel anytime?",

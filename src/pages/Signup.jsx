@@ -109,7 +109,7 @@ const Signup = () => {
           </h1>
           <img
             src={primaryLogo}
-            alt="Medical Financial Freedom"
+            alt="2026 Hospital Debt Relief"
             className="h-7 md:h-8 lg:h-9"
           />
         </div>

@@ -24,7 +24,7 @@ const AboutPage = () => {
           Helping You Secure the Financial Relief You Deserve!
           </h1>
           <p className="mt-4 text-black text-[12px] md:text-[14px] leading-relaxed px-2">
-          We believe that everyone should receive the savings they deserve. Our advanced on-line solutions will quickly determine your eligibility while offering a streamlined process to save money on your hospital bills.          </p>
+          We believe that everyone should receive the savings they deserve. Our advanced on-line solutions will quickly determine your eligibility while offering a streamlined process to save you money.</p>
         </div>
       </section>
 
@@ -35,7 +35,7 @@ const AboutPage = () => {
             {/* Left side - Text content */}
             <div className="order-2 md:order-1">
               <p className="text-[12px] font-semibold tracking-[0.64px] text-[#3D0BBE] uppercase mb-4">
-                THE FOUNDERS OF MEDICAL FINANCIAL FREEDOM.COM
+                THE FOUNDERS OF HOSPITALDEBTRELIEF.COM
               </p>
               <h2 className="text-[28px] md:text-[36px] lg:text-[48px] leading-tight font-bold text-gray-900 mb-4 md:mb-6">
                 Meet Nick & Kristin
