@@ -1,36 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import InteractiveUSMap from "../components/InteractiveUSMap";
+import { stateLawsData } from "../data/stateLawsData";
 
 const StateLawsPage = () => {
   const [selectedState, setSelectedState] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
+  const detailsPanelRef = useRef(null);
 
-  // Sample state data - will be populated with actual data from Google Doc
-  const stateData = {
-    "IA": {
-      name: "Iowa",
-      summary: "Content will be populated from Google Doc"
-    },
-    "CA": {
-      name: "California", 
-      summary: "Content will be populated from Google Doc"
-    },
-    // Will add all other states from the Google Doc
-  };
+  const stateData = stateLawsData;
 
   const handleStateClick = (stateCode) => {
     setSelectedState(stateCode);
     setShowDetails(true);
   };
 
+  useEffect(() => {
+    if (showDetails && selectedState && detailsPanelRef.current) {
+      detailsPanelRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [showDetails, selectedState]);
+
   return (
     <div className="font-sans text-gray-900">
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative flex flex-col items-center justify-center text-center px-4 md:px-6 pt-32 md:pt-40 pb-20 md:pb-28 min-h-[70vh] md:min-h-[80vh] bg-white overflow-hidden">
+      <section className="relative flex flex-col items-center justify-center text-center px-4 md:px-6 pt-32 md:pt-40 pb-10 md:pb-14 bg-white overflow-hidden">
         {/* Soft gradient background behind the banner content */}
         <div
           className="pointer-events-none absolute inset-0"
@@ -51,52 +48,62 @@ const StateLawsPage = () => {
       </section>
 
       {/* Interactive Map Section */}
-      <section className="py-12 md:py-20 bg-white">
+      <section className="pt-4 md:pt-6 pb-12 md:pb-20 bg-white">
         <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-10">
-          
-          {/* Instructions */}
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Interactive State Map
-            </h2>
-            <p className="text-gray-600">
-              Select a state to view specific charity care laws and financial assistance information.
-            </p>
-          </div>
-
-          {/* Interactive Map Component */}
           <InteractiveUSMap 
             selectedState={selectedState}
             onStateClick={handleStateClick}
           />
 
           {/* State Details Panel */}
-          {showDetails && selectedState && stateData[selectedState] && (
-            <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-6">
+          {showDetails && selectedState && (
+            <div ref={detailsPanelRef} className="bg-white border border-gray-200 rounded-lg shadow-lg p-6">
               <div className="flex justify-between items-start mb-4">
                 <h3 className="text-2xl font-bold text-gray-900">
-                  {stateData[selectedState].name} Charity Care Laws
+                  {stateData[selectedState]?.name || selectedState} Charity Care Laws
                 </h3>
                 <button
                   onClick={() => setShowDetails(false)}
                   className="text-gray-500 hover:text-gray-700 text-xl font-bold"
+                  aria-label="Close"
                 >
                   ×
                 </button>
               </div>
-              
-              <div className="prose max-w-none">
-                <p className="text-gray-700 leading-relaxed">
-                  {stateData[selectedState].summary}
-                </p>
+
+              <div className="prose max-w-none text-gray-700 leading-relaxed">
+                {stateData[selectedState]?.sections ? (
+                  <div className="space-y-6">
+                    {stateData[selectedState].sections.map((section, idx) => (
+                      <div key={idx}>
+                        {section.title && (
+                          <h4 className="text-lg font-semibold text-gray-900 mt-6 mb-2 first:mt-0">
+                            {section.title}
+                          </h4>
+                        )}
+                        <div className="space-y-2">
+                          {section.body.map((paragraph, pIdx) => (
+                            <p key={pIdx} className="text-[14px] md:text-[15px]">
+                              {paragraph}
+                            </p>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : stateData[selectedState]?.summary ? (
+                  <p>{stateData[selectedState].summary}</p>
+                ) : (
+                  <p className="text-gray-500 italic">Content for this state is coming soon.</p>
+                )}
               </div>
             </div>
           )}
 
           {!showDetails && (
-            <div className="text-center text-gray-500 italic">
-              Select a state on the map above to view detailed information about charity care laws.
-            </div>
+            <p className="text-center text-gray-500 text-sm">
+              Select a state on the map to view charity care laws.
+            </p>
           )}
         </div>
       </section>
@@ -105,7 +112,5 @@ const StateLawsPage = () => {
     </div>
   );
 };
-
-           
 
 export default StateLawsPage;

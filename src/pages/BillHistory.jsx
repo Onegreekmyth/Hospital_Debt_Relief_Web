@@ -85,12 +85,23 @@ const BillHistory = () => {
     })}`;
   };
 
+  // Format date (submittedAt / createdAt)
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "2-digit",
+      day: "2-digit",
+      year: "numeric",
+    });
+  };
+
   // Transform API data to UI format
   const transformedBills = bills.map((bill) => ({
     id: bill._id,
     hospital: bill.patientName || "N/A", // Using patientName as hospital placeholder
     amount: formatCurrency(bill.billAmount),
-    saving: "$0.00", // Placeholder - can be calculated later
+    dateSubmitted: formatDate(bill.submittedAt || bill.createdAt),
     status: mapStatusToUI(bill.status),
     rawStatus: bill.status, // Keep for filtering
     pdfUrl: bill.pdfUrl || bill.pdf, // Can be PDF or image from API
@@ -225,7 +236,7 @@ const BillHistory = () => {
                     <tr className="border-b border-gray-300 text-xs md:text-lg text-black">
                       <th className="px-6 md:px-10 py-4 font-large">Patient Name</th>
                       <th className="px-4 py-4 font-large">Bill Amount</th>
-                      <th className="px-4 py-4 font-large">Calculated Saving</th>
+                      <th className="px-4 py-4 font-large">Date Submitted</th>
                       <th className="px-6 py-4 font-large text-right pr-8 md:pr-10">
                         Status
                       </th>
@@ -253,7 +264,7 @@ const BillHistory = () => {
                           </div>
                         </td>
                         <td className="px-4 py-4 text-sm md:text-base">{bill.amount}</td>
-                        <td className="px-4 py-4 text-sm md:text-base">{bill.saving}</td>
+                        <td className="px-4 py-4 text-sm md:text-base">{bill.dateSubmitted}</td>
                         <td className="px-6 py-4 text-right pr-8 md:pr-10">
                           <span
                             className={`inline-flex items-center rounded-full px-4 py-1 text-xs md:text-sm font-medium ${getStatusBadgeClasses(
