@@ -37,9 +37,9 @@ const faqs = [
   {
     question: "What do I have to pay?",
     answer: [
-      "If you allow us to help you save money, we will charge you our $299 flat fee to lower your existing hospital bill.",
-      "That's it! No matter if we save you $1,000 or $10,000, a flat fee is all you pay to use our platform.",
-      "You can also sign up for one of our plans to access tools to help cover you or your family against any future hospital bills at no additional cost.",
+      "Non-Member Rate: A Flat $299 Per Bill We keep it simple: non-members pay a one-time fee of $299 to negotiate an existing bill.",
+      "Whether we save you $1,000 or $10,000, your cost stays exactly the same.",
+      "Want to avoid future fees? Join a plan today to protect your family from future hospital bills at no extra cost.",
     ],
   },
   {
