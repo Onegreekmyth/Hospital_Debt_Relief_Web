@@ -24,7 +24,7 @@ const AboutPage = () => {
           Helping You Secure the Financial Relief You Deserve!
           </h1>
           <p className="mt-4 text-black text-[12px] md:text-[14px] leading-relaxed px-2">
-          We believe that everyone should receive the savings they deserve. Our advanced on-line solutions will quickly determine your eligibility while offering a streamlined process to save money on your hospital bills.          </p>
+          We believe that everyone should receive the savings they deserve. Our advanced on-line solutions will quickly determine your eligibility while offering a streamlined process to save you money.</p>
         </div>
       </section>
 

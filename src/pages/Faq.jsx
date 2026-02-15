@@ -89,7 +89,7 @@ const faqs = [
   },
   {
     question: "Who can I reach out to if I have questions?",
-    answer: ["Send us an email at help@hospitaldebtrelief.com."],
+    answer: ["Send us an email at support@hospitaldebtrelief.com."],
   },
   {
     question: "I have a membership, can I cancel anytime?",
