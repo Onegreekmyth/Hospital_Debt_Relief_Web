@@ -43,7 +43,7 @@ const faqs = [
     ],
   },
   {
-    question: "Why do you charge for your services?",
+    question: "Why do you charge for your services?", 
     answer: [
       "We use our earnings to grow our services so we can expand and help more people like you save money.",
       "We believe that everyone in America should be able to save money and avoid medical debt.",

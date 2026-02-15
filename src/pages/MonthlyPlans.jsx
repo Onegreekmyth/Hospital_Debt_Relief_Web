@@ -88,29 +88,25 @@ const MonthlyPlansPage = () => {
           {/* Membership Benefits */}
           <div className="mt-12 md:mt-16 max-w-3xl mx-auto">
             <h2 className="text-[18px] md:text-[20px] font-bold text-gray-900 mb-4">
-              Your Membership Benefits Include:
+              Your Membership Works Harder for You
             </h2>
+            <p className="text-[14px] md:text-[16px] text-gray-700 mb-6">
+              Everything below is included in your plan at no extra charge:
+            </p>
             <ul className="space-y-3 text-[14px] md:text-[16px] text-gray-700">
               <li className="flex gap-2">
                 <span className="text-[#3D0BBE] font-bold shrink-0">•</span>
-                <span className="text-black"><strong>Direct Financial Relief:</strong> Minimize or eliminate your medical debt.</span>
+                <span className="text-black"><strong>Household-Wide Protection:</strong> Financial relief isn't just for you—it covers future hospital bills for everyone under your membership plan.</span>
               </li>
               <li className="flex gap-2">
                 <span className="text-[#3D0BBE] font-bold shrink-0">•</span>
-                <span className="text-black"><strong>Guided Navigation:</strong> Expert help through the maze of hospital billing and paperwork.</span>
+                <span className="text-black"><strong>Unlimited Bill Submissions:</strong> No need to pick and choose. Submit as many hospital bills as you need, whenever they arrive.</span>
               </li>
               <li className="flex gap-2">
                 <span className="text-[#3D0BBE] font-bold shrink-0">•</span>
-                <span className="text-black"><strong>Credit Protection:</strong> Proactive management to keep your accounts out of collections.</span>
-              </li>
-              <li className="flex gap-2">
-                <span className="text-[#3D0BBE] font-bold shrink-0">•</span>
-                <span className="text-black"><strong>Compassionate Support:</strong> A dignified process that puts your well-being first.</span>
+                <span className="text-black"><strong>A Complete Paper Trail:</strong> Keep your full history at your fingertips with a secure, permanent account dashboard.</span>
               </li>
             </ul>
-            <p className="mt-6 text-[14px] md:text-[16px] text-black">
-              <span  className="font-bold text-black">Stay protected:</span> Submit new or future hospital bills for processing at no additional cost.
-            </p>
           </div>
         </div>
       </section>
