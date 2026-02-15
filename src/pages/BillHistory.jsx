@@ -256,7 +256,6 @@ const BillHistory = () => {
                   <thead>
                     <tr className="border-b border-gray-300 text-xs md:text-lg text-black">
                       <th className="px-6 md:px-10 py-4 font-large">Patient Name</th>
-                      <th className="px-4 py-4 font-large">Type</th>
                       <th className="px-4 py-4 font-large">Bill Amount</th>
                       <th className="px-4 py-4 font-large">Date Submitted</th>
                       <th className="px-6 py-4 font-large text-right pr-8 md:pr-10">
@@ -284,9 +283,6 @@ const BillHistory = () => {
                               {bill.hospital}
                             </span>
                           </div>
-                        </td>
-                        <td className="px-4 py-4 text-sm md:text-base max-w-[180px] truncate" title={bill.documentTypeLabel}>
-                          {bill.documentTypeLabel}
                         </td>
                         <td className="px-4 py-4 text-sm md:text-base">{bill.amount}</td>
                         <td className="px-4 py-4 text-sm md:text-base">{bill.dateSubmitted}</td>
