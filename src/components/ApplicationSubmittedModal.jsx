@@ -8,6 +8,7 @@ import {
   deleteSupportingDocument,
 } from "../store/bills/billsSlice";
 import { createCheckoutSession, clearCheckoutError } from "../store/payments/paymentsSlice";
+import { DOCUMENT_TYPES } from "./BillInformationModal";
 
 const ApplicationSubmittedModal = ({
   isOpen,
@@ -34,6 +35,7 @@ const ApplicationSubmittedModal = ({
   const [uploadError, setUploadError] = useState("");
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+  const [supportingDocumentType, setSupportingDocumentType] = useState("");
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [isHipaaOpen, setIsHipaaOpen] = useState(false);
   const [docToDelete, setDocToDelete] = useState(null);
@@ -119,15 +121,24 @@ const ApplicationSubmittedModal = ({
       setUploadError("Please select a PDF file to upload.");
       return;
     }
+    if (!supportingDocumentType) {
+      setUploadError("Please select the type of document.");
+      return;
+    }
     setUploadError("");
     setUploadSuccess(false);
     const result = await dispatch(
-      uploadSupportingDocument({ billId, file: selectedFile })
+      uploadSupportingDocument({
+        billId,
+        file: selectedFile,
+        documentType: supportingDocumentType,
+      })
     );
     if (uploadSupportingDocument.fulfilled.match(result)) {
       setUploadSuccess(true);
       setSelectedFile(null);
       setUploadedFileName("");
+      setSupportingDocumentType("");
       const fileInput = document.getElementById("supporting-doc-upload");
       if (fileInput) fileInput.value = "";
       setTimeout(() => setUploadSuccess(false), 3000);
@@ -283,6 +294,7 @@ const ApplicationSubmittedModal = ({
                   onClick={() => {
                     setSelectedFile(null);
                     setUploadedFileName("");
+                    setSupportingDocumentType("");
                     const fileInput = document.getElementById("supporting-doc-upload");
                     if (fileInput) {
                       fileInput.value = "";
@@ -305,10 +317,27 @@ const ApplicationSubmittedModal = ({
                   </svg>
                 </button>
               </div>
+              <div className="mb-2.5">
+                <label className="block text-[11px] md:text-sm font-medium text-gray-700 mb-1">
+                  Type of document
+                </label>
+                <select
+                  value={supportingDocumentType}
+                  onChange={(e) => setSupportingDocumentType(e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-100"
+                >
+                  <option value="">Select document type</option>
+                  {DOCUMENT_TYPES.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <button
                 type="button"
                 onClick={handleUploadSupportingDocument}
-                disabled={uploading}
+                disabled={uploading || !supportingDocumentType}
                 className="w-full py-2 px-3 bg-purple-700 text-white rounded-lg text-xs md:text-sm font-medium hover:bg-purple-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {uploading ? "Uploading..." : "Upload Document"}
@@ -336,34 +365,45 @@ const ApplicationSubmittedModal = ({
               <p className="text-[11px] md:text-sm font-medium text-gray-700 mb-1.5">
                 Uploaded supporting documents
               </p>
-              {supportingDocuments.map((doc) => (
+              {supportingDocuments.map((doc) => {
+                const typeLabel = doc.documentType
+                  ? (DOCUMENT_TYPES.find((t) => t.value === doc.documentType)?.label || doc.documentType)
+                  : null;
+                return (
                 <div
                   key={doc._id || doc.pdfUrl}
                   className="flex items-center justify-between p-2.5 rounded-lg border border-purple-200 bg-purple-50/50"
                 >
-                  <div className="flex items-center gap-2 min-w-0 flex-1">
-                    <svg
-                      className="w-5 h-5 text-purple-600 flex-shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                      />
-                    </svg>
-                    <a
-                      href={doc.pdfUrl}
-                      download={doc.pdfFileName || "supporting-doc.pdf"}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs md:text-sm text-purple-700 hover:underline truncate"
-                    >
-                      {doc.pdfFileName || "Supporting document"}
-                    </a>
+                  <div className="flex flex-col gap-0.5 min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <svg
+                        className="w-5 h-5 text-purple-600 flex-shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                        />
+                      </svg>
+                      <a
+                        href={doc.pdfUrl}
+                        download={doc.pdfFileName || "supporting-doc.pdf"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs md:text-sm text-purple-700 hover:underline truncate"
+                      >
+                        {doc.pdfFileName || "Supporting document"}
+                      </a>
+                    </div>
+                    {typeLabel && (
+                      <span className="text-[10px] md:text-xs text-gray-500 pl-7">
+                        Type: {typeLabel}
+                      </span>
+                    )}
                   </div>
                   <button
                     type="button"
@@ -387,7 +427,8 @@ const ApplicationSubmittedModal = ({
                     </svg>
                   </button>
                 </div>
-              ))}
+              );
+              })}
             </div>
           )}
         </div>

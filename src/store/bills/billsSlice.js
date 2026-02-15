@@ -4,7 +4,7 @@ import axiosClient from "../../api/axiosClient";
 export const uploadBill = createAsyncThunk(
   "bills/uploadBill",
   async (
-    { patientName, serviceDate, billAmount, documentType, file },
+    { patientName, serviceDate, billAmount, file },
     { rejectWithValue }
   ) => {
     try {
@@ -15,7 +15,6 @@ export const uploadBill = createAsyncThunk(
         serviceDate || new Date().toISOString().split("T")[0]
       );
       formData.append("billAmount", parseFloat(billAmount));
-      if (documentType) formData.append("documentType", documentType);
       formData.append("pdf", file);
 
       const response = await axiosClient.post("/bills", formData, {
@@ -105,10 +104,11 @@ export const deleteHipaaForm = createAsyncThunk(
 
 export const uploadSupportingDocument = createAsyncThunk(
   "bills/uploadSupportingDocument",
-  async ({ billId, file }, { rejectWithValue }) => {
+  async ({ billId, file, documentType }, { rejectWithValue }) => {
     try {
       const formData = new FormData();
       formData.append("pdf", file);
+      if (documentType) formData.append("documentType", documentType);
 
       const response = await axiosClient.post(
         `/bills/${billId}/supporting-documents`,

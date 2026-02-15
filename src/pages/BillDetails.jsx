@@ -409,34 +409,43 @@ const BillDetails = () => {
                       </div>
                       <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px]">
                         <div className="w-full h-full max-h-[400px] overflow-y-auto thin-scrollbar mt-4 md:mt-5 space-y-3">
-                          {bill.supportingDocuments.map((doc) => (
+                          {bill.supportingDocuments.map((doc) => {
+                            const supportingTypeLabel = doc.documentType
+                              ? (DOCUMENT_TYPES.find((t) => t.value === doc.documentType)?.label || doc.documentType)
+                              : null;
+                            return (
                             <div
                               key={doc._id || doc.pdfUrl}
                               className="flex items-center justify-between p-3 rounded-lg border border-purple-200 bg-purple-50/50"
                             >
-                              <div className="flex items-center gap-2 min-w-0 flex-1">
-                                <svg
-                                  className="w-5 h-5 text-purple-600 flex-shrink-0"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                                  />
-                                </svg>
-                                <a
-                                  href={doc.pdfUrl}
-                                  download={doc.pdfFileName || "supporting-doc.pdf"}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-sm text-purple-700 hover:underline truncate"
-                                >
-                                  {doc.pdfFileName || "Supporting document"}
-                                </a>
+                              <div className="flex flex-col gap-0.5 min-w-0 flex-1">
+                                <div className="flex items-center gap-2">
+                                  <svg
+                                    className="w-5 h-5 text-purple-600 flex-shrink-0"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                                    />
+                                  </svg>
+                                  <a
+                                    href={doc.pdfUrl}
+                                    download={doc.pdfFileName || "supporting-doc.pdf"}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-sm text-purple-700 hover:underline truncate"
+                                  >
+                                    {doc.pdfFileName || "Supporting document"}
+                                  </a>
+                                </div>
+                                {supportingTypeLabel && (
+                                  <span className="text-xs text-gray-500 pl-7">Type: {supportingTypeLabel}</span>
+                                )}
                               </div>
                               <button
                                 type="button"
@@ -460,7 +469,8 @@ const BillDetails = () => {
                                 </svg>
                               </button>
                             </div>
-                          ))}
+                          );
+                          })}
                         </div>
                       </div>
                     </div>
@@ -655,34 +665,43 @@ const BillDetails = () => {
                       </div>
                       <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px] max-w-[340px] w-full mx-auto">
                         <div className="w-full h-full max-h-[400px] overflow-y-auto thin-scrollbar mt-4 md:mt-5 space-y-3">
-                          {bill.supportingDocuments.map((doc) => (
+                          {bill.supportingDocuments.map((doc) => {
+                            const supportingTypeLabel = doc.documentType
+                              ? (DOCUMENT_TYPES.find((t) => t.value === doc.documentType)?.label || doc.documentType)
+                              : null;
+                            return (
                             <div
                               key={doc._id || doc.pdfUrl}
                               className="flex items-center justify-between p-3 rounded-lg border border-purple-200 bg-purple-50/50"
                             >
-                              <div className="flex items-center gap-2 min-w-0 flex-1">
-                                <svg
-                                  className="w-5 h-5 text-purple-600 flex-shrink-0"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                                  />
-                                </svg>
-                                <a
-                                  href={doc.pdfUrl}
-                                  download={doc.pdfFileName || "supporting-doc.pdf"}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-sm text-purple-700 hover:underline truncate"
-                                >
-                                  {doc.pdfFileName || "Supporting document"}
-                                </a>
+                              <div className="flex flex-col gap-0.5 min-w-0 flex-1">
+                                <div className="flex items-center gap-2">
+                                  <svg
+                                    className="w-5 h-5 text-purple-600 flex-shrink-0"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                                    />
+                                  </svg>
+                                  <a
+                                    href={doc.pdfUrl}
+                                    download={doc.pdfFileName || "supporting-doc.pdf"}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-sm text-purple-700 hover:underline truncate"
+                                  >
+                                    {doc.pdfFileName || "Supporting document"}
+                                  </a>
+                                </div>
+                                {supportingTypeLabel && (
+                                  <span className="text-xs text-gray-500 pl-7">Type: {supportingTypeLabel}</span>
+                                )}
                               </div>
                               <button
                                 type="button"
@@ -706,7 +725,8 @@ const BillDetails = () => {
                                 </svg>
                               </button>
                             </div>
-                          ))}
+                          );
+                          })}
                         </div>
                       </div>
                     </div>
