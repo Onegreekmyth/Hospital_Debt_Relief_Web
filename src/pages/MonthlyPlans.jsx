@@ -52,8 +52,7 @@ const MonthlyPlansPage = () => {
             hospital bills.
           </h1>
           <p className="text-[14px] md:text-[16px] text-gray-600 text-center mt-4 max-w-2xl mx-auto">
-            Choose a membership that fits your family size and get expert help with hospital billing, financial relief, and credit protection.
-          </p>
+Check your eligibility and add your family members—we’ll automatically calculate the best plan for your household size          </p>
         </div>
       </section>
 
