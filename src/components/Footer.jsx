@@ -11,7 +11,7 @@ const Footer = () => {
           <span className="hidden md:inline">
             <br />
           </span>{" "}
-          much you can save on your hospital bill.
+          much you can save on your hospital bills.
         </h2>
         <Link
           to="/#savings-calculator"
