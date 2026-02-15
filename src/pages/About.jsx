@@ -35,7 +35,7 @@ const AboutPage = () => {
             {/* Left side - Text content */}
             <div className="order-2 md:order-1">
               <p className="text-[12px] font-semibold tracking-[0.64px] text-[#3D0BBE] uppercase mb-4">
-                THE FOUNDERS OF MEDICAL FINANCIAL FREEDOM.COM
+                THE FOUNDERS OF HOSPITALDEBTRELIEF.COM
               </p>
               <h2 className="text-[28px] md:text-[36px] lg:text-[48px] leading-tight font-bold text-gray-900 mb-4 md:mb-6">
                 Meet Nick & Kristin

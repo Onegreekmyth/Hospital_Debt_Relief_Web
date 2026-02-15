@@ -94,7 +94,7 @@ const Footer = () => {
         {/* Bottom row: copyright + links */}
         <div className="w-full px-6 md:px-10 py-6 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0 text-[12px] md:text-[14px]">
           <p className="text-gray-800 text-center md:text-left">
-            © 2025 Medical Financial Freedom. All Rights Reserved.
+            © 2026 Hospital Debt Relief. All Rights Reserved.
           </p>
           <div className="flex items-center gap-4 md:gap-6 text-gray-800">
             <Link
