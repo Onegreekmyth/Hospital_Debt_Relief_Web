@@ -8,7 +8,7 @@ const CharityCarePage = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative flex flex-col items-center justify-center text-center px-4 md:px-6 pt-32 md:pt-40 pb-16 md:pb-24 bg-white overflow-hidden">
+      <section className="relative flex flex-col items-center justify-center text-center px-4 md:px-6 pt-32 md:pt-40 pb-20 md:pb-28 min-h-[70vh] md:min-h-[80vh] bg-white overflow-hidden">
         <div
           className="pointer-events-none absolute inset-0"
           aria-hidden="true"
@@ -17,7 +17,7 @@ const CharityCarePage = () => {
               "radial-gradient(circle at center, rgba(86,49,211,0.22) 0, rgba(86,49,211,0.04) 45%, rgba(86,49,211,0) 70%)",
           }}
         />
-        <div className="relative max-w-3xl text-gray-900">
+        <div className="relative max-w-4xl text-gray-900">
           <h1 className="text-[24px] md:text-[28px] leading-[1.2] md:leading-tight lg:text-[40px] font-bold">
             What is Charity Care?
           </h1>

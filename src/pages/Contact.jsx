@@ -168,7 +168,7 @@ const ContactPage = () => {
                         ? "border-red-400 focus:border-red-500 text-red-600"
                         : "border-purple-200 text-gray-700 focus:border-purple-500"
                     }`}
-                    placeholder="John Doe"
+                    placeholder="First Last"
                   />
                   {errors.name && (
                     <p className="text-xs text-red-600 mt-1">{errors.name}</p>
