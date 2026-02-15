@@ -450,10 +450,12 @@ const ApplicationSubmittedModal = ({
           </>
         )}
 
-        {/* Complete Application Button */}
+        {/* Complete Application Button - disabled until fee is paid when fee button is showing */}
         <button
           type="button"
-          className="w-full py-2.5 md:py-3 rounded-full border-2 border-purple-700 bg-white text-purple-700 font-bold text-xs md:text-base mb-2.5 md:mb-4 hover:bg-purple-50 transition-colors"
+          disabled={showFlatFeeButton}
+          title={showFlatFeeButton ? "Pay the one-time fee above to continue" : undefined}
+          className="w-full py-2.5 md:py-3 rounded-full border-2 border-purple-700 bg-white text-purple-700 font-bold text-xs md:text-base mb-2.5 md:mb-4 hover:bg-purple-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-white"
         >
           Click to Complete Application
         </button>
