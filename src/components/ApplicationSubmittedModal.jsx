@@ -7,6 +7,7 @@ import {
   uploadSupportingDocument,
   deleteSupportingDocument,
 } from "../store/bills/billsSlice";
+import { createCheckoutSession, clearCheckoutError } from "../store/payments/paymentsSlice";
 
 const ApplicationSubmittedModal = ({
   isOpen,
@@ -26,6 +27,9 @@ const ApplicationSubmittedModal = ({
     supportingDocUploadError: uploadErrorFromSlice,
     supportingDocDeleteLoading: deletingDoc,
   } = useSelector((state) => state.bills);
+  const { checkoutLoading: flatFeeLoading, checkoutError: flatFeeError } = useSelector(
+    (state) => state.payments
+  );
 
   const [uploadError, setUploadError] = useState("");
   const [uploadedFileName, setUploadedFileName] = useState("");
@@ -50,6 +54,25 @@ const ApplicationSubmittedModal = ({
     return member ? member.withActiveSubscription !== false : true;
   })();
   const showFlatFeeButton = !hasActiveSubscription || !isBillPatientInSubscription;
+
+  const handlePayFlatFee = async () => {
+    dispatch(clearCheckoutError());
+    const baseUrl = window.location.origin;
+    const successUrl = `${baseUrl}/dashboard?subscription=success&session_id={CHECKOUT_SESSION_ID}`;
+    const cancelUrl = `${baseUrl}/dashboard?subscription=cancelled`;
+    try {
+      const checkoutUrl = await dispatch(
+        createCheckoutSession({
+          planId: "one_time_flat",
+          successUrl,
+          cancelUrl,
+        })
+      ).unwrap();
+      if (checkoutUrl) window.location.href = checkoutUrl;
+    } catch (err) {
+      console.error("Pay $299 flat fee error:", err);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -371,12 +394,19 @@ const ApplicationSubmittedModal = ({
 
         {/* Payment Button - only for patients not included in active subscription */}
         {showFlatFeeButton && (
-          <button
-            type="button"
-            className="w-full py-2.5 md:py-3 rounded-full bg-gradient-to-r from-purple-700 to-purple-900 text-white font-bold text-xs md:text-base mb-2.5 md:mb-4 hover:from-purple-600 hover:to-purple-800 transition-all shadow-lg"
-          >
-            Pay $299 Flat Fee
-          </button>
+          <>
+            {flatFeeError && (
+              <p className="text-sm text-red-600 mb-2">{flatFeeError}</p>
+            )}
+            <button
+              type="button"
+              disabled={flatFeeLoading}
+              onClick={handlePayFlatFee}
+              className="w-full py-2.5 md:py-3 rounded-full bg-gradient-to-r from-purple-700 to-purple-900 text-white font-bold text-xs md:text-base mb-2.5 md:mb-4 hover:from-purple-600 hover:to-purple-800 transition-all shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              {flatFeeLoading ? "Redirecting to payment..." : "Pay $299 Flat Fee"}
+            </button>
+          </>
         )}
 
         {/* Complete Application Button */}

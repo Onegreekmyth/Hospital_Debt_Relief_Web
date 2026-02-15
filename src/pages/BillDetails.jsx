@@ -8,6 +8,7 @@ import uploadImg from "../assets/upload-circle.png";
 import billPlaceholder from "../assets/bill-history.png";
 import axiosClient from "../api/axiosClient";
 import { deleteHipaaForm, deleteSupportingDocument } from "../store/bills/billsSlice";
+import { DOCUMENT_TYPES } from "../components/BillInformationModal";
 
 const BillDetails = () => {
   const { id } = useParams();
@@ -63,10 +64,15 @@ const BillDetails = () => {
         year: "numeric",
       });
     };
+    const documentTypeLabel = apiBill.documentType
+      ? (DOCUMENT_TYPES.find((t) => t.value === apiBill.documentType)?.label || apiBill.documentType)
+      : null;
     return {
       id: apiBill._id,
       patientName: apiBill.patientName || null,
       hospital: apiBill.patientName || "N/A",
+      documentType: apiBill.documentType || null,
+      documentTypeLabel,
       serviceDate: apiBill.serviceDate || apiBill.submittedAt || apiBill.createdAt || null,
       amount: formatCurrency(apiBill.billAmount),
       newAmount: formatCurrency(apiBill.billAmount * 0.55),
@@ -259,10 +265,15 @@ const BillDetails = () => {
                   {/* Uploaded Bill card */}
                   <div className="relative flex flex-col max-w-[360px] w-full">
                     {/* Floating label with actions */}
-                    <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md flex items-center gap-3">
+                    <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md flex items-center gap-3 flex-wrap">
                       <span className="text-md font-medium text-gray-800">
                         Uploaded Bill
                       </span>
+                      {bill.documentTypeLabel && (
+                        <span className="text-xs text-gray-500 border-l border-gray-200 pl-3">
+                          Type: {bill.documentTypeLabel}
+                        </span>
+                      )}
                       {/* Edit icon - opens Application Submitted modal */}
                       <button
                         type="button"
@@ -503,10 +514,15 @@ const BillDetails = () => {
                 })()}`}>
                   {/* Uploaded Bill */}
                   <div className="relative flex flex-col">
-                    <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md flex items-center gap-3">
+                    <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md flex items-center gap-3 flex-wrap">
                       <span className="text-md font-medium text-gray-800">
                         Uploaded Bill
                       </span>
+                      {bill.documentTypeLabel && (
+                        <span className="text-xs text-gray-500 border-l border-gray-200 pl-3">
+                          Type: {bill.documentTypeLabel}
+                        </span>
+                      )}
                       <button
                         type="button"
                         onClick={handleEditBillClick}

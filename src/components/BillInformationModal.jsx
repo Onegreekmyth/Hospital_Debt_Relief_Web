@@ -2,6 +2,22 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { uploadBill, clearUploadError } from "../store/bills/billsSlice";
 
+// Document type options for bill upload (client requirement)
+export const DOCUMENT_TYPES = [
+  { value: "hospital_bill", label: "Hospital Bill" },
+  { value: "drivers_license", label: "Drivers License" },
+  { value: "utility_bill", label: "Utility Bill" },
+  { value: "w2", label: "W-2" },
+  { value: "prior_year_tax_return", label: "Prior Year's Tax Return" },
+  { value: "three_most_recent_paycheck_stubs", label: "Three Most Recent Paycheck Stubs" },
+  { value: "proof_of_child_support_income", label: "Proof of Child Support Income" },
+  { value: "retirement_check_stubs", label: "Retirement Check Stubs" },
+  { value: "social_security_letters_or_deposit_slips", label: "Social Security Letters or Deposit Slips (showing the amount of the Social Security deposit)" },
+  { value: "unemployment_check_stubs", label: "Unemployment Check Stubs" },
+  { value: "other_governmental_program_check_stubs", label: "Other Governmental Program Check Stubs" },
+  { value: "letter_from_employer", label: "Letter from Employer (on company letterhead) indicating the payment amount" },
+];
+
 const BillInformationModal = ({ 
   isOpen, 
   onClose, 
@@ -18,6 +34,7 @@ const BillInformationModal = ({
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [patientName, setPatientName] = useState("");
+  const [documentType, setDocumentType] = useState("");
   const [serviceDate, setServiceDate] = useState("");
   const [billAmount, setBillAmount] = useState("");
   const [submitError, setSubmitError] = useState("");
@@ -167,6 +184,11 @@ const BillInformationModal = ({
       return;
     }
 
+    if (!documentType) {
+      setSubmitError("Please select the type of document.");
+      return;
+    }
+
     if (!serviceDate && isSubscriptionActive) {
       setSubmitError("Please select a service date.");
       return;
@@ -196,6 +218,7 @@ const BillInformationModal = ({
       const result = await dispatch(
         uploadBill({
           patientName,
+          documentType,
           serviceDate,
           billAmount,
           file: fileToUpload,
@@ -204,6 +227,7 @@ const BillInformationModal = ({
 
       if (result?.success && result?.data) {
         setPatientName("");
+        setDocumentType("");
         setServiceDate("");
         setBillAmount("");
         setSelectedFile(null);
@@ -294,6 +318,27 @@ const BillInformationModal = ({
                     <option value="Child">Child</option>
                   </>
                 )}
+              </select>
+            </div>
+          </div>
+
+          {/* Type of Document */}
+          <div className="flex flex-col gap-2">
+            <label className="text-xs md:text-sm font-medium text-gray-700">
+              Type of Document
+            </label>
+            <div className="relative">
+              <select
+                value={documentType}
+                onChange={(e) => setDocumentType(e.target.value)}
+                className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-white pl-10 md:pl-12 pr-16 md:pr-20 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-100 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%239C88FF%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:10px] md:bg-[length:12px] bg-[right_1.5rem_center] md:bg-[right_2rem_center] bg-no-repeat"
+              >
+                <option value="">Select document type</option>
+                {DOCUMENT_TYPES.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
               </select>
             </div>
           </div>

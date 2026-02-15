@@ -4,7 +4,7 @@ import axiosClient from "../../api/axiosClient";
 export const uploadBill = createAsyncThunk(
   "bills/uploadBill",
   async (
-    { patientName, serviceDate, billAmount, file },
+    { patientName, serviceDate, billAmount, documentType, file },
     { rejectWithValue }
   ) => {
     try {
@@ -15,6 +15,7 @@ export const uploadBill = createAsyncThunk(
         serviceDate || new Date().toISOString().split("T")[0]
       );
       formData.append("billAmount", parseFloat(billAmount));
+      if (documentType) formData.append("documentType", documentType);
       formData.append("pdf", file);
 
       const response = await axiosClient.post("/bills", formData, {

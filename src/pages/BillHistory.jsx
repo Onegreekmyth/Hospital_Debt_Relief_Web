@@ -96,10 +96,31 @@ const BillHistory = () => {
     });
   };
 
+  // Document type value -> label (subset; full list in BillInformationModal)
+  const getDocumentTypeLabel = (value) => {
+    const types = [
+      { value: "hospital_bill", label: "Hospital Bill" },
+      { value: "drivers_license", label: "Drivers License" },
+      { value: "utility_bill", label: "Utility Bill" },
+      { value: "w2", label: "W-2" },
+      { value: "prior_year_tax_return", label: "Prior Year's Tax Return" },
+      { value: "three_most_recent_paycheck_stubs", label: "Three Most Recent Paycheck Stubs" },
+      { value: "proof_of_child_support_income", label: "Proof of Child Support Income" },
+      { value: "retirement_check_stubs", label: "Retirement Check Stubs" },
+      { value: "social_security_letters_or_deposit_slips", label: "Social Security Letters or Deposit Slips" },
+      { value: "unemployment_check_stubs", label: "Unemployment Check Stubs" },
+      { value: "other_governmental_program_check_stubs", label: "Other Governmental Program Check Stubs" },
+      { value: "letter_from_employer", label: "Letter from Employer" },
+    ];
+    return types.find((t) => t.value === value)?.label || value || "—";
+  };
+
   // Transform API data to UI format
   const transformedBills = bills.map((bill) => ({
     id: bill._id,
     hospital: bill.patientName || "N/A", // Using patientName as hospital placeholder
+    documentType: bill.documentType || null,
+    documentTypeLabel: getDocumentTypeLabel(bill.documentType),
     amount: formatCurrency(bill.billAmount),
     dateSubmitted: formatDate(bill.submittedAt || bill.createdAt),
     status: mapStatusToUI(bill.status),
@@ -235,6 +256,7 @@ const BillHistory = () => {
                   <thead>
                     <tr className="border-b border-gray-300 text-xs md:text-lg text-black">
                       <th className="px-6 md:px-10 py-4 font-large">Patient Name</th>
+                      <th className="px-4 py-4 font-large">Type</th>
                       <th className="px-4 py-4 font-large">Bill Amount</th>
                       <th className="px-4 py-4 font-large">Date Submitted</th>
                       <th className="px-6 py-4 font-large text-right pr-8 md:pr-10">
@@ -262,6 +284,9 @@ const BillHistory = () => {
                               {bill.hospital}
                             </span>
                           </div>
+                        </td>
+                        <td className="px-4 py-4 text-sm md:text-base max-w-[180px] truncate" title={bill.documentTypeLabel}>
+                          {bill.documentTypeLabel}
                         </td>
                         <td className="px-4 py-4 text-sm md:text-base">{bill.amount}</td>
                         <td className="px-4 py-4 text-sm md:text-base">{bill.dateSubmitted}</td>
@@ -303,7 +328,7 @@ const BillHistory = () => {
                   {filteredBills.length === 0 && (
                     <tr>
                       <td
-                        colSpan={5}
+                        colSpan={6}
                         className="px-6 md:px-10 py-10 text-center text-sm text-gray-500"
                       >
                         No bills found for this filter.
