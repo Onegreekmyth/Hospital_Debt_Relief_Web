@@ -160,6 +160,30 @@ export const deleteSupportingDocument = createAsyncThunk(
   }
 );
 
+export const completeBillApplication = createAsyncThunk(
+  "bills/completeBillApplication",
+  async (billId, { rejectWithValue }) => {
+    try {
+      const response = await axiosClient.patch(
+        `/bills/${billId}/complete-application`
+      );
+      if (response.data?.success === false) {
+        return rejectWithValue(
+          response.data?.message || "Failed to complete application."
+        );
+      }
+      return { billId, data: response.data };
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Failed to complete application. Please try again.";
+      return rejectWithValue(message);
+    }
+  }
+);
+
 export const deleteBill = createAsyncThunk(
   "bills/deleteBill",
   async (billId, { rejectWithValue }) => {
@@ -197,6 +221,8 @@ const billsSlice = createSlice({
     supportingDocDeleteError: "",
     billDeleteLoading: false,
     billDeleteError: "",
+    completeApplicationLoading: false,
+    completeApplicationError: "",
   },
   reducers: {
     clearUploadError: (state) => {
@@ -263,6 +289,18 @@ const billsSlice = createSlice({
         state.billDeleteLoading = false;
         state.billDeleteError =
           action.payload || "Failed to delete bill. Please try again.";
+      })
+      .addCase(completeBillApplication.pending, (state) => {
+        state.completeApplicationLoading = true;
+        state.completeApplicationError = "";
+      })
+      .addCase(completeBillApplication.fulfilled, (state) => {
+        state.completeApplicationLoading = false;
+      })
+      .addCase(completeBillApplication.rejected, (state, action) => {
+        state.completeApplicationLoading = false;
+        state.completeApplicationError =
+          action.payload || "Failed to complete application. Please try again.";
       });
   },
 });

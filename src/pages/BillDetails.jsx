@@ -40,6 +40,7 @@ const BillDetails = () => {
   const transformApiBill = (apiBill) => {
     const mapStatusToUI = (backendStatus) => {
       const statusMap = {
+        inactive: "Pending",
         pending: "Pending",
         submitted: "Submitted",
         processing: "Submitted",

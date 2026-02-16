@@ -3,7 +3,7 @@ import axiosClient from "../../api/axiosClient";
 
 export const createCheckoutSession = createAsyncThunk(
   "payments/createCheckoutSession",
-  async ({ planId, successUrl, cancelUrl }, { rejectWithValue }) => {
+  async ({ planId, successUrl, cancelUrl, billId }, { rejectWithValue }) => {
     try {
       const response = await axiosClient.post(
         "/payments/create-checkout-session",
@@ -11,6 +11,7 @@ export const createCheckoutSession = createAsyncThunk(
           planId,
           successUrl,
           cancelUrl,
+          ...(billId ? { billId } : {}),
         }
       );
 

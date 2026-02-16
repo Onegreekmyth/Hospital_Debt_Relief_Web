@@ -68,6 +68,7 @@ const BillHistory = () => {
   // Map backend status to UI status
   const mapStatusToUI = (backendStatus) => {
     const statusMap = {
+      inactive: "Pending",
       pending: "Pending",
       submitted: "Submitted",
       processing: "Submitted",

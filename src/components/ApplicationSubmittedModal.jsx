@@ -6,6 +6,7 @@ import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import {
   uploadSupportingDocument,
   deleteSupportingDocument,
+  completeBillApplication,
 } from "../store/bills/billsSlice";
 import { createCheckoutSession, clearCheckoutError } from "../store/payments/paymentsSlice";
 import { DOCUMENT_TYPES } from "./BillInformationModal";
@@ -27,6 +28,8 @@ const ApplicationSubmittedModal = ({
     supportingDocUploadLoading: uploading,
     supportingDocUploadError: uploadErrorFromSlice,
     supportingDocDeleteLoading: deletingDoc,
+    completeApplicationLoading: completeLoading,
+    completeApplicationError: completeError,
   } = useSelector((state) => state.bills);
   const { checkoutLoading: flatFeeLoading, checkoutError: flatFeeError } = useSelector(
     (state) => state.payments
@@ -68,6 +71,7 @@ const ApplicationSubmittedModal = ({
           planId: "one_time_flat",
           successUrl,
           cancelUrl,
+          billId: billId || undefined,
         })
       ).unwrap();
       if (checkoutUrl) window.location.href = checkoutUrl;
@@ -81,6 +85,17 @@ const ApplicationSubmittedModal = ({
   const handleViewApplication = () => {
     navigate(`/bill-history/${billId}`);
     onClose();
+  };
+
+  const handleCompleteApplication = async () => {
+    if (!billId || completeLoading) return;
+    try {
+      await dispatch(completeBillApplication(billId)).unwrap();
+      onBillUpdated?.();
+      onClose();
+    } catch (err) {
+      // Error is shown via completeError from slice
+    }
   };
 
   const handleFileChange = (e) => {
@@ -450,14 +465,18 @@ const ApplicationSubmittedModal = ({
           </>
         )}
 
+        {completeError && (
+          <p className="text-sm text-red-600 mb-2">{completeError}</p>
+        )}
         {/* Complete Application Button - disabled until fee is paid when fee button is showing */}
         <button
           type="button"
-          disabled={showFlatFeeButton}
+          disabled={showFlatFeeButton || completeLoading}
+          onClick={handleCompleteApplication}
           title={showFlatFeeButton ? "Pay the one-time fee above to continue" : undefined}
           className="w-full py-2.5 md:py-3 rounded-full border-2 border-purple-700 bg-white text-purple-700 font-bold text-xs md:text-base mb-2.5 md:mb-4 hover:bg-purple-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-white"
         >
-          Click to Complete Application
+          {completeLoading ? "Completing..." : "Click to Complete Application"}
         </button>
 
           {/* Guarantee Text */}
