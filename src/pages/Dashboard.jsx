@@ -290,7 +290,7 @@ const Dashboard = () => {
     }
   };
 
-  // Update profile (firstName, lastName, phone, mailing_address) via user slice
+  // Update profile (firstName, lastName, phone, mailing_address, state, zipcode) via user slice
   const handleUpdateProfile = () => {
     dispatch(
       updateProfile({
@@ -298,6 +298,8 @@ const Dashboard = () => {
         lastName: profile.lastName?.trim() ?? "",
         phone: profile.phone?.trim() ?? "",
         mailing_address: profile.mailingAddress?.trim() ?? "",
+        state: profile.state?.trim() || undefined,
+        zipcode: profile.zipcode?.toString().trim() || undefined,
       })
     );
   };
@@ -542,6 +544,61 @@ const Dashboard = () => {
                         className={`w-full h-11 md:h-12 rounded-full border border-gray-300 pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${isProfileEditing ? "bg-white" : "bg-gray-100 cursor-not-allowed"}`}
                         placeholder={profileLoading ? "Loading..." : "address"}
                       />
+                    </div>
+                  </div>
+
+                  {/* State & Zipcode (same row, half width each) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                    {/* State */}
+                    <div className="flex flex-col gap-2">
+                      <label className="text-xs font-medium text-gray-500">
+                        State
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={profile.state}
+                          disabled={!isProfileEditing}
+                          onChange={(e) =>
+                            dispatch(
+                              setProfileField({
+                                field: "state",
+                                value: e.target.value,
+                              })
+                            )
+                          }
+                          className={`w-full h-11 md:h-12 rounded-full border border-gray-300 px-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${
+                            isProfileEditing ? "bg-white" : "bg-gray-100 cursor-not-allowed"
+                          }`}
+                          placeholder={profileLoading ? "Loading..." : ""}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Zipcode */}
+                    <div className="flex flex-col gap-2">
+                      <label className="text-xs font-medium text-gray-500">
+                        Zipcode
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={profile.zipcode}
+                          disabled={!isProfileEditing}
+                          onChange={(e) =>
+                            dispatch(
+                              setProfileField({
+                                field: "zipcode",
+                                value: e.target.value,
+                              })
+                            )
+                          }
+                          className={`w-full h-11 md:h-12 rounded-full border border-gray-300 px-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${
+                            isProfileEditing ? "bg-white" : "bg-gray-100 cursor-not-allowed"
+                          }`}
+                          placeholder={profileLoading ? "Loading..." : ""}
+                        />
+                      </div>
                     </div>
                   </div>
 

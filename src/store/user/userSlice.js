@@ -7,6 +7,8 @@ const initialProfileState = {
   email: '',
   phone: '',
   mailingAddress: '',
+  state: '',
+  zipcode: '',
   annualHouseholdIncome: '',
   hospitalInfo: null,
   withActiveSubscription: true,
@@ -71,9 +73,12 @@ export const fetchProfile = createAsyncThunk(
       const profile = {
         firstName,
         lastName,
-        mailingAddress: userData.mailingAddress || '',
+        // Support both mailingAddress and mailing_address from backend
+        mailingAddress: userData.mailingAddress || userData.mailing_address || '',
         email: userData.email || '',
         phone: userData.phone || '',
+        state: userData.state || '',
+        zipcode: userData.zipcode != null ? String(userData.zipcode) : '',
         annualHouseholdIncome: annualHouseholdIncome
           ? annualHouseholdIncome.toLocaleString('en-US')
           : '',
@@ -120,16 +125,29 @@ export const updateAccountHolderSubscription = createAsyncThunk(
 export const updateProfile = createAsyncThunk(
   'user/updateProfile',
   async (
-    { firstName, lastName, phone, mailing_address },
+    { firstName, lastName, phone, mailing_address, state, zipcode },
     { rejectWithValue }
   ) => {
     try {
-      const response = await axiosClient.put('/auth/profile', {
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        phone: phone.trim(),
+      const payload = {
+        firstName: (firstName || '').trim(),
+        lastName: (lastName || '').trim(),
+        phone: (phone || '').trim(),
         mailing_address: (mailing_address || '').trim(),
-      });
+      };
+
+      const trimmedState = (state || '').trim();
+      if (trimmedState) {
+        payload.state = trimmedState;
+      }
+
+      const rawZip = zipcode != null ? String(zipcode) : '';
+      const trimmedZip = rawZip.trim();
+      if (trimmedZip) {
+        payload.zipcode = trimmedZip;
+      }
+
+      const response = await axiosClient.put('/auth/profile', payload);
       if (!response.data?.success) {
         return rejectWithValue(response.data?.message || 'Failed to update profile');
       }
@@ -207,6 +225,8 @@ const userSlice = createSlice({
           if (p.phone != null) state.profile.phone = p.phone;
           if (p.mailingAddress != null) state.profile.mailingAddress = p.mailingAddress;
           if (p.mailing_address != null) state.profile.mailingAddress = p.mailing_address;
+          if (p.state != null) state.profile.state = p.state;
+          if (p.zipcode != null) state.profile.zipcode = String(p.zipcode);
         }
       })
       .addCase(updateProfile.rejected, (state, action) => {

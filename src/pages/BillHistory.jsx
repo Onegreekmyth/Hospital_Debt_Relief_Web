@@ -68,7 +68,6 @@ const BillHistory = () => {
   // Map backend status to UI status
   const mapStatusToUI = (backendStatus) => {
     const statusMap = {
-      inactive: "Pending",
       pending: "Pending",
       submitted: "Submitted",
       processing: "Submitted",
@@ -130,6 +129,8 @@ const BillHistory = () => {
   }));
 
   const filteredBills = transformedBills.filter((bill) => {
+    // Never show inactive bills
+    if (bill.rawStatus === "inactive") return false;
     if (filter === "Submitted") return bill.status === "Submitted";
     if (filter === "Pending") return bill.status === "Pending";
     if (filter === "Refunded") return bill.status === "Refunded";
