@@ -58,8 +58,12 @@ const ApplicationSubmittedModal = ({
     );
     return member ? member.withActiveSubscription !== false : true;
   })();
-  const showFlatFeeButton = !hasActiveSubscription || !isBillPatientInSubscription;
+  const isBillPending = billData?.status?.toLowerCase() === "pending";
 
+  const showFlatFeeButton =
+    (!hasActiveSubscription || !isBillPatientInSubscription) &&
+    !isBillPending;
+  
   const handlePayFlatFee = async () => {
     dispatch(clearCheckoutError());
     const baseUrl = window.location.origin;
