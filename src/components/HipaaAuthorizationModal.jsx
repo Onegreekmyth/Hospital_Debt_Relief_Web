@@ -67,12 +67,20 @@ function buildHipaaPdf(hipaaForm, familySignatureDataUrl, guardianSignatureDataU
   doc.setFont(undefined, "bold");
   addParagraph("4. Validity of Authorization Form.");
   doc.setFont(undefined, "normal");
+  
+  const today = new Date();
+  const formattedDate = 
+    (today.getMonth() + 1) + "/" +
+    today.getDate() + "/" +
+    today.getFullYear();
+  
   addParagraph(
     "This Authorization Form is valid beginning on " +
-      (hipaaForm.billDate || "[Date]") +
+      formattedDate +
       " and expires one year after the beginning date."
   );
   y += 3;
+  
 
   doc.setFont(undefined, "bold");
   addParagraph("5. Acknowledgment.");

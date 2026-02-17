@@ -37,7 +37,7 @@ const faqs = [
   {
     question: "What do I have to pay?",
     answer: [
-      "Non-Member Rate: A Flat $299 Per Bill We keep it simple: non-members pay a one-time fee of $299 to negotiate an existing bill.",
+      "Non-Member Rate: A Flat $299 Per Bill. We keep it simple: non-members pay a one-time fee of $299 to negotiate an existing bill.",
       "Whether we save you $1,000 or $10,000, your cost stays exactly the same.",
       "Want to avoid future fees? Join a plan today to protect your family from future hospital bills at no extra cost.",
     ],
@@ -54,6 +54,7 @@ const faqs = [
     answer: [
       "We only use the information you provide us to reduce your bill, including sharing your information with your healthcare institution.",
       "We will never sell your data and we take security very seriously.",
+      "We treat your medical privacy with the highest level of care. Our platform is fully HIPAA-compliant, using 256-bit encryption and strict access controls to ensure your family's sensitive health information stays private and secure.",
     ],
   },
   {
