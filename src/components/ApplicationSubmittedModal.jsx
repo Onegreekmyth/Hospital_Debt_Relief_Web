@@ -101,6 +101,7 @@ const ApplicationSubmittedModal = ({
       await dispatch(completeBillApplication(billId)).unwrap();
       onBillUpdated?.();
       onClose();
+      navigate(`/bill-history/${billId}`);
     } catch (err) {
       // Error is shown via completeError from slice
     }

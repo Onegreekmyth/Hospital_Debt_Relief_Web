@@ -36,6 +36,12 @@ const BillDetails = () => {
     return /\.(png|jpg|jpeg|webp|heic)$/.test(path);
   };
 
+  // Use Google Docs viewer so PDF displays inline instead of triggering download (S3 often sends Content-Disposition: attachment)
+  const getPdfViewerUrl = (url) => {
+    if (!url || typeof url !== "string") return "";
+    return `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
+  };
+
   // Map backend bill to UI format
   const transformApiBill = (apiBill) => {
     const mapStatusToUI = (backendStatus) => {
@@ -303,21 +309,24 @@ const BillDetails = () => {
                     <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px]">
                       
                       {bill.pdfUrl ? (
-                        <div className="w-full h-full min-h-[280px] max-h-[560px] mt-4 md:mt-5 pt-4 md:pt-5 flex flex-col items-center justify-center overflow-auto px-3 md:px-4">
-                          {isImageUrl(bill.pdfUrl) ? (
-                            <img
-                              src={bill.pdfUrl}
-                              alt="Uploaded bill"
-                              className="w-full max-h-[500px] object-contain rounded-lg"
-                            />
-                          ) : (
-                            <iframe
-                              src={bill.pdfUrl}
-                              title="Uploaded bill"
-                              className="w-full min-h-[400px] flex-1 rounded-lg border-0"
-                            />
-                          )}
-                        </div>
+                        <>
+                          <div className="w-full h-full min-h-[280px] max-h-[560px] mt-4 md:mt-5 pt-4 md:pt-5 flex flex-col items-center justify-center overflow-auto px-3 md:px-4">
+                            {isImageUrl(bill.pdfUrl) ? (
+                              <img
+                                src={bill.pdfUrl}
+                                alt="Uploaded bill"
+                                className="w-full max-h-[500px] object-contain rounded-lg"
+                              />
+                            ) : (
+                              <iframe
+                                src={getPdfViewerUrl(bill.pdfUrl)}
+                                title="Uploaded bill"
+                                className="w-full min-h-[400px] flex-1 rounded-lg border-0"
+                              />
+                            )}
+                          </div>
+                       
+                        </>
                       ) : (
                         <img
                           src={billPlaceholder}
@@ -358,22 +367,33 @@ const BillDetails = () => {
                         </button>
                       </div>
                       <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px]">
-                        <div className="w-full h-full max-h-[280px] sm:max-h-[340px] md:max-h-[400px] mt-4 md:mt-5 pt-4 md:pt-5 flex flex-col items-center justify-center gap-3 md:gap-4 text-center px-3 md:px-4">
-                          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center">
-                            <svg className="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                            </svg>
-                          </div>
-                          <a
-                            href={bill.hipaaForm.pdfUrl}
-                            download={bill.hipaaForm.pdfFileName || "hipaa-form.pdf"}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 rounded-full border border-purple-200 px-4 py-2 text-sm text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition"
-                          >
-                            <span>Download HIPAA form</span>
-                          </a>
+                        <div className="w-full mt-4 md:mt-5 flex flex-col overflow-hidden rounded-lg bg-gray-100" style={{ minHeight: "380px" }}>
+                          {isImageUrl(bill.hipaaForm.pdfUrl) ? (
+                            <img
+                              src={bill.hipaaForm.pdfUrl}
+                              alt="HIPAA Authorization Form"
+                              className="w-full max-h-[420px] object-contain rounded-lg"
+                            />
+                          ) : (
+                            <iframe
+                              src={getPdfViewerUrl(bill.hipaaForm.pdfUrl)}
+                              title="HIPAA Authorization Form"
+                              width="100%"
+                              height="420"
+                              className="rounded-lg border-0 bg-white"
+                              style={{ minHeight: "380px" }}
+                            />
+                          )}
                         </div>
+                        <a
+                          href={bill.hipaaForm.pdfUrl}
+                          download={bill.hipaaForm.pdfFileName || "hipaa-form.pdf"}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-4 inline-flex items-center justify-center gap-2 rounded-full border-2 border-purple-200 px-4 py-2.5 text-sm font-medium text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition"
+                        >
+                          <span>Download HIPAA form</span>
+                        </a>
                       </div>
                     </div>
                   )}
@@ -527,21 +547,31 @@ const BillDetails = () => {
                     
 
                       {bill.pdfUrl ? (
-                        <div className="w-full h-full min-h-[280px] max-h-[560px] flex flex-col items-center justify-center overflow-auto mt-4 md:mt-5 px-3 md:px-4">
-                          {isImageUrl(bill.pdfUrl) ? (
-                            <img
-                              src={bill.pdfUrl}
-                              alt="Uploaded bill"
-                              className="w-full max-h-[500px] object-contain rounded-lg"
-                            />
-                          ) : (
-                            <iframe
-                              src={bill.pdfUrl}
-                              title="Uploaded bill"
-                              className="w-full min-h-[400px] flex-1 rounded-lg border-0"
-                            />
-                          )}
-                        </div>
+                        <>
+                          <div className="w-full h-full min-h-[280px] max-h-[560px] flex flex-col items-center justify-center overflow-auto mt-4 md:mt-5 px-3 md:px-4">
+                            {isImageUrl(bill.pdfUrl) ? (
+                              <img
+                                src={bill.pdfUrl}
+                                alt="Uploaded bill"
+                                className="w-full max-h-[500px] object-contain rounded-lg"
+                              />
+                            ) : (
+                              <iframe
+                                src={getPdfViewerUrl(bill.pdfUrl)}
+                                title="Uploaded bill"
+                                className="w-full min-h-[400px] flex-1 rounded-lg border-0"
+                              />
+                            )}
+                          </div>
+                          <a
+                            href={bill.pdfUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-4 inline-flex items-center justify-center gap-2 rounded-full border-2 border-purple-200 px-4 py-2.5 text-sm font-medium text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition"
+                          >
+                            Open bill in new window
+                          </a>
+                        </>
                       ) : (
                         <img
                           src={billPlaceholder}
@@ -582,22 +612,33 @@ const BillDetails = () => {
                         </button>
                       </div>
                       <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px] max-w-[340px] w-full mx-auto">
-                        <div className="w-full h-full max-h-[280px] sm:max-h-[340px] md:max-h-[400px] flex flex-col items-center justify-center gap-3 md:gap-4 text-center mt-4 md:mt-5 px-3 md:px-4">
-                          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center">
-                            <svg className="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                            </svg>
-                          </div>
-                          <a
-                            href={bill.hipaaForm.pdfUrl}
-                            download={bill.hipaaForm.pdfFileName || "hipaa-form.pdf"}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 rounded-full border border-purple-200 px-4 py-2 text-sm text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition"
-                          >
-                            <span>Download HIPAA form</span>
-                          </a>
+                        <div className="w-full mt-4 md:mt-5 flex flex-col overflow-hidden rounded-lg bg-gray-100" style={{ minHeight: "380px" }}>
+                          {isImageUrl(bill.hipaaForm.pdfUrl) ? (
+                            <img
+                              src={bill.hipaaForm.pdfUrl}
+                              alt="HIPAA Authorization Form"
+                              className="w-full max-h-[420px] object-contain rounded-lg"
+                            />
+                          ) : (
+                            <iframe
+                              src={getPdfViewerUrl(bill.hipaaForm.pdfUrl)}
+                              title="HIPAA Authorization Form"
+                              width="100%"
+                              height="420"
+                              className="rounded-lg border-0 bg-white"
+                              style={{ minHeight: "380px" }}
+                            />
+                          )}
                         </div>
+                        <a
+                          href={bill.hipaaForm.pdfUrl}
+                          download={bill.hipaaForm.pdfFileName || "hipaa-form.pdf"}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-4 inline-flex items-center justify-center gap-2 rounded-full border-2 border-purple-200 px-4 py-2.5 text-sm font-medium text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition"
+                        >
+                          <span>Download HIPAA form</span>
+                        </a>
                       </div>
                     </div>
                   )}
