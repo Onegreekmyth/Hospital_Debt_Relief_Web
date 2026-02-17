@@ -128,10 +128,32 @@ const Dashboard = () => {
   const [eligibilityStatus, setEligibilityStatus] = useState("eligible"); // "eligible" | "ineligible"
   const [discountPercentage, setDiscountPercentage] = useState(40); // Example: calculated by backend
 
-  // Handle Stripe redirect: sync subscription status when user returns from Stripe success
+  // Handle Stripe redirect: flat fee success -> go to bill details; subscription success -> sync and stay on dashboard
   useEffect(() => {
-    const subscriptionParam = searchParams.get("subscription");
+    const flatFeeSuccess = searchParams.get("flat_fee_success");
     const sessionId = searchParams.get("session_id");
+    const billIdFromUrl = searchParams.get("bill_id");
+    const subscriptionParam = searchParams.get("subscription");
+
+    if (flatFeeSuccess === "1" && sessionId) {
+      const goToBillDetails = async () => {
+        try {
+          await dispatch(syncStripeSession({ sessionId })).unwrap();
+        } catch (err) {
+          console.error("Failed to sync flat fee session:", err);
+        } finally {
+          searchParams.delete("flat_fee_success");
+          searchParams.delete("session_id");
+          searchParams.delete("bill_id");
+          setSearchParams(searchParams, { replace: true });
+          if (billIdFromUrl) {
+            navigate(`/bill-history/${billIdFromUrl}`);
+          }
+        }
+      };
+      goToBillDetails();
+      return;
+    }
 
     if (subscriptionParam === "success" && sessionId) {
       // Sync subscription status from Stripe (works in dev when webhook can't reach localhost)
@@ -188,7 +210,7 @@ const Dashboard = () => {
       searchParams.delete("subscription");
       setSearchParams(searchParams, { replace: true });
     }
-  }, [searchParams, setSearchParams]);
+  }, [searchParams, setSearchParams, dispatch, navigate]);
 
   // Fetch user profile on component mount
   useEffect(() => {

@@ -67,7 +67,9 @@ const ApplicationSubmittedModal = ({
   const handlePayFlatFee = async () => {
     dispatch(clearCheckoutError());
     const baseUrl = window.location.origin;
-    const successUrl = `${baseUrl}/dashboard?subscription=success&session_id={CHECKOUT_SESSION_ID}`;
+    const successUrl = billId
+      ? `${baseUrl}/dashboard?flat_fee_success=1&session_id={CHECKOUT_SESSION_ID}&bill_id=${billId}`
+      : `${baseUrl}/dashboard?flat_fee_success=1&session_id={CHECKOUT_SESSION_ID}`;
     const cancelUrl = `${baseUrl}/dashboard?subscription=cancelled`;
     try {
       const checkoutUrl = await dispatch(
@@ -284,13 +286,15 @@ const ApplicationSubmittedModal = ({
           </button>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setIsHipaaOpen(true)}
-          className="w-full mb-4 md:mb-6 rounded-full border-2 border-purple-700 bg-white text-purple-700 font-semibold text-xs md:text-base py-2.5 md:py-4 hover:bg-purple-50 transition-colors"
-        >
-          HIPAA Authorization Form
-        </button>
+        {!billData?.hipaaForm?.pdfUrl && (
+          <button
+            type="button"
+            onClick={() => setIsHipaaOpen(true)}
+            className="w-full mb-4 md:mb-6 rounded-full border-2 border-purple-700 bg-white text-purple-700 font-semibold text-xs md:text-base py-2.5 md:py-4 hover:bg-purple-50 transition-colors"
+          >
+            HIPAA Authorization Form
+          </button>
+        )}
 
         {/* Supporting Document Upload Section */}
         <div className="mb-3 md:mb-5">
@@ -464,7 +468,7 @@ const ApplicationSubmittedModal = ({
               onClick={handlePayFlatFee}
               className="w-full py-2.5 md:py-3 rounded-full bg-gradient-to-r from-purple-700 to-purple-900 text-white font-bold text-xs md:text-base mb-2.5 md:mb-4 hover:from-purple-600 hover:to-purple-800 transition-all shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              {flatFeeLoading ? "Redirecting to payment..." : "Pay $299 Flat Fee"}
+              {flatFeeLoading ? "Redirecting to payment..." : "Pay $299 and complete"}
             </button>
           </>
         )}
@@ -472,16 +476,18 @@ const ApplicationSubmittedModal = ({
         {completeError && (
           <p className="text-sm text-red-600 mb-2">{completeError}</p>
         )}
-        {/* Complete Application Button - disabled until fee is paid when fee button is showing */}
-        <button
-          type="button"
-          disabled={showFlatFeeButton || completeLoading}
-          onClick={handleCompleteApplication}
-          title={showFlatFeeButton ? "Pay the one-time fee above to continue" : undefined}
-          className="w-full py-2.5 md:py-3 rounded-full border-2 border-purple-700 bg-white text-purple-700 font-bold text-xs md:text-base mb-2.5 md:mb-4 hover:bg-purple-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-white"
-        >
-          {completeLoading ? "Completing..." : "Click to Complete Application"}
-        </button>
+        {/* Complete Application Button - hidden when flat fee button is showing; disabled when bill is pending */}
+        {!showFlatFeeButton && !isBillPending && (
+          <button
+            type="button"
+            disabled={completeLoading}
+            onClick={handleCompleteApplication}
+            title={isBillPending ? "Complete application when bill is no longer pending" : undefined}
+            className="w-full py-2.5 md:py-3 rounded-full border-2 border-purple-700 bg-white text-purple-700 font-bold text-xs md:text-base mb-2.5 md:mb-4 hover:bg-purple-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-white"
+          >
+            {completeLoading ? "Completing..." : "Click to Complete Application"}
+          </button>
+        )}
 
           {/* Guarantee Text */}
           <p className="text-center text-[11px] md:text-sm text-gray-600 mb-1">
