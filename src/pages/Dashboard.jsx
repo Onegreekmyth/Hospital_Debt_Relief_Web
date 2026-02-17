@@ -28,6 +28,7 @@ import {
   clearUpdateSuccess,
 } from "../store/user/userSlice";
 import PrimaryLogo from "../assets/primary-logo.png";
+import axiosClient from "../api/axiosClient";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -1104,6 +1105,17 @@ const Dashboard = () => {
         profile={profile}
         hasActiveSubscription={subscriptionStatus === "active"}
         familyMembers={familyMembers}
+        onBillUpdated={async () => {
+          if (!submittedBillId) return;
+          try {
+            const response = await axiosClient.get(`/bills/${submittedBillId}`);
+            if (response.data?.success && response.data?.data) {
+              setSubmittedBillData(response.data.data);
+            }
+          } catch (err) {
+            console.error("Failed to refresh bill:", err);
+          }
+        }}
       />
 
       {/* Monthly Subscription Modal */}

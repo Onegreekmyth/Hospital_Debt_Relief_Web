@@ -7,6 +7,7 @@ import {
   uploadSupportingDocument,
   deleteSupportingDocument,
   completeBillApplication,
+  deleteHipaaForm,
 } from "../store/bills/billsSlice";
 import { createCheckoutSession, clearCheckoutError } from "../store/payments/paymentsSlice";
 import { DOCUMENT_TYPES } from "./BillInformationModal";
@@ -30,6 +31,7 @@ const ApplicationSubmittedModal = ({
     supportingDocDeleteLoading: deletingDoc,
     completeApplicationLoading: completeLoading,
     completeApplicationError: completeError,
+    hipaaDeleteLoading: deletingHipaa,
   } = useSelector((state) => state.bills);
   const { checkoutLoading: flatFeeLoading, checkoutError: flatFeeError } = useSelector(
     (state) => state.payments
@@ -184,6 +186,14 @@ const ApplicationSubmittedModal = ({
     }
   };
 
+  const handleDeleteHipaaForm = async () => {
+    if (!billId || deletingHipaa) return;
+    const result = await dispatch(deleteHipaaForm(billId));
+    if (deleteHipaaForm.fulfilled.match(result)) {
+      onBillUpdated?.();
+    }
+  };
+
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-30 p-3 sm:p-4 pt-24 md:pt-28"
@@ -286,7 +296,45 @@ const ApplicationSubmittedModal = ({
           </button>
         </div>
 
-        {!billData?.hipaaForm?.pdfUrl && (
+        {billData?.hipaaForm?.pdfUrl ? (
+          <div className="mb-4 md:mb-6 flex items-center justify-between p-3 rounded-lg border border-purple-200 bg-purple-50/50">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <svg
+                className="w-5 h-5 text-purple-600 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                />
+              </svg>
+              <a
+                href={billData.hipaaForm.pdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs md:text-sm text-purple-700 hover:underline truncate"
+              >
+                {billData.hipaaForm.pdfFileName || "HIPAA Authorization Form"}
+              </a>
+            </div>
+            <button
+              type="button"
+              onClick={handleDeleteHipaaForm}
+              disabled={deletingHipaa}
+              className="p-1.5 rounded-full text-red-600 hover:bg-red-50 hover:text-red-800 disabled:opacity-50 flex-shrink-0"
+              title="Remove HIPAA form"
+              aria-label="Remove HIPAA form"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        ) : (
           <button
             type="button"
             onClick={() => setIsHipaaOpen(true)}
@@ -383,12 +431,12 @@ const ApplicationSubmittedModal = ({
           )}
 
           {/* List of supporting documents with delete icon */}
-          {supportingDocuments && supportingDocuments.length > 0 && (
+          {((supportingDocuments?.length ? supportingDocuments : billData?.supportingDocuments) || []).length > 0 && (
             <div className="mb-3 space-y-2 max-h-40 overflow-y-auto pr-1">
               <p className="text-[11px] md:text-sm font-medium text-gray-700 mb-1.5">
                 Uploaded supporting documents
               </p>
-              {supportingDocuments.map((doc) => {
+              {(supportingDocuments?.length ? supportingDocuments : billData?.supportingDocuments || []).map((doc) => {
                 const typeLabel = doc.documentType
                   ? (DOCUMENT_TYPES.find((t) => t.value === doc.documentType)?.label || doc.documentType)
                   : null;
@@ -432,21 +480,12 @@ const ApplicationSubmittedModal = ({
                     type="button"
                     onClick={() => handleDeleteSupportingDocClick(doc)}
                     disabled={deletingDoc}
-                    className="text-red-600 hover:text-red-800 p-1 disabled:opacity-50 flex-shrink-0"
+                    className="p-1.5 rounded-full text-red-600 hover:bg-red-50 hover:text-red-800 disabled:opacity-50 flex-shrink-0"
                     title="Remove document"
+                    aria-label="Remove document"
                   >
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m-9 0h10"
-                      />
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
