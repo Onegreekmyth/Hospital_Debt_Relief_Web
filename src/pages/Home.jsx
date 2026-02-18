@@ -637,7 +637,7 @@ const HomePage = () => {
                 <span className="relative">2</span>
               </div>
               <h3 className="text-white text-[18px] md:text-[22px] lg:text-[24px] font-extrabold tracking-[0.64px]">
-                Register your account
+                Register Your Account
               </h3>
               <p className="mt-2 text-white/90 text-[14px] md:text-[15px] leading-6 md:leading-7 max-w-[520px]">
                 By registering your account with us, you will be able to upload
@@ -652,7 +652,7 @@ const HomePage = () => {
                 <span className="relative">3</span>
               </div>
               <h3 className="text-[#4F28E8] text-[18px] md:text-[22px] lg:text-[24px] font-extrabold tracking-[0.64px]">
-                Start saving
+                Start Saving
               </h3>
               <p className="mt-2 text-[#1B0D47] text-[14px] md:text-[15px] leading-6 md:leading-7 max-w-[520px]">
                 We will find the best way to have you pay as little as possible.
