@@ -37,9 +37,8 @@ const faqs = [
   {
     question: "What do I have to pay?",
     answer: [
-      "Non-Member Rate: A Flat $299 Per Bill. We keep it simple: non-members pay a one-time fee of $299 to negotiate an existing bill.",
-      "Whether we save you $1,000 or $10,000, your cost stays exactly the same.",
-      "Want to avoid future fees? Join a plan today to protect your family from future hospital bills at no extra cost.",
+      "The Non-Member Rate: A Flat $299 Per Bill. We keep it simple, non-members pay a one-time fee of $299 to help lower an existing bill. Whether we save you $1,000 or $10,000, your cost stays exactly the same.",
+      "Want to avoid future fees and save even more money? Become a member to protect your family from future hospital bills at no extra cost. On a yearly average, members pay 56% less than non-members and that’s based on just one member bill submission vs the non-member rate. Memberships start at $7/Month.",
     ],
   },
   {
