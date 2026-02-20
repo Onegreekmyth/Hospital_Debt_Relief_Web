@@ -34,13 +34,13 @@ const InteractiveUSMap = ({ selectedState, onStateClick }) => {
     if (legend) legend.style.display = "none";
     if (credit) credit.style.display = "none";
 
-    // Remove focus outline/selection rectangle on state paths
+    // Remove focus outline/selection rectangle on state paths and groups
     const style = doc.createElementNS("http://www.w3.org/2000/svg", "style");
-    style.textContent = "path[id]:focus { outline: none; } path[id] { outline: none; }";
+    style.textContent = "path[id]:focus, path[id], g[id$=\"_group\"]:focus, g[id$=\"_group\"] { outline: none; } g[id$=\"_group\"] { -webkit-user-select: none; user-select: none; }";
     const wrapper = doc.getElementById("wrapper") || doc.documentElement;
     wrapper.insertBefore(style, wrapper.firstChild);
 
-    // Find all state paths: <g id="XX_group"> contains <path id="XX" />
+    // Attach click/hover to the parent group so both path and label (state name text) are clickable
     const groups = doc.querySelectorAll('g[id$="_group"]');
     groups.forEach((g) => {
       const id = g.id.replace(/_line_group$|_group$/, "");
@@ -48,21 +48,38 @@ const InteractiveUSMap = ({ selectedState, onStateClick }) => {
       const path = doc.getElementById(id);
       if (!path || path.tagName !== "path") return;
 
-      path.style.cursor = "pointer";
       path.style.outline = "none";
-      path.setAttribute("role", "button");
-      path.setAttribute("tabindex", "0");
-      path.setAttribute("aria-label", `${id}, click to view charity care laws`);
+      g.style.outline = "none";
+      g.setAttribute("role", "button");
+      g.setAttribute("tabindex", "0");
+      g.setAttribute("aria-label", `${id}, click to view charity care laws`);
+      g.style.cursor = "pointer";
+      g.style.pointerEvents = "auto";
 
-      path.addEventListener("click", () => onStateClick(id));
-      path.addEventListener("mouseenter", () => setHoveredState(id));
-      path.addEventListener("mouseleave", () => setHoveredState(null));
-      path.addEventListener("keydown", (e) => {
+      g.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onStateClick(id);
+      });
+      g.addEventListener("mouseenter", () => setHoveredState(id));
+      g.addEventListener("mouseleave", () => setHoveredState(null));
+      g.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           onStateClick(id);
         }
       });
+
+      // Ensure label and tspans don't block pointer events (they inherit from group)
+      const label = doc.getElementById(`${id}_label`);
+      if (label) {
+        label.style.pointerEvents = "none";
+      }
+      if (label) {
+        label.querySelectorAll("tspan").forEach((tspan) => {
+          tspan.style.pointerEvents = "none";
+        });
+      }
     });
 
     setMapReady(true);

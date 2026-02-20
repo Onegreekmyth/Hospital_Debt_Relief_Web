@@ -321,6 +321,7 @@ const Dashboard = () => {
         lastName: profile.lastName?.trim() ?? "",
         phone: profile.phone?.trim() ?? "",
         mailing_address: profile.mailingAddress?.trim() ?? "",
+        city: profile.city?.trim() || undefined,
         state: profile.state?.trim() || undefined,
         zipcode: profile.zipcode?.toString().trim() || undefined,
       })
@@ -570,8 +571,34 @@ const Dashboard = () => {
                     </div>
                   </div>
 
-                  {/* State & Zipcode (same row, half width each) */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                  {/* City, State & Zipcode (same row) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+                    {/* City */}
+                    <div className="flex flex-col gap-2">
+                      <label className="text-xs font-medium text-gray-500">
+                        City
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={profile.city}
+                          disabled={!isProfileEditing}
+                          onChange={(e) =>
+                            dispatch(
+                              setProfileField({
+                                field: "city",
+                                value: e.target.value,
+                              })
+                            )
+                          }
+                          className={`w-full h-11 md:h-12 rounded-full border border-gray-300 px-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${
+                            isProfileEditing ? "bg-white" : "bg-gray-100 cursor-not-allowed"
+                          }`}
+                          placeholder={profileLoading ? "Loading..." : ""}
+                        />
+                      </div>
+                    </div>
+
                     {/* State */}
                     <div className="flex flex-col gap-2">
                       <label className="text-xs font-medium text-gray-500">
@@ -938,6 +965,30 @@ const Dashboard = () => {
                     Based on your location and household info.
                   </p>
                 </div>
+
+                {/* Estimated Discount - right above subscription row */}
+                {profile.estimatedDiscount != null && (
+                  <div className="mb-4 p-4 md:p-5 rounded-2xl bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200/60">
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-xs md:text-sm font-medium text-gray-600 uppercase tracking-wide">
+                          Estimated discount
+                        </p>
+                        <p className="mt-1 text-2xl md:text-3xl font-bold text-[#5225cc]">
+                          Up to {profile.estimatedDiscount}%
+                        </p>
+                        <p className="mt-1 text-[11px] md:text-xs text-gray-500">
+                          Based on your eligibility. Actual discount may vary by hospital and bill.
+                        </p>
+                      </div>
+                      <div className="flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/80 border border-purple-200 flex items-center justify-center shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 md:w-7 md:h-7 text-[#5225cc]">
+                          <path fillRule="evenodd" d="M7.5 6.75a3 3 0 116 0 3 3 0 01-6 0zM3.75 24a.75.75 0 01-.75-.75v-7.5a.75.75 0 011.5 0v7.5c0 .414-.336.75-.75.75zm16.5 0a.75.75 0 01-.75-.75v-7.5a.75.75 0 011.5 0v7.5c0 .414-.336.75-.75.75zm-1.5-4.5a.75.75 0 01-.75.75h-7.5a.75.75 0 010-1.5h7.5a.75.75 0 01.75.75zM12 2.25a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM12 9a3 3 0 100 6 3 3 0 000-6zM15.75 9a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75zM20.25 12a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5a.75.75 0 01.75.75zM3.75 12a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Action cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-2">

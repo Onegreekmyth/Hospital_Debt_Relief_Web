@@ -7,11 +7,13 @@ const initialProfileState = {
   email: '',
   phone: '',
   mailingAddress: '',
+  city: '',
   state: '',
   zipcode: '',
   annualHouseholdIncome: '',
   hospitalInfo: null,
   withActiveSubscription: true,
+  estimatedDiscount: null, // from eligibilityData.estimatedDiscount (e.g. percentage)
 };
 
 // Register (signup) - POST /auth/register
@@ -77,6 +79,7 @@ export const fetchProfile = createAsyncThunk(
         mailingAddress: userData.mailingAddress || userData.mailing_address || '',
         email: userData.email || '',
         phone: userData.phone || '',
+        city: userData.city || '',
         state: userData.state || '',
         zipcode: userData.zipcode != null ? String(userData.zipcode) : '',
         annualHouseholdIncome: annualHouseholdIncome
@@ -84,6 +87,7 @@ export const fetchProfile = createAsyncThunk(
           : '',
         hospitalInfo,
         withActiveSubscription: userData.withActiveSubscription !== false,
+        estimatedDiscount: userData.eligibilityData?.estimatedDiscount ?? null,
       };
 
       return { profile, userData };
@@ -121,11 +125,11 @@ export const updateAccountHolderSubscription = createAsyncThunk(
   }
 );
 
-// Update user profile (firstName, lastName, phone, mailing_address)
+// Update user profile (firstName, lastName, phone, mailing_address, city, state, zipcode)
 export const updateProfile = createAsyncThunk(
   'user/updateProfile',
   async (
-    { firstName, lastName, phone, mailing_address, state, zipcode },
+    { firstName, lastName, phone, mailing_address, city, state, zipcode },
     { rejectWithValue }
   ) => {
     try {
@@ -135,6 +139,11 @@ export const updateProfile = createAsyncThunk(
         phone: (phone || '').trim(),
         mailing_address: (mailing_address || '').trim(),
       };
+
+      const trimmedCity = (city || '').trim();
+      if (trimmedCity) {
+        payload.city = trimmedCity;
+      }
 
       const trimmedState = (state || '').trim();
       if (trimmedState) {
@@ -225,6 +234,7 @@ const userSlice = createSlice({
           if (p.phone != null) state.profile.phone = p.phone;
           if (p.mailingAddress != null) state.profile.mailingAddress = p.mailingAddress;
           if (p.mailing_address != null) state.profile.mailingAddress = p.mailing_address;
+          if (p.city != null) state.profile.city = p.city;
           if (p.state != null) state.profile.state = p.state;
           if (p.zipcode != null) state.profile.zipcode = String(p.zipcode);
         }

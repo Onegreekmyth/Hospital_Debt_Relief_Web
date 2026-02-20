@@ -8,6 +8,7 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isResourcesOpen, setIsResourcesOpen] = useState(false);
   const [resourcesTimeout, setResourcesTimeout] = useState(null);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { pathname, hash } = location;
@@ -15,11 +16,16 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
     pathname === "/dashboard" || pathname.startsWith("/bill-history");
   const isBillHistory = pathname.startsWith("/bill-history");
 
+  const isAuthenticated =
+    !!localStorage.getItem("token") ||
+    localStorage.getItem("isAuthenticated") === "true";
+
   const handleLogout = () => {
+    setShowLogoutConfirm(false);
+    setIsMobileMenuOpen(false);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("isAuthenticated");
-    setIsMobileMenuOpen(false);
     navigate("/login");
   };
 
@@ -76,17 +82,22 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
             {isDashboard ? (
               <>
                 <nav className="hidden md:flex items-center space-x-6 text-sm font-medium text-black-800">
-                  <button type="button" className="hover:text-purple-700">
-                    Help
-                  </button>
-
-                  <button
+                <button
                     type="button"
                     className="hover:text-purple-700"
-                    onClick={handleLogout}
+                    onClick={() => setShowLogoutConfirm(true)}
                   >
-                    Logout
+                    Log Out
                   </button>
+
+                  <Link
+                    to="/contact"
+                    className="hover:text-purple-700"
+                  >
+                    Help
+                  </Link>
+
+                
                 </nav>
                 {isBillHistory ? (
                   <Link
@@ -188,12 +199,25 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
                     Monthly Plans
                   </Link>
                 </nav>
-                <Link
-                  to="/login"
-                  className="hidden md:inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-900 to-blue-800 px-5 py-2 text-white text-sm font-medium hover:from-purple-800 hover:to-blue-700 transition"
-                >
-                  Login
-                </Link>
+                {isAuthenticated ? (
+                  <button
+                    type="button"
+                    onClick={() => navigate("/dashboard")}
+                    className="hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-purple-900 to-blue-800 text-white cursor-pointer hover:from-purple-800 hover:to-blue-700 transition shadow-md ring-2 ring-white"
+                    aria-label="Go to account dashboard"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                      <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                ) : (
+                  <Link
+                    to="/login"
+                    className="hidden md:inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-900 to-blue-800 px-5 py-2 text-white text-sm font-medium hover:from-purple-800 hover:to-blue-700 transition"
+                  >
+                    Login
+                  </Link>
+                )}
                 <button
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                   className="md:hidden inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-900 to-blue-800 px-3 py-2 text-white text-xs font-medium"
@@ -287,13 +311,23 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
             >
               Monthly Plans
             </Link>
-            <Link
-              to="/login"
-              className="mt-4 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-900 to-blue-800 px-5 py-2 text-white text-sm font-medium"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Login
-            </Link>
+            {isAuthenticated ? (
+              <Link
+                to="/dashboard"
+                className="mt-4 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-900 to-blue-800 px-5 py-2 text-white text-sm font-medium"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Go to Dashboard
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="mt-4 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-900 to-blue-800 px-5 py-2 text-white text-sm font-medium"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Login
+              </Link>
+            )}
           </nav>
         </div>
       )}
@@ -302,17 +336,17 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
       {isDashboard && isMobileMenuOpen && (
         <div className="fixed top-24 left-1/2 -translate-x-1/2 z-40 w-[92%] md:hidden bg-white rounded-2xl border border-purple-300 shadow-lg p-6">
           <nav className="flex flex-col space-y-4">
-            <a
-              href="#"
+            <Link
+              to="/contact"
               className="text-sm font-medium text-gray-800 hover:text-purple-700 py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Help
-            </a>
+            </Link>
             <button
               type="button"
               className="text-left text-sm font-medium text-gray-800 hover:text-purple-700 py-2"
-              onClick={handleLogout}
+              onClick={() => setShowLogoutConfirm(true)}
             >
               Logout
             </button>
@@ -341,6 +375,36 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
               </Link>
             )}
           </nav>
+        </div>
+      )}
+
+      {/* Logout confirmation modal */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50" onClick={() => setShowLogoutConfirm(false)}>
+          <div
+            className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 border border-purple-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="text-gray-800 font-medium text-center mb-6">
+              Are you sure you want to log out?
+            </p>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                className="flex-1 py-2.5 px-4 rounded-full border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition"
+                onClick={() => setShowLogoutConfirm(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="flex-1 py-2.5 px-4 rounded-full bg-gradient-to-r from-purple-900 to-blue-800 text-white font-medium hover:from-purple-800 hover:to-blue-700 transition"
+                onClick={handleLogout}
+              >
+                Log out
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </>
