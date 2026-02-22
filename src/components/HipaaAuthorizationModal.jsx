@@ -250,9 +250,14 @@ const HipaaAuthorizationModal = ({
 
   useEffect(() => {
     if (!isOpen) return;
-    const billDate = billData?.serviceDate
-      ? new Date(billData.serviceDate).toISOString().slice(0, 10)
-      : "";
+    // Validity date: use current date (YYYY-MM-DD) for the authorization form
+    const today = new Date();
+    const billDate =
+      today.getFullYear() +
+      "-" +
+      String(today.getMonth() + 1).padStart(2, "0") +
+      "-" +
+      String(today.getDate()).padStart(2, "0");
     const hospitalName = billData?.hospitalName || profileHospitalName || "";
     const patientName = (billData?.patientName || billData?.hospital || "Patient").trim() || "Patient";
     setHipaaForm((prev) => ({
@@ -274,7 +279,7 @@ const HipaaAuthorizationModal = ({
       nextErrors.hospitalName = "Hospital name is required.";
     }
     if (!hipaaForm.billDate) {
-      nextErrors.billDate = "Date of hospital bill is required.";
+      nextErrors.billDate = "Date is required.";
     }
     const hasFamilySig = !!familySignatureDataUrl;
     const hasGuardianSig = !!guardianSignatureDataUrl;
@@ -315,14 +320,8 @@ const HipaaAuthorizationModal = ({
   if (!isOpen) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-start justify-center  p-3 sm:p-4 pt-20 md:pt-24 pb-6"
-      onClick={onClose}
-    >
-      <div
-        className="relative w-full max-w-md sm:max-w-3xl max-h-[80vh] overflow-y-auto thin-scrollbar rounded-3xl bg-white p-4 md:p-7 shadow-2xl mt-2"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="fixed inset-0 z-50 flex items-start justify-center  p-3 sm:p-4 pt-20 md:pt-24 pb-6">
+      <div className="relative w-full max-w-md sm:max-w-3xl max-h-[80vh] overflow-y-auto thin-scrollbar rounded-3xl bg-white p-4 md:p-7 shadow-2xl mt-2">
         {/* Close button */}
         <button
           type="button"

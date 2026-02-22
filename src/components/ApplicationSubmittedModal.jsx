@@ -196,14 +196,8 @@ const ApplicationSubmittedModal = ({
   };
 
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-30 p-3 sm:p-4 pt-24 md:pt-28"
-      onClick={onClose}
-    >
-      <div
-        className="relative w-full max-w-md sm:max-w-xl bg-white rounded-2xl md:rounded-3xl shadow-xl mt-2"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-30 p-3 sm:p-4 pt-24 md:pt-28">
+      <div className="relative w-full max-w-md sm:max-w-xl bg-white rounded-2xl md:rounded-3xl shadow-xl mt-2">
         {/* Header */}
         <div className="flex items-center justify-between px-3 sm:px-5 pt-3 sm:pt-4 pb-1">
           <h2 className="flex-1 text-center text-base md:text-2xl font-bold text-gray-900">

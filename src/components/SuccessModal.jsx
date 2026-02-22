@@ -47,11 +47,21 @@ const SuccessModal = ({
       {/* Blurred Background Overlay */}
       <div
         className="absolute inset-0 bg-black/20 backdrop-blur-sm"
-        onClick={onClose}
+        aria-hidden
       />
 
       {/* Modal */}
       <div className="relative bg-white rounded-2xl border-2 border-purple-200/60 shadow-2xl max-w-lg w-full p-6 md:p-8 lg:p-10 mx-4">
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 text-gray-500"
+          aria-label="Close"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
         {/* Icon */}
         <div className="flex justify-center mb-4 md:mb-6">
           {isEligible ? (

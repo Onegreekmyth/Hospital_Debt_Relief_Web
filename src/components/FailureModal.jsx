@@ -8,11 +8,22 @@ const FailureModal = ({ isOpen, onClose, hospitalName = "xyz Hospital" }) => {
       {/* Light Purple/Lavender Background Overlay */}
       <div 
         className="absolute inset-0 bg-[#F5F0F9]"
-        onClick={onClose}
+        aria-hidden
       />
       
       {/* Modal Container */}
       <div className="relative bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 md:p-8 lg:p-12 mx-4">
+        {/* Close button */}
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 text-gray-500"
+          aria-label="Close"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
         {/* Red Error Icon */}
         <div className="flex justify-center mb-6 md:mb-8">
           <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-[#E53935] flex items-center justify-center">

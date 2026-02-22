@@ -36,10 +36,6 @@ const AddFamilyMembersModal = ({ isOpen, onClose, editingMember = null, onSucces
 
   if (!isOpen) return null;
 
-  const handleOverlayClick = () => {
-    if (onClose) onClose();
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -99,11 +95,8 @@ const AddFamilyMembersModal = ({ isOpen, onClose, editingMember = null, onSucces
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
-      {/* Background overlay */}
-      <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
-        onClick={handleOverlayClick}
-      />
+      {/* Background overlay - no close on click outside */}
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" aria-hidden />
 
       {/* Modal card */}
       <div

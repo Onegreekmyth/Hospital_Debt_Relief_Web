@@ -8,7 +8,7 @@ const SubmissionModal = ({ isOpen, onClose }) => {
       {/* Background Overlay */}
       <div
         className="absolute inset-0 bg-black bg-opacity-50"
-        onClick={onClose}
+        aria-hidden
       />
 
       {/* Modal */}

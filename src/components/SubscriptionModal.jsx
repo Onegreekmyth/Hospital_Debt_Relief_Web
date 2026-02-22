@@ -93,7 +93,7 @@ const SubscriptionModal = ({
       {/* Background Overlay */}
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-        onClick={onClose}
+        aria-hidden
       />
 
       {/* Modal */}

@@ -3,10 +3,6 @@ import React from "react";
 const ConfirmDeleteModal = ({ isOpen, onClose, onConfirm, title, message, memberName }) => {
   if (!isOpen) return null;
 
-  const handleOverlayClick = () => {
-    if (onClose) onClose();
-  };
-
   const handleConfirm = () => {
     if (onConfirm) onConfirm();
     if (onClose) onClose();
@@ -14,11 +10,8 @@ const ConfirmDeleteModal = ({ isOpen, onClose, onConfirm, title, message, member
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
-      {/* Background overlay */}
-      <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
-        onClick={handleOverlayClick}
-      />
+      {/* Background overlay - no close on click outside */}
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" aria-hidden />
 
       {/* Modal card */}
       <div

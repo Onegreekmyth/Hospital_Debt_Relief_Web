@@ -1199,10 +1199,20 @@ const Dashboard = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={() => !cancelSubscriptionLoading && setIsCancelSubscriptionOpen(false)}
+            aria-hidden
           />
           <div className="relative w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
-            <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3">
+            <button
+              type="button"
+              onClick={() => !cancelSubscriptionLoading && setIsCancelSubscriptionOpen(false)}
+              className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 text-gray-500"
+              aria-label="Close"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 pr-10">
               Cancel Membership?
             </h3>
             <p className="text-sm md:text-base text-gray-600 mb-6">

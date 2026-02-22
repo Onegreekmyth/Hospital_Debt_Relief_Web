@@ -378,14 +378,21 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
         </div>
       )}
 
-      {/* Logout confirmation modal */}
+      {/* Logout confirmation modal - no close on click outside */}
       {showLogoutConfirm && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50" onClick={() => setShowLogoutConfirm(false)}>
-          <div
-            className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 border border-purple-200"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <p className="text-gray-800 font-medium text-center mb-6">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 border border-purple-200 relative">
+            <button
+              type="button"
+              onClick={() => setShowLogoutConfirm(false)}
+              className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 text-gray-500"
+              aria-label="Close"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <p className="text-gray-800 font-medium text-center mb-6 pt-6">
               Are you sure you want to log out?
             </p>
             <div className="flex gap-3">
