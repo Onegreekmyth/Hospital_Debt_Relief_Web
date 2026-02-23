@@ -26,6 +26,14 @@ const HomePage = () => {
   const [hospitalInputActive, setHospitalInputActive] = useState(false);
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
+  const [stateDropdownOpen, setStateDropdownOpen] = useState(false);
+  const [stateSearch, setStateSearch] = useState("");
+  const [cityDropdownOpen, setCityDropdownOpen] = useState(false);
+  const [citySearch, setCitySearch] = useState("");
+  const [hospitalSearch, setHospitalSearch] = useState("");
+  const stateDropdownRef = useRef(null);
+  const cityDropdownRef = useRef(null);
+  const hospitalDropdownRef = useRef(null);
   const [householdIncome, setHouseholdIncome] = useState("");
   const [householdSize, setHouseholdSize] = useState("");
   const [notInCollections, setNotInCollections] = useState(false);
@@ -45,6 +53,23 @@ const HomePage = () => {
   const [recaptchaError, setRecaptchaError] = useState("");
   const formSectionRef = useRef(null);
   const existingBillRef = useRef(null);
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (stateDropdownRef.current && !stateDropdownRef.current.contains(e.target)) {
+        setStateDropdownOpen(false);
+      }
+      if (cityDropdownRef.current && !cityDropdownRef.current.contains(e.target)) {
+        setCityDropdownOpen(false);
+      }
+      if (hospitalDropdownRef.current && !hospitalDropdownRef.current.contains(e.target)) {
+        setHospitalInputActive(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const dispatch = useDispatch();
   const {
@@ -112,7 +137,24 @@ const HomePage = () => {
     setSelectedHospital(hospital.Name);
     setSelectedHospitalId(hospital._id);
     setHospitalInputActive(false);
+    setHospitalSearch("");
   };
+
+  const filteredStateOptions = useMemo(() =>
+    stateOptions.filter((s) => s.toLowerCase().includes(stateSearch.toLowerCase())),
+    [stateOptions, stateSearch]
+  );
+
+  const filteredCityOptions = useMemo(() =>
+    cityOptions.filter((c) => c.toLowerCase().includes(citySearch.toLowerCase())),
+    [cityOptions, citySearch]
+  );
+
+  const filteredHospitalOptions = useMemo(() => {
+    if (!hospitalSearch.trim()) return hospitalOptions;
+    const q = hospitalSearch.toLowerCase();
+    return hospitalOptions.filter((h) => h.Name.toLowerCase().includes(q));
+  }, [hospitalOptions, hospitalSearch]);
 
   const handleHospitalScroll = (e) => {
     if (!hospitalInputActive) return;
@@ -347,50 +389,155 @@ const HomePage = () => {
                 <p className="mt-1 text-xs text-red-600">{existingBillError}</p>
               )}
             </div>
-            <div className="flex flex-col gap-2">
+            {/* State Searchable Dropdown */}
+            <div className="flex flex-col gap-2" ref={stateDropdownRef}>
               <label className="text-sm md:text-base font-medium text-gray-900">
-                State <span className="text-red-500"></span>
+                State
               </label>
-              <select
-                className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat"
-                value={selectedState}
-                onChange={(e) => {
-                  setSelectedState(e.target.value);
-                  setSelectedCity("");
-                  setStateError("");
-                  setCityError("");
-                }}
-              >
-                <option value="">Select</option>
-                {stateOptions.map((state) => (
-                  <option key={state} value={state}>
-                    {state}
-                  </option>
-                ))}
-              </select>
-            
+              <div className="relative">
+                <button
+                  type="button"
+                  className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-purple-300"
+                  onClick={() => {
+                    setStateDropdownOpen((prev) => !prev);
+                    setStateSearch("");
+                  }}
+                >
+                  <span className={selectedState ? "text-gray-700" : "text-gray-500"}>
+                    {selectedState || "Select state"}
+                  </span>
+                  <span className="ml-2 text-gray-400 text-xs">▼</span>
+                </button>
+                {stateDropdownOpen && (
+                  <div className="absolute z-30 mt-2 w-full rounded-xl border border-purple-200 bg-white shadow-lg">
+                    <div className="px-3 pt-3 pb-2">
+                      <input
+                        type="text"
+                        autoFocus
+                        className="w-full rounded-full border border-purple-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300"
+                        placeholder="Search state..."
+                        value={stateSearch}
+                        onChange={(e) => setStateSearch(e.target.value)}
+                      />
+                    </div>
+                    <div className="max-h-52 overflow-y-auto">
+                      {selectedState && (
+                        <button
+                          type="button"
+                          className="w-full px-4 py-2 text-left text-sm text-gray-400 hover:bg-purple-50"
+                          onClick={() => {
+                            setSelectedState("");
+                            setSelectedCity("");
+                            setStateError("");
+                            setCityError("");
+                            setStateDropdownOpen(false);
+                            setStateSearch("");
+                          }}
+                        >
+                          Clear selection
+                        </button>
+                      )}
+                      {filteredStateOptions.length === 0 ? (
+                        <div className="px-4 py-2 text-sm text-gray-400">No states found</div>
+                      ) : (
+                        filteredStateOptions.map((state) => (
+                          <button
+                            type="button"
+                            key={state}
+                            className={`w-full px-4 py-2 text-left text-sm hover:bg-purple-50 ${
+                              selectedState === state ? "bg-purple-50 font-semibold text-purple-700" : "text-gray-700"
+                            }`}
+                            onClick={() => {
+                              setSelectedState(state);
+                              setSelectedCity("");
+                              setStateError("");
+                              setCityError("");
+                              setStateDropdownOpen(false);
+                              setStateSearch("");
+                            }}
+                          >
+                            {state}
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="flex flex-col gap-2">
+
+            {/* City Searchable Dropdown */}
+            <div className="flex flex-col gap-2" ref={cityDropdownRef}>
               <label className="text-sm md:text-base font-medium text-gray-900">
-                City <span className="text-red-500"></span>
+                City
               </label>
-              <select
-                className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M6%209L1%204h10z%22/%3E%3C/svg%3E')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-repeat"
-                value={selectedCity}
-                onChange={(e) => {
-                  setSelectedCity(e.target.value);
-                  setCityError("");
-                }}
-                disabled={cityOptions.length === 0}
-              >
-                <option value="">Select</option>
-                {cityOptions.map((city) => (
-                  <option key={city} value={city}>
-                    {city}
-                  </option>
-                ))}
-              </select>
-           
+              <div className="relative">
+                <button
+                  type="button"
+                  disabled={cityOptions.length === 0}
+                  className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-purple-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => {
+                    setCityDropdownOpen((prev) => !prev);
+                    setCitySearch("");
+                  }}
+                >
+                  <span className={selectedCity ? "text-gray-700" : "text-gray-500"}>
+                    {selectedCity || "Select city"}
+                  </span>
+                  <span className="ml-2 text-gray-400 text-xs">▼</span>
+                </button>
+                {cityDropdownOpen && (
+                  <div className="absolute z-30 mt-2 w-full rounded-xl border border-purple-200 bg-white shadow-lg">
+                    <div className="px-3 pt-3 pb-2">
+                      <input
+                        type="text"
+                        autoFocus
+                        className="w-full rounded-full border border-purple-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300"
+                        placeholder="Search city..."
+                        value={citySearch}
+                        onChange={(e) => setCitySearch(e.target.value)}
+                      />
+                    </div>
+                    <div className="max-h-52 overflow-y-auto">
+                      {selectedCity && (
+                        <button
+                          type="button"
+                          className="w-full px-4 py-2 text-left text-sm text-gray-400 hover:bg-purple-50"
+                          onClick={() => {
+                            setSelectedCity("");
+                            setCityError("");
+                            setCityDropdownOpen(false);
+                            setCitySearch("");
+                          }}
+                        >
+                          Clear selection
+                        </button>
+                      )}
+                      {filteredCityOptions.length === 0 ? (
+                        <div className="px-4 py-2 text-sm text-gray-400">No cities found</div>
+                      ) : (
+                        filteredCityOptions.map((city) => (
+                          <button
+                            type="button"
+                            key={city}
+                            className={`w-full px-4 py-2 text-left text-sm hover:bg-purple-50 ${
+                              selectedCity === city ? "bg-purple-50 font-semibold text-purple-700" : "text-gray-700"
+                            }`}
+                            onClick={() => {
+                              setSelectedCity(city);
+                              setCityError("");
+                              setCityDropdownOpen(false);
+                              setCitySearch("");
+                            }}
+                          >
+                            {city}
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -400,11 +547,14 @@ const HomePage = () => {
               <label className="text-sm md:text-base font-medium text-gray-900">
                 Local Hospital <span className="text-red-500">*</span>
               </label>
-              <div className="relative">
+              <div className="relative" ref={hospitalDropdownRef}>
                 <button
                   type="button"
                   className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-700 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-purple-300"
-                  onClick={() => setHospitalInputActive((prev) => !prev)}
+                  onClick={() => {
+                    setHospitalInputActive((prev) => !prev);
+                    setHospitalSearch("");
+                  }}
                 >
                   <span
                     className={
@@ -420,38 +570,54 @@ const HomePage = () => {
                 </button>
 
                 {hospitalInputActive && (
-                  <div
-                    className="absolute z-20 mt-2 w-full rounded-xl border border-purple-200 bg-white shadow-lg max-h-60 overflow-y-auto"
-                    onScroll={handleHospitalScroll}
-                  >
-                    {hospitalOptions.map((hospital) => (
-                      <button
-                        type="button"
-                        key={hospital._id}
-                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-purple-50"
-                        onClick={() => handleSelectHospital(hospital)}
-                      >
-                        {hospital.Name} ({hospital.City}, {hospital.State})
-                      </button>
-                    ))}
+                  <div className="absolute z-20 mt-2 w-full rounded-xl border border-purple-200 bg-white shadow-lg">
+                    {/* Search input */}
+                    <div className="px-3 pt-3 pb-2">
+                      <input
+                        type="text"
+                        autoFocus
+                        className="w-full rounded-full border border-purple-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300"
+                        placeholder="Search hospital..."
+                        value={hospitalSearch}
+                        onChange={(e) => setHospitalSearch(e.target.value)}
+                      />
+                    </div>
+                    {/* Scrollable list */}
+                    <div
+                      className="max-h-52 overflow-y-auto"
+                      onScroll={handleHospitalScroll}
+                    >
+                      {filteredHospitalOptions.map((hospital) => (
+                        <button
+                          type="button"
+                          key={hospital._id}
+                          className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-purple-50"
+                          onClick={() => handleSelectHospital(hospital)}
+                        >
+                          {hospital.Name} ({hospital.City}, {hospital.State})
+                        </button>
+                      ))}
 
-                    {status === "succeeded" && hospitalOptions.length === 0 && (
-                      <div className="px-4 py-2 text-sm text-gray-500">
-                        No hospital found for the selected state or city.
-                      </div>
-                    )}
+                      {status === "succeeded" && filteredHospitalOptions.length === 0 && (
+                        <div className="px-4 py-2 text-sm text-gray-500">
+                          {hospitalSearch
+                            ? "No hospitals match your search."
+                            : "No hospital found for the selected state or city."}
+                        </div>
+                      )}
 
-                    {status === "failed" && (
-                      <div className="px-4 py-2 text-sm text-red-500">
-                        Unable to load hospitals. Please try again.
-                      </div>
-                    )}
+                      {status === "failed" && (
+                        <div className="px-4 py-2 text-sm text-red-500">
+                          Unable to load hospitals. Please try again.
+                        </div>
+                      )}
 
-                    {status === "loading" && (
-                      <div className="px-4 py-2 text-xs text-gray-400">
-                        Loading hospitals...
-                      </div>
-                    )}
+                      {status === "loading" && (
+                        <div className="px-4 py-2 text-xs text-gray-400">
+                          Loading hospitals...
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
