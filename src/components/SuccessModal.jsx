@@ -114,7 +114,7 @@ const SuccessModal = ({
           {showExistingBillMessage
             ? "Create an account to upload your current hospital bill."
             : isEligible
-            ? "Create an account to Subscribe."
+            ? "Create an account to explore membership plans."
             : ""}
         </p>
 
