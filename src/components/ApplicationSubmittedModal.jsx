@@ -201,7 +201,7 @@ const ApplicationSubmittedModal = ({
         {/* Header */}
         <div className="flex items-center justify-between px-3 sm:px-5 pt-3 sm:pt-4 pb-1">
           <h2 className="flex-1 text-center text-base md:text-2xl font-bold text-gray-900">
-            Application Submitted
+            Upload Documents
           </h2>
           <button
             type="button"
@@ -502,7 +502,7 @@ const ApplicationSubmittedModal = ({
               onClick={handlePayFlatFee}
               className="w-full py-2.5 md:py-3 rounded-full bg-gradient-to-r from-purple-700 to-purple-900 text-white font-bold text-xs md:text-base mb-2.5 md:mb-4 hover:from-purple-600 hover:to-purple-800 transition-all shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              {flatFeeLoading ? "Redirecting to payment..." : "Pay $299 and complete"}
+              {flatFeeLoading ? "Redirecting to payment..." : "Pay $299 and complete Application"}
             </button>
           </>
         )}

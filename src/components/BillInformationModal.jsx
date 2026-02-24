@@ -4,7 +4,6 @@ import { uploadBill, clearUploadError } from "../store/bills/billsSlice";
 
 // Document type options for supporting documents (used in ApplicationSubmittedModal and display)
 export const DOCUMENT_TYPES = [
-  { value: "hospital_bill", label: "Hospital Bill" },
   { value: "drivers_license", label: "Drivers License" },
   { value: "utility_bill", label: "Utility Bill" },
   { value: "w2", label: "W-2" },
@@ -16,6 +15,9 @@ export const DOCUMENT_TYPES = [
   { value: "unemployment_check_stubs", label: "Unemployment Check Stubs" },
   { value: "other_governmental_program_check_stubs", label: "Other Governmental Program Check Stubs" },
   { value: "letter_from_employer", label: "Letter from Employer (on company letterhead) indicating the payment amount" },
+  { value: "revised_hospital_bill", label: "Revised Hospital Bill" },
+  { value: "other", label: "Other" },
+
 ];
 
 const BillInformationModal = ({ 

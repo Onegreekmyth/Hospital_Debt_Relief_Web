@@ -5,9 +5,14 @@ import Navbar from "../components/Navbar";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import ApplicationSubmittedModal from "../components/ApplicationSubmittedModal";
 import uploadImg from "../assets/upload-circle.png";
+import uploadArrow from "../assets/upload_arrow.png";
 import billPlaceholder from "../assets/bill-history.png";
 import axiosClient from "../api/axiosClient";
-import { deleteHipaaForm, deleteSupportingDocument } from "../store/bills/billsSlice";
+import {
+  deleteHipaaForm,
+  deleteSupportingDocument,
+  uploadSupportingDocument,
+} from "../store/bills/billsSlice";
 import { DOCUMENT_TYPES } from "../components/BillInformationModal";
 
 const BillDetails = () => {
@@ -18,6 +23,8 @@ const BillDetails = () => {
     hipaaDeleteLoading: deletingHipaa, 
     hipaaDeleteError: hipaaDeleteErrorFromSlice,
     supportingDocDeleteLoading: deletingDoc,
+    supportingDocUploadLoading: uploadingSupportingDoc,
+    supportingDocUploadError: supportingDocUploadErrorFromSlice,
   } = useSelector((state) => state.bills);
   const profile = useSelector((state) => state.user?.profile) || {};
   const [bill, setBill] = useState(null);
@@ -28,6 +35,9 @@ const BillDetails = () => {
   const [showHipaaDeleteConfirm, setShowHipaaDeleteConfirm] = useState(false);
   const [showApplicationModal, setShowApplicationModal] = useState(false);
   const [docToDelete, setDocToDelete] = useState(null);
+  const [revisedUploadError, setRevisedUploadError] = useState("");
+  const [uploadingRevisedBill, setUploadingRevisedBill] = useState(false);
+  const revisedBillInputRef = useRef(null);
 
   // Check if pdfUrl is an image by extension (API can return PDF or image in pdfUrl)
   const isImageUrl = (url) => {
@@ -194,6 +204,65 @@ const BillDetails = () => {
     }
   };
 
+  const handleRevisedBillUploadClick = () => {
+    if (uploadingRevisedBill || uploadingSupportingDoc) return;
+    if (revisedBillInputRef.current) {
+      revisedBillInputRef.current.click();
+    }
+  };
+
+  const handleRevisedBillFileChange = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file || !bill?.id) return;
+
+    const allowedFileTypes = [
+      "application/pdf",
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/webp",
+      "image/heic",
+    ];
+    const allowedExtensions = [".pdf", ".jpg", ".jpeg", ".png", ".webp", ".heic"];
+    const isTypeValid =
+      allowedFileTypes.includes(file.type) ||
+      allowedExtensions.some((ext) => file.name.toLowerCase().endsWith(ext));
+
+    if (!isTypeValid) {
+      setRevisedUploadError("Please upload a PDF or image (JPEG, PNG, WebP, HEIC).");
+      return;
+    }
+
+    if (file.size > 50 * 1024 * 1024) {
+      setRevisedUploadError("File size must be less than 50MB.");
+      return;
+    }
+
+    setRevisedUploadError("");
+    setUploadingRevisedBill(true);
+    const result = await dispatch(
+      uploadSupportingDocument({
+        billId: bill.id,
+        file,
+        documentType: "revised_hospital_bill",
+      })
+    );
+
+    if (uploadSupportingDocument.fulfilled.match(result)) {
+      await refetchBill();
+      setUploadingRevisedBill(false);
+      return;
+    }
+
+    setUploadingRevisedBill(false);
+    if (result.payload) {
+      setRevisedUploadError(result.payload);
+    } else {
+      setRevisedUploadError("Failed to upload revised hospital bill.");
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#f5f5fb]">
@@ -236,8 +305,14 @@ const BillDetails = () => {
     bill.status === "Submitted"
       ? "View Submitted Bill"
       : bill.status === "Pending"
-      ? "View Pending Bill"
+      ? "Bill Submission Details"
       : "Bill Details";
+  const revisedHospitalBill = (bill.supportingDocuments || []).find(
+    (doc) => doc.documentType === "revised_hospital_bill"
+  );
+  const filteredSupportingDocuments = (bill.supportingDocuments || []).filter(
+    (doc) => doc.documentType !== "revised_hospital_bill"
+  );
 
   return (
     <div className="min-h-screen bg-[#f5f5fb]">
@@ -263,6 +338,13 @@ const BillDetails = () => {
             {hipaaDeleteErrorFromSlice && (
               <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200">
                 <p className="text-sm text-red-600">{hipaaDeleteErrorFromSlice}</p>
+              </div>
+            )}
+            {(revisedUploadError || supportingDocUploadErrorFromSlice) && (
+              <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200">
+                <p className="text-sm text-red-600">
+                  {revisedUploadError || supportingDocUploadErrorFromSlice}
+                </p>
               </div>
             )}
             {isPending ? (
@@ -398,8 +480,76 @@ const BillDetails = () => {
                     </div>
                   )}
 
+                  {/* Revised Hospital Bill - same style as HIPAA card */}
+                  <div className="relative flex flex-col max-w-[360px] w-full mt-8 md:mt-0">
+                    <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md flex items-center gap-3">
+                      <span className="text-md font-medium text-gray-800">
+                        Revised Hospital Bill
+                      </span>
+                      {revisedHospitalBill?.pdfUrl && (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteSupportingDocClick(revisedHospitalBill)}
+                          disabled={deletingDoc}
+                          className="text-purple-500 hover:text-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Remove revised hospital bill"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m-9 0h10"
+                            />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                    <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px]">
+                      {revisedHospitalBill?.pdfUrl ? (
+                        <>
+                          <div className="w-full mt-4 md:mt-5 flex flex-col overflow-hidden rounded-lg bg-gray-100" style={{ minHeight: "380px" }}>
+                            <iframe
+                              src={getPdfViewerUrl(revisedHospitalBill.pdfUrl)}
+                              title="Revised Hospital Bill"
+                              width="100%"
+                              height="420"
+                              className="rounded-lg border-0 bg-white"
+                              style={{ minHeight: "380px" }}
+                            />
+                          </div>
+                     
+                        </>
+                      ) : (
+                        <div className="w-full mt-4 md:mt-5 flex-1 rounded-lg flex flex-col items-center justify-center gap-3">
+                          <button
+                            type="button"
+                            onClick={handleRevisedBillUploadClick}
+                            disabled={uploadingSupportingDoc || uploadingRevisedBill}
+                            className="disabled:opacity-60 disabled:cursor-not-allowed"
+                            title="Upload revised hospital bill"
+                          >
+                            <img
+                              src={uploadArrow}
+                              alt="Upload arrow"
+                              className="w-16 h-16 object-contain"
+                            />
+                          </button>
+                          <span className="text-sm text-gray-500 text-center">
+                            {uploadingRevisedBill ? "Uploading revised hospital bill..." : "Upload revised hospital bill"}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
                   {/* Supporting Documents */}
-                  {bill.supportingDocuments && bill.supportingDocuments.length > 0 && (
+                  {filteredSupportingDocuments.length > 0 && (
                     <div className="relative flex flex-col max-w-[360px] w-full mt-8 md:mt-0">
                       <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md">
                         <span className="text-md font-medium text-gray-800">
@@ -408,7 +558,7 @@ const BillDetails = () => {
                       </div>
                       <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px]">
                         <div className="w-full h-full max-h-[400px] overflow-y-auto thin-scrollbar mt-4 md:mt-5 space-y-3">
-                          {bill.supportingDocuments.map((doc) => {
+                          {filteredSupportingDocuments.map((doc) => {
                             const supportingTypeLabel = doc.documentType
                               ? (DOCUMENT_TYPES.find((t) => t.value === doc.documentType)?.label || doc.documentType)
                               : null;
@@ -510,16 +660,16 @@ const BillDetails = () => {
             ) : (
               <>
                 {/* Submitted / other view: full layout */}
-                {/* Top layout: 3, 4, or 5 columns depending on HIPAA form and supporting documents */}
+                {/* Top layout: 3 to 6 columns depending on optional document cards */}
                 <div className={`grid grid-cols-1 gap-6 md:gap-8 ${(() => {
                   const hasHipaa = bill.hipaaForm?.pdfUrl;
-                  const hasSupportingDocs = bill.supportingDocuments && bill.supportingDocuments.length > 0;
-                  if (hasHipaa && hasSupportingDocs) {
-                    return "lg:grid-cols-5"; // Uploaded Bill, HIPAA, Supporting Docs, Upload New Bill, Amounts & CTA
-                  } else if (hasHipaa || hasSupportingDocs) {
-                    return "lg:grid-cols-4"; // Uploaded Bill, HIPAA/Supporting Docs, Upload New Bill, Amounts & CTA
-                  }
-                  return "lg:grid-cols-3"; // Base: Uploaded Bill, Upload New Bill, Amounts & CTA
+                  const hasRevisedHospitalBill = true;
+                  const hasSupportingDocs = filteredSupportingDocuments.length > 0;
+                  const optionalCards = [hasHipaa, hasRevisedHospitalBill, hasSupportingDocs].filter(Boolean).length;
+                  if (optionalCards >= 3) return "lg:grid-cols-6";
+                  if (optionalCards === 2) return "lg:grid-cols-5";
+                  if (optionalCards === 1) return "lg:grid-cols-4";
+                  return "lg:grid-cols-3";
                 })()}`}>
                   {/* Uploaded Bill */}
                   <div className="relative flex flex-col">
@@ -643,8 +793,83 @@ const BillDetails = () => {
                     </div>
                   )}
 
+                  {/* Revised Hospital Bill - same style as HIPAA card */}
+                  <div className="relative flex flex-col">
+                    <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md flex items-center gap-3">
+                      <span className="text-md font-medium text-gray-800">
+                        Revised Hospital Bill
+                      </span>
+                      {revisedHospitalBill?.pdfUrl && (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteSupportingDocClick(revisedHospitalBill)}
+                          disabled={deletingDoc}
+                          className="text-purple-500 hover:text-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Remove revised hospital bill"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m-9 0h10"
+                            />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                    <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px] max-w-[340px] w-full mx-auto">
+                      {revisedHospitalBill?.pdfUrl ? (
+                        <>
+                          <div className="w-full mt-4 md:mt-5 flex flex-col overflow-hidden rounded-lg bg-gray-100" style={{ minHeight: "380px" }}>
+                            <iframe
+                              src={getPdfViewerUrl(revisedHospitalBill.pdfUrl)}
+                              title="Revised Hospital Bill"
+                              width="100%"
+                              height="420"
+                              className="rounded-lg border-0 bg-white"
+                              style={{ minHeight: "380px" }}
+                            />
+                          </div>
+                          <a
+                            href={getPdfViewerUrl(revisedHospitalBill.pdfUrl)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-4 inline-flex items-center justify-center gap-2 rounded-full border-2 border-purple-200 px-4 py-2.5 text-sm font-medium text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition"
+                          >
+                            <span>Open revised hospital bill in viewer</span>
+                          </a>
+                        </>
+                      ) : (
+                        <div className="w-full mt-4 md:mt-5 flex-1 min-h-[380px] rounded-lg bg-gray-100 flex flex-col items-center justify-center gap-3">
+                          <button
+                            type="button"
+                            onClick={handleRevisedBillUploadClick}
+                            disabled={uploadingSupportingDoc || uploadingRevisedBill}
+                            className="disabled:opacity-60 disabled:cursor-not-allowed"
+                            title="Upload revised hospital bill"
+                          >
+                            <img
+                              src={uploadArrow}
+                              alt="Upload arrow"
+                              className="w-16 h-16 object-contain"
+                            />
+                          </button>
+                          <span className="text-sm text-gray-500 text-center">
+                            {uploadingRevisedBill ? "Uploading revised hospital bill..." : "Upload revised hospital bill"}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
                   {/* Supporting Documents */}
-                  {bill.supportingDocuments && bill.supportingDocuments.length > 0 && (
+                  {filteredSupportingDocuments.length > 0 && (
                     <div className="relative flex flex-col">
                       <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md">
                         <span className="text-md font-medium text-gray-800">
@@ -653,7 +878,7 @@ const BillDetails = () => {
                       </div>
                       <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px] max-w-[340px] w-full mx-auto">
                         <div className="w-full h-full max-h-[400px] overflow-y-auto thin-scrollbar mt-4 md:mt-5 space-y-3">
-                          {bill.supportingDocuments.map((doc) => {
+                          {filteredSupportingDocuments.map((doc) => {
                             const supportingTypeLabel = doc.documentType
                               ? (DOCUMENT_TYPES.find((t) => t.value === doc.documentType)?.label || doc.documentType)
                               : null;
@@ -859,6 +1084,14 @@ const BillDetails = () => {
         title="Remove supporting document"
         message="Remove this supporting document from the bill? You can upload it again later."
         memberName={docToDelete?.pdfFileName ? `"${docToDelete.pdfFileName}"` : undefined}
+      />
+
+      <input
+        ref={revisedBillInputRef}
+        type="file"
+        className="hidden"
+        accept=".pdf,application/pdf,image/jpeg,image/jpg,image/png,image/webp,image/heic"
+        onChange={handleRevisedBillFileChange}
       />
 
       {bill && (
