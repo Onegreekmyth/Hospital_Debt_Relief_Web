@@ -25,6 +25,7 @@ const BillInformationModal = ({
   onClose, 
   onSubmitted, 
   isSubscriptionActive = true,
+  subscriptionStartDate = null,
   accountHolderName = "",
   familyMembers = []
 }) => {
@@ -188,6 +189,25 @@ const BillInformationModal = ({
     if (!serviceDate && isSubscriptionActive) {
       setSubmitError("Please select a service date.");
       return;
+    }
+
+    if (isSubscriptionActive && subscriptionStartDate && serviceDate) {
+      const serviceDateStr = serviceDate.trim();
+      const subStartStr = typeof subscriptionStartDate === "string"
+        ? subscriptionStartDate.slice(0, 10)
+        : new Date(subscriptionStartDate).toISOString().slice(0, 10);
+      if (serviceDateStr < subStartStr) {
+        const subStart = new Date(subscriptionStartDate);
+        const formatted = subStart.toLocaleDateString("en-US", {
+          month: "2-digit",
+          day: "2-digit",
+          year: "numeric",
+        });
+        setSubmitError(
+          `Oops! It looks like the medical service happened before your membership started on ${formatted}. You can only submit bills with a service date after the membership active date.`
+        );
+        return;
+      }
     }
 
     if (!billAmount || parseFloat(billAmount) <= 0) {
