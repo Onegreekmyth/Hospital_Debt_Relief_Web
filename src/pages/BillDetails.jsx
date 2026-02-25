@@ -480,73 +480,6 @@ const BillDetails = () => {
                     </div>
                   )}
 
-                  {/* Revised Hospital Bill - same style as HIPAA card */}
-                  <div className="relative flex flex-col max-w-[360px] w-full mt-8 md:mt-0">
-                    <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md flex items-center gap-3">
-                      <span className="text-md font-medium text-gray-800">
-                        Revised Hospital Bill
-                      </span>
-                      {revisedHospitalBill?.pdfUrl && (
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteSupportingDocClick(revisedHospitalBill)}
-                          disabled={deletingDoc}
-                          className="text-purple-500 hover:text-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                          title="Remove revised hospital bill"
-                        >
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m-9 0h10"
-                            />
-                          </svg>
-                        </button>
-                      )}
-                    </div>
-                    <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px]">
-                      {revisedHospitalBill?.pdfUrl ? (
-                        <>
-                          <div className="w-full mt-4 md:mt-5 flex flex-col overflow-hidden rounded-lg bg-gray-100" style={{ minHeight: "380px" }}>
-                            <iframe
-                              src={getPdfViewerUrl(revisedHospitalBill.pdfUrl)}
-                              title="Revised Hospital Bill"
-                              width="100%"
-                              height="420"
-                              className="rounded-lg border-0 bg-white"
-                              style={{ minHeight: "380px" }}
-                            />
-                          </div>
-                     
-                        </>
-                      ) : (
-                        <div className="w-full mt-4 md:mt-5 flex-1 rounded-lg flex flex-col items-center justify-center gap-3">
-                          <button
-                            type="button"
-                            onClick={handleRevisedBillUploadClick}
-                            disabled={uploadingSupportingDoc || uploadingRevisedBill}
-                            className="disabled:opacity-60 disabled:cursor-not-allowed"
-                            title="Upload revised hospital bill"
-                          >
-                            <img
-                              src={uploadArrow}
-                              alt="Upload arrow"
-                              className="w-16 h-16 object-contain"
-                            />
-                          </button>
-                          <span className="text-sm text-gray-500 text-center">
-                            {uploadingRevisedBill ? "Uploading revised hospital bill..." : "Upload revised hospital bill"}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
 
                   {/* Supporting Documents */}
                   {filteredSupportingDocuments.length > 0 && (
@@ -713,14 +646,7 @@ const BillDetails = () => {
                               />
                             )}
                           </div>
-                          <a
-                            href={bill.pdfUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="mt-4 inline-flex items-center justify-center gap-2 rounded-full border-2 border-purple-200 px-4 py-2.5 text-sm font-medium text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition"
-                          >
-                            Open bill in new window
-                          </a>
+                       
                         </>
                       ) : (
                         <img
@@ -793,80 +719,7 @@ const BillDetails = () => {
                     </div>
                   )}
 
-                  {/* Revised Hospital Bill - same style as HIPAA card */}
-                  <div className="relative flex flex-col">
-                    <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md flex items-center gap-3">
-                      <span className="text-md font-medium text-gray-800">
-                        Revised Hospital Bill
-                      </span>
-                      {revisedHospitalBill?.pdfUrl && (
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteSupportingDocClick(revisedHospitalBill)}
-                          disabled={deletingDoc}
-                          className="text-purple-500 hover:text-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                          title="Remove revised hospital bill"
-                        >
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m-9 0h10"
-                            />
-                          </svg>
-                        </button>
-                      )}
-                    </div>
-                    <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px] max-w-[340px] w-full mx-auto">
-                      {revisedHospitalBill?.pdfUrl ? (
-                        <>
-                          <div className="w-full mt-4 md:mt-5 flex flex-col overflow-hidden rounded-lg bg-gray-100" style={{ minHeight: "380px" }}>
-                            <iframe
-                              src={getPdfViewerUrl(revisedHospitalBill.pdfUrl)}
-                              title="Revised Hospital Bill"
-                              width="100%"
-                              height="420"
-                              className="rounded-lg border-0 bg-white"
-                              style={{ minHeight: "380px" }}
-                            />
-                          </div>
-                          <a
-                            href={getPdfViewerUrl(revisedHospitalBill.pdfUrl)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="mt-4 inline-flex items-center justify-center gap-2 rounded-full border-2 border-purple-200 px-4 py-2.5 text-sm font-medium text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition"
-                          >
-                            <span>Open revised hospital bill in viewer</span>
-                          </a>
-                        </>
-                      ) : (
-                        <div className="w-full mt-4 md:mt-5 flex-1 min-h-[380px] rounded-lg bg-gray-100 flex flex-col items-center justify-center gap-3">
-                          <button
-                            type="button"
-                            onClick={handleRevisedBillUploadClick}
-                            disabled={uploadingSupportingDoc || uploadingRevisedBill}
-                            className="disabled:opacity-60 disabled:cursor-not-allowed"
-                            title="Upload revised hospital bill"
-                          >
-                            <img
-                              src={uploadArrow}
-                              alt="Upload arrow"
-                              className="w-16 h-16 object-contain"
-                            />
-                          </button>
-                          <span className="text-sm text-gray-500 text-center">
-                            {uploadingRevisedBill ? "Uploading revised hospital bill..." : "Upload revised hospital bill"}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
+               
 
                   {/* Supporting Documents */}
                   {filteredSupportingDocuments.length > 0 && (
