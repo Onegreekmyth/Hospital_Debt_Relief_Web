@@ -975,10 +975,10 @@ const Dashboard = () => {
                           Estimated discount
                         </p>
                         <p className="mt-1 text-2xl md:text-3xl font-bold text-[#5225cc]">
-                          Up to {profile.estimatedDiscount}%
+                          Estimated up to {profile.estimatedDiscount}%
                         </p>
                         <p className="mt-1 text-[11px] md:text-xs text-gray-500">
-                          Based on your eligibility. Actual discount may vary by hospital and bill.
+                          Based on your eligibility. Final discount is determined by the hospital.
                         </p>
                       </div>
                       <div className="flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/80 border border-purple-200 flex items-center justify-center shadow-sm">

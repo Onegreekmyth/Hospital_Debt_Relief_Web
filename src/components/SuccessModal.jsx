@@ -28,6 +28,7 @@ const SuccessModal = ({
       : eligibilityType === "free_care"
       ? 100
       : null;
+  const discountPercentUnknown = details?.discountPercentUnknown || details?.eligibilityDetails?.discountPercentUnknown;
   // Dollar savings: from API or computed from bill amount and discount
   const savingsAmount =
     typeof details?.estimatedSavings === "number"
@@ -97,7 +98,11 @@ const SuccessModal = ({
               : isEligible
               ? eligibilityType === "free_care" ||
                 eligibilityType === "discounted_care"
-                ? `You qualify! You will save ${discountPercent ?? 0}% on future out-of-pocket expenses billed by ${hospitalDisplayName}.`
+                ? discountPercentUnknown && eligibilityType === "discounted_care"
+                  ? `You may qualify for a partial discount on future out-of-pocket expenses billed by ${hospitalDisplayName}.`
+                  : eligibilityType === "free_care"
+                  ? `You qualify! An estimated discount of up to 100% may apply on future out-of-pocket expenses billed by ${hospitalDisplayName}.`
+                  : `You qualify! An estimated discount of up to ${discountPercent ?? 0}% may apply on future out-of-pocket expenses billed by ${hospitalDisplayName}.`
                 : `Based on your information, you may qualify for financial assistance at ${hospitalDisplayName}.`
               : `Based on the information provided, it appears you do not qualify for financial assistance from ${hospitalDisplayName}.`}
           </p>
