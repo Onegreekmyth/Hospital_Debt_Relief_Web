@@ -22,6 +22,7 @@ const ApplicationSubmittedModal = ({
   familyMembers = [],
   supportingDocuments = [],
   onBillUpdated,
+  onBillSubmittedSuccess,
 }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -60,7 +61,10 @@ const ApplicationSubmittedModal = ({
     );
     return member ? member.withActiveSubscription !== false : true;
   })();
-  const isBillPending = billData?.status?.toLowerCase() === "pending";
+  const billStatus = billData?.status?.toLowerCase();
+  const isBillPending = billStatus === "pending";
+  const isBillApproved = billStatus === "approved";
+  const showSubmitMyBillButton = !isBillPending && !isBillApproved;
 
   const showFlatFeeButton =
     (!hasActiveSubscription || !isBillPatientInSubscription) &&
@@ -100,10 +104,18 @@ const ApplicationSubmittedModal = ({
     try {
       await dispatch(completeBillApplication(billId)).unwrap();
       onBillUpdated?.();
+      onBillSubmittedSuccess?.(billId);
       onClose();
-      navigate(`/bill-history/${billId}`);
     } catch (err) {
       // Error is shown via completeError from slice
+    }
+  };
+
+  const handleSubmitMyBill = () => {
+    if (showFlatFeeButton) {
+      handlePayFlatFee();
+    } else if (!isBillPending) {
+      handleCompleteApplication();
     }
   };
 
@@ -201,7 +213,7 @@ const ApplicationSubmittedModal = ({
         {/* Header */}
         <div className="flex items-center justify-between px-3 sm:px-5 pt-3 sm:pt-4 pb-1">
           <h2 className="flex-1 text-center text-base md:text-2xl font-bold text-gray-900">
-            Application Submitted
+            Upload Documents
           </h2>
           <button
             type="button"
@@ -490,37 +502,23 @@ const ApplicationSubmittedModal = ({
           )}
         </div>
 
-        {/* Payment Button - only for patients not included in active subscription */}
-        {showFlatFeeButton && (
+        {/* Single Submit My Bill button - hidden when bill is pending or approved */}
+        {showSubmitMyBillButton && (
           <>
-            {flatFeeError && (
-              <p className="text-sm text-red-600 mb-2">{flatFeeError}</p>
+            {(flatFeeError || completeError) && (
+              <p className="text-sm text-red-600 mb-2">{flatFeeError || completeError}</p>
             )}
             <button
               type="button"
-              disabled={flatFeeLoading}
-              onClick={handlePayFlatFee}
+              disabled={showFlatFeeButton ? flatFeeLoading : completeLoading}
+              onClick={handleSubmitMyBill}
               className="w-full py-2.5 md:py-3 rounded-full bg-gradient-to-r from-purple-700 to-purple-900 text-white font-bold text-xs md:text-base mb-2.5 md:mb-4 hover:from-purple-600 hover:to-purple-800 transition-all shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              {flatFeeLoading ? "Redirecting to payment..." : "Pay $299 and complete"}
+              {showFlatFeeButton
+                ? (flatFeeLoading ? "Redirecting to payment..." : "Submit My Bill")
+                : (completeLoading ? "Submitting..." : "Submit My Bill")}
             </button>
           </>
-        )}
-
-        {completeError && (
-          <p className="text-sm text-red-600 mb-2">{completeError}</p>
-        )}
-        {/* Complete Application Button - hidden when flat fee button is showing; disabled when bill is pending */}
-        {!showFlatFeeButton && !isBillPending && (
-          <button
-            type="button"
-            disabled={completeLoading}
-            onClick={handleCompleteApplication}
-            title={isBillPending ? "Complete application when bill is no longer pending" : undefined}
-            className="w-full py-2.5 md:py-3 rounded-full border-2 border-purple-700 bg-white text-purple-700 font-bold text-xs md:text-base mb-2.5 md:mb-4 hover:bg-purple-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-white"
-          >
-            {completeLoading ? "Completing..." : "Click to Complete Application"}
-          </button>
         )}
 
           {/* Guarantee Text */}

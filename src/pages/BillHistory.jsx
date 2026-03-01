@@ -31,7 +31,7 @@ const BillHistory = () => {
           const statusMap = {
             "Submitted": "submitted",
             "Pending": "pending",
-            "Refunded": "approved", // Assuming refunded = approved
+            "Approved": "approved", // Assuming refunded = approved
           };
           if (statusMap[filter]) {
             params.append("status", statusMap[filter]);
@@ -71,7 +71,7 @@ const BillHistory = () => {
       pending: "Pending",
       submitted: "Submitted",
       processing: "Submitted",
-      approved: "Refunded",
+      approved: "Approved",
       rejected: "Pending",
     };
     return statusMap[backendStatus] || "Pending";
@@ -133,7 +133,7 @@ const BillHistory = () => {
     if (bill.rawStatus === "inactive") return false;
     if (filter === "Submitted") return bill.status === "Submitted";
     if (filter === "Pending") return bill.status === "Pending";
-    if (filter === "Refunded") return bill.status === "Refunded";
+    if (filter === "Approved") return bill.status === "Approved";
     return true;
   });
 
@@ -143,6 +143,9 @@ const BillHistory = () => {
     }
     if (status === "Pending") {
       return "bg-[#FFD6DA] text-[#D35662]";
+    }
+    if (status === "Approved") {
+      return "bg-[#C7F5C4] text-[#1B8F3A]";
     }
     return "bg-[#FFD6DA] text-[#D35662]";
   };

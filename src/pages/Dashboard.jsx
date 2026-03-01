@@ -7,6 +7,7 @@ import BillInformationModal from "../components/BillInformationModal";
 import SubscriptionModal from "../components/SubscriptionModal";
 import AddFamilyMembersModal from "../components/AddFamilyMembersModal";
 import ApplicationSubmittedModal from "../components/ApplicationSubmittedModal";
+import BillReceivedModal from "../components/BillReceivedModal";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import HospitalMap from "../components/HospitalMap";
 import uploadImg from "../assets/upload-img.png";
@@ -47,6 +48,7 @@ const Dashboard = () => {
   const [isCancelSubscriptionOpen, setIsCancelSubscriptionOpen] = useState(false);
   const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState(null);
+  const [billReceivedModalBillId, setBillReceivedModalBillId] = useState(null);
 
   const [householdSize, setHouseholdSize] = useState(1);
   const [editingMember, setEditingMember] = useState(null);
@@ -86,6 +88,7 @@ const Dashboard = () => {
   const [subscriptionDate, setSubscriptionDate] = useState("");
   const [subscriptionEndDate, setSubscriptionEndDate] = useState("");
   const [subscriptionWillCancel, setSubscriptionWillCancel] = useState(false);
+  const [subscriptionStartDateISO, setSubscriptionStartDateISO] = useState(null);
 
   const applySubscriptionFromData = (sub) => {
     if (!sub) {
@@ -94,6 +97,7 @@ const Dashboard = () => {
       setSubscriptionDate("");
       setSubscriptionEndDate("");
       setSubscriptionWillCancel(false);
+      setSubscriptionStartDateISO(null);
       return;
     }
 
@@ -103,6 +107,7 @@ const Dashboard = () => {
     setSubscriptionStatus(uiStatus);
     setSubscriptionTier(sub.planId || null);
     setSubscriptionWillCancel(!!sub.cancelAtPeriodEnd);
+    setSubscriptionStartDateISO(sub.currentPeriodStart || null);
 
     const start = sub.currentPeriodStart ? new Date(sub.currentPeriodStart) : null;
     const end = sub.currentPeriodEnd ? new Date(sub.currentPeriodEnd) : null;
@@ -137,7 +142,7 @@ const Dashboard = () => {
     const subscriptionParam = searchParams.get("subscription");
 
     if (flatFeeSuccess === "1" && sessionId) {
-      const goToBillDetails = async () => {
+      const afterPaymentSuccess = async () => {
         try {
           await dispatch(syncStripeSession({ sessionId })).unwrap();
         } catch (err) {
@@ -148,11 +153,11 @@ const Dashboard = () => {
           searchParams.delete("bill_id");
           setSearchParams(searchParams, { replace: true });
           if (billIdFromUrl) {
-            navigate(`/bill-history/${billIdFromUrl}`);
+            setBillReceivedModalBillId(billIdFromUrl);
           }
         }
       };
-      goToBillDetails();
+      afterPaymentSuccess();
       return;
     }
 
@@ -172,6 +177,7 @@ const Dashboard = () => {
 
             setSubscriptionStatus(uiStatus);
             setSubscriptionTier(sub.planId || null);
+            setSubscriptionStartDateISO(sub.currentPeriodStart || null);
 
             const start = sub.currentPeriodStart ? new Date(sub.currentPeriodStart) : null;
             const end = sub.currentPeriodEnd ? new Date(sub.currentPeriodEnd) : null;
@@ -1132,7 +1138,8 @@ const Dashboard = () => {
         isOpen={isBillModalOpen}
         onClose={() => setIsBillModalOpen(false)}
         isSubscriptionActive={subscriptionStatus === "active"}
-        accountHolderName={[profile.firstName, profile.lastName].filter(Boolean).join(" ").trim()}
+        subscriptionStartDate={subscriptionStartDateISO}
+        accountHolderName={[profile?.firstName, profile?.lastName].filter(Boolean).join(" ").trim()}
         familyMembers={familyMembers}
         onSubmitted={(billData) => {
           setIsBillModalOpen(false);
@@ -1166,6 +1173,23 @@ const Dashboard = () => {
           } catch (err) {
             console.error("Failed to refresh bill:", err);
           }
+        }}
+        onBillSubmittedSuccess={(billId) => {
+          setBillReceivedModalBillId(billId);
+          setIsApplicationSubmittedModalOpen(false);
+          setSubmittedBillId(null);
+          setSubmittedBillData(null);
+        }}
+      />
+
+      {/* Bill received modal - after $299 payment or after subscribed user submits */}
+      <BillReceivedModal
+        isOpen={!!billReceivedModalBillId}
+        billId={billReceivedModalBillId}
+        onClose={() => setBillReceivedModalBillId(null)}
+        onViewBillDetails={(id) => {
+          setBillReceivedModalBillId(null);
+          navigate(`/bill-history/${id}`);
         }}
       />
 
