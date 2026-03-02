@@ -74,6 +74,31 @@ export const cancelSubscription = createAsyncThunk(
   }
 );
 
+export const createDonationSession = createAsyncThunk(
+  "payments/createDonationSession",
+  async ({ amountInCents, successUrl, cancelUrl }, { rejectWithValue }) => {
+    try {
+      const response = await axiosClient.post(
+        "/payments/create-donation-session",
+        { amountInCents, successUrl, cancelUrl }
+      );
+      if (response.data?.success && response.data?.data?.url) {
+        return response.data.data.url;
+      }
+      return rejectWithValue(
+        response.data?.message || "Failed to start donation"
+      );
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message ||
+          "Failed to start donation"
+      );
+    }
+  }
+);
+
 const paymentsSlice = createSlice({
   name: "payments",
   initialState: {
@@ -84,10 +109,15 @@ const paymentsSlice = createSlice({
     syncError: "",
     cancelLoading: false,
     cancelError: "",
+    donationLoading: false,
+    donationError: "",
   },
   reducers: {
     clearCheckoutError: (state) => {
       state.checkoutError = "";
+    },
+    clearDonationError: (state) => {
+      state.donationError = "";
     },
     clearSyncError: (state) => {
       state.syncError = "";
@@ -132,9 +162,20 @@ const paymentsSlice = createSlice({
       .addCase(cancelSubscription.rejected, (state, action) => {
         state.cancelLoading = false;
         state.cancelError = action.payload || "Failed to cancel membership.";
+      })
+      .addCase(createDonationSession.pending, (state) => {
+        state.donationLoading = true;
+        state.donationError = "";
+      })
+      .addCase(createDonationSession.fulfilled, (state, action) => {
+        state.donationLoading = false;
+      })
+      .addCase(createDonationSession.rejected, (state, action) => {
+        state.donationLoading = false;
+        state.donationError = action.payload || "Failed to start donation.";
       });
   },
 });
 
-export const { clearCheckoutError, clearSyncError, clearCancelError } = paymentsSlice.actions;
+export const { clearCheckoutError, clearSyncError, clearCancelError, clearDonationError } = paymentsSlice.actions;
 export default paymentsSlice.reducer;

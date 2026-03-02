@@ -12,6 +12,8 @@ import {
   deleteHipaaForm,
   deleteSupportingDocument,
   uploadSupportingDocument,
+  requestRefund,
+  clearRefundRequestError
 } from "../store/bills/billsSlice";
 import { DOCUMENT_TYPES } from "../components/BillInformationModal";
 
@@ -25,6 +27,8 @@ const BillDetails = () => {
     supportingDocDeleteLoading: deletingDoc,
     supportingDocUploadLoading: uploadingSupportingDoc,
     supportingDocUploadError: supportingDocUploadErrorFromSlice,
+    refundRequestLoading: refundLoading,
+    refundRequestError: refundError,
   } = useSelector((state) => state.bills);
   const profile = useSelector((state) => state.user?.profile) || {};
   const [bill, setBill] = useState(null);
@@ -101,6 +105,9 @@ const BillDetails = () => {
       pdfUrl: apiBill.pdfUrl || apiBill.pdf,
       supportingDocuments: apiBill.supportingDocuments || [],
       hipaaForm: apiBill.hipaaForm || null,
+      flatFeePaid: apiBill.flatFeePaid === true,
+      refundRequested: apiBill.refundRequested === true,
+      refundStatus: apiBill.refundStatus || "none",
     };
   };
 
@@ -157,6 +164,17 @@ const BillDetails = () => {
 
   const handleEditBillClick = () => {
     setShowApplicationModal(true);
+  };
+
+  const handleRequestRefund = async () => {
+    if (!bill?.id || refundLoading) return;
+    dispatch(clearRefundRequestError());
+    try {
+      await dispatch(requestRefund(bill.id)).unwrap();
+      await refetchBill();
+    } catch (_) {
+      // Error shown via refundError from slice
+    }
   };
 
   const handleCloseApplicationModal = () => {
@@ -588,6 +606,33 @@ const BillDetails = () => {
                       </span>
                     </div>
                   </div>
+
+                  {/* Refund - only for flat-fee-paid bills */}
+                  {bill.flatFeePaid && (
+                    <div className="mt-6 max-w-[360px] w-full">
+                      {refundError && (
+                        <p className="text-sm text-red-600 mb-2">{refundError}</p>
+                      )}
+                      {bill.refundStatus === "requested" || bill.refundRequested ? (
+                        <div className="w-full inline-flex items-center justify-center rounded-full border-2 border-green-500 bg-green-50 px-6 py-3 md:px-8 md:py-4 text-sm md:text-base font-semibold text-green-700">
+                          Refund request sent
+                        </div>
+                      ) : bill.refundStatus === "approved" || bill.refundStatus === "rejected" ? (
+                        <div className="text-sm text-gray-600">
+                          Refund {bill.refundStatus === "approved" ? "approved" : "rejected"}.
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={handleRequestRefund}
+                          disabled={refundLoading}
+                          className="w-full inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#7a3cff] to-[#15103b] px-6 py-3 md:px-8 md:py-4 text-sm md:text-base font-semibold text-white shadow-md hover:from-[#6a34e3] hover:to-[#120d33] disabled:opacity-70"
+                        >
+                          {refundLoading ? "Sending…" : "Submit Refund Request"}
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </>
             ) : (
@@ -861,13 +906,32 @@ const BillDetails = () => {
                         </div>
                       </div>
 
-                      {/* Submit button */}
-                      <button
-                        type="button"
-                        className="w-full inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#7a3cff] to-[#15103b] px-6 py-3 md:px-8 md:py-4 text-sm md:text-base font-semibold text-white shadow-md hover:from-[#6a34e3] hover:to-[#120d33]"
-                      >
-                        Submit Refund Request
-                      </button>
+                      {/* Refund - only for flat-fee-paid bills */}
+                      {bill.flatFeePaid && (
+                        <>
+                          {refundError && (
+                            <p className="text-sm text-red-600 mb-2">{refundError}</p>
+                          )}
+                          {bill.refundStatus === "requested" || bill.refundRequested ? (
+                            <div className="w-full inline-flex items-center justify-center rounded-full border-2 border-green-500 bg-green-50 px-6 py-3 md:px-8 md:py-4 text-sm md:text-base font-semibold text-green-700">
+                              Refund request sent
+                            </div>
+                          ) : bill.refundStatus === "approved" || bill.refundStatus === "rejected" ? (
+                            <div className="text-sm text-gray-600">
+                              Refund {bill.refundStatus === "approved" ? "approved" : "rejected"}.
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={handleRequestRefund}
+                              disabled={refundLoading}
+                              className="w-full inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#7a3cff] to-[#15103b] px-6 py-3 md:px-8 md:py-4 text-sm md:text-base font-semibold text-white shadow-md hover:from-[#6a34e3] hover:to-[#120d33] disabled:opacity-70"
+                            >
+                              {refundLoading ? "Sending…" : "Submit Refund Request"}
+                            </button>
+                          )}
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>

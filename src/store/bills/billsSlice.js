@@ -184,6 +184,28 @@ export const completeBillApplication = createAsyncThunk(
   }
 );
 
+export const requestRefund = createAsyncThunk(
+  "bills/requestRefund",
+  async (billId, { rejectWithValue }) => {
+    try {
+      const response = await axiosClient.post(`/bills/${billId}/request-refund`);
+      if (response.data?.success === false) {
+        return rejectWithValue(
+          response.data?.message || "Failed to submit refund request."
+        );
+      }
+      return { billId, data: response.data };
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Failed to submit refund request. Please try again.";
+      return rejectWithValue(message);
+    }
+  }
+);
+
 export const deleteBill = createAsyncThunk(
   "bills/deleteBill",
   async (billId, { rejectWithValue }) => {
@@ -223,6 +245,8 @@ const billsSlice = createSlice({
     billDeleteError: "",
     completeApplicationLoading: false,
     completeApplicationError: "",
+    refundRequestLoading: false,
+    refundRequestError: "",
   },
   reducers: {
     clearUploadError: (state) => {
@@ -239,6 +263,9 @@ const billsSlice = createSlice({
     },
     clearSupportingDocDeleteError: (state) => {
       state.supportingDocDeleteError = "";
+    },
+    clearRefundRequestError: (state) => {
+      state.refundRequestError = "";
     },
   },
   extraReducers: (builder) => {
@@ -301,6 +328,18 @@ const billsSlice = createSlice({
         state.completeApplicationLoading = false;
         state.completeApplicationError =
           action.payload || "Failed to complete application. Please try again.";
+      })
+      .addCase(requestRefund.pending, (state) => {
+        state.refundRequestLoading = true;
+        state.refundRequestError = "";
+      })
+      .addCase(requestRefund.fulfilled, (state) => {
+        state.refundRequestLoading = false;
+      })
+      .addCase(requestRefund.rejected, (state, action) => {
+        state.refundRequestLoading = false;
+        state.refundRequestError =
+          action.payload || "Failed to submit refund request. Please try again.";
       });
   },
 });
@@ -311,5 +350,6 @@ export const {
   clearHipaaDeleteError,
   clearSupportingDocUploadError,
   clearSupportingDocDeleteError,
+  clearRefundRequestError,
 } = billsSlice.actions;
 export default billsSlice.reducer;
