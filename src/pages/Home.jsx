@@ -226,10 +226,10 @@ const HomePage = () => {
       return;
     }
 
-    if (!recaptchaToken) {
-      setRecaptchaError("Please complete the CAPTCHA.");
-      return;
-    }
+    // if (!recaptchaToken) {
+    //   setRecaptchaError("Please complete the CAPTCHA.");
+    //   return;
+    // }
 
     setEligibilityLoading(true);
     setEligibilityError("");

@@ -15,6 +15,7 @@ import CommittedSolutionPage from "./pages/CommittedSolution";
 import StateLawsPage from "./pages/StateLaws";
 import PrivacyPolicyPage from "./pages/PrivacyPolicy";
 import TermsAndConditionsPage from "./pages/TermsAndConditions";
+import DonateButton from "./components/DonateButton";
 
 const ProtectedRoute = () => {
   const isAuthenticated =
@@ -26,6 +27,7 @@ const ProtectedRoute = () => {
 
 function App() {
   return (
+    <>
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/about" element={<AboutPage />} />
@@ -49,6 +51,8 @@ function App() {
         <Route path="/bill-history/:id" element={<BillDetails />} />
       </Route>
     </Routes>
+    <DonateButton />
+    </>
   );
 }
 
