@@ -295,7 +295,7 @@ const ApplicationSubmittedModal = ({
               </svg>
             </div>
             <span className="text-xs md:text-sm font-semibold text-purple-900">
-              Complete & Upload
+              Upload
             </span>
             <span className="text-[11px] md:text-sm text-purple-700 mt-0.5">
               Supporting Documents

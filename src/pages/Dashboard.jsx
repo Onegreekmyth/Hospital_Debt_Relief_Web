@@ -989,11 +989,7 @@ const Dashboard = () => {
                           Based on your eligibility. Final discount is determined by the hospital.
                         </p>
                       </div>
-                      <div className="flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/80 border border-purple-200 flex items-center justify-center shadow-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 md:w-7 md:h-7 text-[#5225cc]">
-                          <path fillRule="evenodd" d="M7.5 6.75a3 3 0 116 0 3 3 0 01-6 0zM3.75 24a.75.75 0 01-.75-.75v-7.5a.75.75 0 011.5 0v7.5c0 .414-.336.75-.75.75zm16.5 0a.75.75 0 01-.75-.75v-7.5a.75.75 0 011.5 0v7.5c0 .414-.336.75-.75.75zm-1.5-4.5a.75.75 0 01-.75.75h-7.5a.75.75 0 010-1.5h7.5a.75.75 0 01.75.75zM12 2.25a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM12 9a3 3 0 100 6 3 3 0 000-6zM15.75 9a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75zM20.25 12a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5a.75.75 0 01.75.75zM3.75 12a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75z" clipRule="evenodd" />
-                        </svg>
-                      </div>
+                     
                     </div>
                   </div>
                 )}
