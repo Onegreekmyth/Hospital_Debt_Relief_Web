@@ -41,7 +41,9 @@ const BillReceivedModal = ({ isOpen, onClose, billId, onViewBillDetails }) => {
           Your bill has been received.
         </h2>
         <p className="text-sm text-gray-600 mb-6">
-          You can view and manage your bill below.
+          Please Allow 48 hours for us to review your submission and to compile your application packet.<br />
+          Once complete, your application packet will be sent to the "Bill History" tab on your account for you to complete. Additional documents may be needed.<br />
+
         </p>
         <button
           type="button"
