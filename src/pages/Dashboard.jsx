@@ -409,6 +409,8 @@ const Dashboard = () => {
 
   const subscriptionInfo = getSubscriptionInfoForHousehold(householdCount);
 
+   const hasMemberActiveSubscription = memberToDelete?.withActiveSubscription === true;
+   const message = hasMemberActiveSubscription ? "Have an active subscription? Please cancel the subscription to make Changes." : "Are you sure you want to delete this family member? This action cannot be undone.";
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar onOpenAddFamilyMembers={() => setIsAddFamilyModalOpen(true)} />
@@ -1297,8 +1299,9 @@ const Dashboard = () => {
         isOpen={isDeleteConfirmModalOpen}
         onClose={handleCloseDeleteModal}
         onConfirm={handleConfirmDelete}
+        hasMemberActiveSubscription={hasMemberActiveSubscription}
         title="Delete Family Member"
-        message="Are you sure you want to delete this family member? This action cannot be undone."
+        message={message}
         memberName={memberToDelete ? `${memberToDelete.firstName || ""} ${memberToDelete.lastName || ""}`.trim() : ""}
       />
 

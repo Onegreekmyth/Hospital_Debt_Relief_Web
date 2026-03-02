@@ -1,6 +1,6 @@
 import React from "react";
 
-const ConfirmDeleteModal = ({ isOpen, onClose, onConfirm, title, message, memberName }) => {
+const ConfirmDeleteModal = ({ isOpen, onClose, onConfirm, title, message, memberName, hasMemberActiveSubscription }) => {
   if (!isOpen) return null;
 
   const handleConfirm = () => {
@@ -8,6 +8,14 @@ const ConfirmDeleteModal = ({ isOpen, onClose, onConfirm, title, message, member
     if (onClose) onClose();
   };
 
+  console.log('hasMemberActiveSubscription', hasMemberActiveSubscription);
+  const handleConfirmWithSubscription = () => {
+    if (!hasMemberActiveSubscription) {
+      handleConfirm();
+    } else {
+      alert("This family member has an active subscription. Please cancel the subscription before deleting this family member.");
+    }
+  };
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
       {/* Background overlay - no close on click outside */}
@@ -18,7 +26,7 @@ const ConfirmDeleteModal = ({ isOpen, onClose, onConfirm, title, message, member
         className="relative w-full max-w-md max-h-[90vh] rounded-[32px] bg-white shadow-2xl overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-      
+
 
         <div className="relative px-5 sm:px-7 pt-9 pb-5 sm:pt-7 sm:pb-6">
           {/* Header */}
@@ -66,10 +74,16 @@ const ConfirmDeleteModal = ({ isOpen, onClose, onConfirm, title, message, member
             </button>
             <button
               type="button"
-              onClick={handleConfirm}
-              className="flex-1 h-12 sm:h-14 px-4 rounded-full bg-red-600 text-white text-sm sm:text-base font-semibold shadow-lg hover:bg-red-700 transition"
+              onClick={handleConfirmWithSubscription}
+              disabled={hasMemberActiveSubscription}
+              className={`flex-1 h-12 sm:h-14 px-4 rounded-full text-sm sm:text-base font-semibold shadow-lg transition ${hasMemberActiveSubscription
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-red-600 text-white hover:bg-red-700"
+                }`}
             >
-              Delete
+              {hasMemberActiveSubscription
+                ? "Delete"
+                : "Delete"}
             </button>
           </div>
         </div>
