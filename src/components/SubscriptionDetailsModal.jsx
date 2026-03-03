@@ -8,6 +8,7 @@ const SubscriptionDetailsModal = ({
   subscriptionEndDate,
   subscriptionWillCancel,
   subscriptionInfo,
+  householdCount,
   onCancelClick,
 }) => {
   if (!isOpen) return null;
@@ -48,6 +49,12 @@ const SubscriptionDetailsModal = ({
             <div>
               <p className="text-xs text-gray-600">Membership Type</p>
               <p className="font-medium text-gray-900">{subscriptionInfo.type}</p>
+            </div>
+          )}
+          {typeof householdCount === 'number' && (
+            <div>
+              <p className="text-xs text-gray-600">Members Included</p>
+              <p className="font-medium text-gray-900">{householdCount}</p>
             </div>
           )}
 

@@ -1058,7 +1058,7 @@ const Dashboard = () => {
                         }
                       }
                     }}
-                    className={`group w-full rounded-[26px] border-2 border-[#5225cc] bg-white px-6 py-5 flex flex-col items-center justify-between hover:bg-[#e2dfec] hover:shadow-md transition ${subscriptionWillCancel ? "min-h-[9.5rem] md:min-h-[9.5rem]" : "min-h-[8rem] md:min-h-[9rem]"
+                    className={`group w-full h-32 md:h-36 rounded-[26px] border-2 border-[#5225cc] bg-white px-6 py-5 flex flex-col items-center justify-between hover:bg-[#e2dfec] hover:shadow-md transition ${subscriptionWillCancel ? "min-h-[9.5rem] md:min-h-[9.5rem]" : "min-h-[8rem] md:min-h-[9rem]"
                       }`}
                   >
                     {effectiveStatus === "inactive" && (
@@ -1096,9 +1096,14 @@ const Dashboard = () => {
 
                       {effectiveStatus === "active" && (
                         <>
-                          <span className="text-[11px] md:text-xs text-[#5225cc]">
-                            Membership Date: {subscriptionDate}
-                          </span>
+                          <div className="flex items-center gap-1 whitespace-nowrap">
+                            <span className="text-[11px] md:text-xs text-[#5225cc]">
+                              Membership Date:
+                            </span>
+                            <span className="text-[11px] md:text-xs text-[#5225cc] font-semibold">
+                              {subscriptionDate}
+                            </span>
+                          </div>
                           {!subscriptionWillCancel && (
                             <span className="text-[11px] md:text-[12px] font-extrabold text-[#5225cc]">
                               Cancel My Membership Plan
@@ -1235,6 +1240,7 @@ const Dashboard = () => {
         subscriptionEndDate={subscriptionEndDate}
         subscriptionWillCancel={subscriptionWillCancel}
         subscriptionInfo={subscriptionInfo}
+        householdCount={householdCount}
         onCancelClick={() => {
           // when user clicks cancel inside details modal
           dispatch(clearCancelError());
