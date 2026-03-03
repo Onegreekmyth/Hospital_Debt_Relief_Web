@@ -16,6 +16,8 @@ const HospitalMap = ({ hospitalInfo, className = "", height = "280px" }) => {
   const name = (hospitalInfo?.name || "").trim();
   const city = (hospitalInfo?.city || "").trim();
   const state = (hospitalInfo?.state || "").trim();
+  // expand known abbreviations (JBER = Joint Base Elmendorf-Richardson) for better geocoding
+  const expandedCity = city.toUpperCase() === "JBER" ? "Joint Base Elmendorf-Richardson" : city;
   const hasLocation = name || city || state;
 
   useEffect(() => {
@@ -46,22 +48,40 @@ const HospitalMap = ({ hospitalInfo, className = "", height = "280px" }) => {
       return null;
     };
 
-    // 1) Try Photon with full "Hospital Name, City, State" to get actual hospital location
-    const photonQuery = [name, city, state].filter(Boolean).join(", ");
-    fetch(`${PHOTON_BASE}?q=${encodeURIComponent(photonQuery)}&limit=5`, { signal })
-      .then((res) => res.json())
-      .then((data) => {
-        const c = pickBestHospital(data?.features);
-        if (c) {
-          setCoords({ lat: c.lat, lon: c.lon });
-          setError(null);
-          setLoading(false);
-          return;
-        }
+    // 1) Try Photon with multiple query variations to handle odd names
+    const performPhoton = (query) =>
+      fetch(`${PHOTON_BASE}?q=${encodeURIComponent(query)}&limit=5`, { signal })
+        .then((res) => res.json());
+
+    const buildPhotonQueries = () => {
+      const queries = [];
+      const base = [name, expandedCity, state].filter(Boolean).join(", ");
+      if (base) queries.push(base);
+      // strip parentheses content from name (e.g. remove "(Joint Base...)" )
+      const strippedName = name.replace(/\s*\(.*?\)/g, "").trim();
+      if (strippedName && strippedName !== name) {
+        const q = [strippedName, expandedCity, state].filter(Boolean).join(", ");
+        if (q && q !== base) queries.push(q);
+      }
+      // include just the name alone
+      if (name) queries.push(name);
+      // also include city/state combos for broader match
+      const cityState = [expandedCity, state].filter(Boolean).join(", ");
+      if (cityState) queries.push(cityState);
+      if (city) queries.push(city);
+      if (state) queries.push(state);
+      // dedupe queries
+      return [...new Set(queries)].filter((q) => q && q.length >= 2);
+    };
+
+    const photonQueries = buildPhotonQueries();
+    let photonIndex = 0;
+    const tryPhotonNext = () => {
+      if (photonIndex >= photonQueries.length) {
         // 2) Fallback: Open-Meteo for city/state (city-level only)
         const queries = [
-          [city, state].filter(Boolean).join(", "),
-          city,
+          [expandedCity, state].filter(Boolean).join(", "),
+          expandedCity,
           state,
         ].filter((q) => q && q.length >= 2);
         let index = 0;
@@ -93,13 +113,26 @@ const HospitalMap = ({ hospitalInfo, className = "", height = "280px" }) => {
             });
         };
         tryNext();
-      })
-      .catch((err) => {
-        if (err.name === "AbortError") return;
-        setError("Could not load map");
-        setCoords(null);
-        setLoading(false);
-      });
+        return;
+      }
+      const q = photonQueries[photonIndex++];
+      performPhoton(q)
+        .then((data) => {
+          const c = pickBestHospital(data?.features);
+          if (c) {
+            setCoords({ lat: c.lat, lon: c.lon });
+            setError(null);
+            setLoading(false);
+          } else {
+            tryPhotonNext();
+          }
+        })
+        .catch((err) => {
+          if (err.name === "AbortError") return;
+          tryPhotonNext();
+        });
+    };
+    tryPhotonNext();
 
     return () => controller.abort();
   }, [name, city, state, hasLocation]);
