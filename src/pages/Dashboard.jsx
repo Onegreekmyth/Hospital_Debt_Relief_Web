@@ -69,9 +69,9 @@ const Dashboard = () => {
   const profileUpdateLoading = profileUpdateStatus === "loading";
 
   // Redux state for family members
-  const { 
-    items: familyMembers, 
-    status: familyMembersStatus, 
+  const {
+    items: familyMembers,
+    status: familyMembersStatus,
     error: familyMembersError,
     operationStatus,
     operationError,
@@ -115,19 +115,19 @@ const Dashboard = () => {
     setSubscriptionDate(
       start
         ? start.toLocaleDateString("en-US", {
-            month: "2-digit",
-            day: "2-digit",
-            year: "numeric",
-          })
+          month: "2-digit",
+          day: "2-digit",
+          year: "numeric",
+        })
         : ""
     );
     setSubscriptionEndDate(
       end
         ? end.toLocaleDateString("en-US", {
-            month: "2-digit",
-            day: "2-digit",
-            year: "numeric",
-          })
+          month: "2-digit",
+          day: "2-digit",
+          year: "numeric",
+        })
         : ""
     );
   };
@@ -185,19 +185,19 @@ const Dashboard = () => {
             setSubscriptionDate(
               start
                 ? start.toLocaleDateString("en-US", {
-                    month: "2-digit",
-                    day: "2-digit",
-                    year: "numeric",
-                  })
+                  month: "2-digit",
+                  day: "2-digit",
+                  year: "numeric",
+                })
                 : ""
             );
             setSubscriptionEndDate(
               end
                 ? end.toLocaleDateString("en-US", {
-                    month: "2-digit",
-                    day: "2-digit",
-                    year: "numeric",
-                  })
+                  month: "2-digit",
+                  day: "2-digit",
+                  year: "numeric",
+                })
                 : ""
             );
           }
@@ -409,8 +409,8 @@ const Dashboard = () => {
 
   const subscriptionInfo = getSubscriptionInfoForHousehold(householdCount);
 
-   const hasMemberActiveSubscription = memberToDelete?.withActiveSubscription === true;
-   const message = hasMemberActiveSubscription ? "Have an active subscription? Please cancel the subscription to make Changes." : "Are you sure you want to delete this family member? This action cannot be undone.";
+  const hasMemberActiveSubscription = memberToDelete?.withActiveSubscription === true && subscriptionStatus === "active";
+  const message = hasMemberActiveSubscription ? "Have an active subscription? Please cancel the subscription to make Changes." : "Are you sure you want to delete this family member? This action cannot be undone.";
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar onOpenAddFamilyMembers={() => setIsAddFamilyModalOpen(true)} />
@@ -599,9 +599,8 @@ const Dashboard = () => {
                               })
                             )
                           }
-                          className={`w-full h-11 md:h-12 rounded-full border border-gray-300 px-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${
-                            isProfileEditing ? "bg-white" : "bg-gray-100 cursor-not-allowed"
-                          }`}
+                          className={`w-full h-11 md:h-12 rounded-full border border-gray-300 px-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${isProfileEditing ? "bg-white" : "bg-gray-100 cursor-not-allowed"
+                            }`}
                           placeholder={profileLoading ? "Loading..." : ""}
                         />
                       </div>
@@ -625,9 +624,8 @@ const Dashboard = () => {
                               })
                             )
                           }
-                          className={`w-full h-11 md:h-12 rounded-full border border-gray-300 px-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${
-                            isProfileEditing ? "bg-white" : "bg-gray-100 cursor-not-allowed"
-                          }`}
+                          className={`w-full h-11 md:h-12 rounded-full border border-gray-300 px-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${isProfileEditing ? "bg-white" : "bg-gray-100 cursor-not-allowed"
+                            }`}
                           placeholder={profileLoading ? "Loading..." : ""}
                         />
                       </div>
@@ -651,9 +649,8 @@ const Dashboard = () => {
                               })
                             )
                           }
-                          className={`w-full h-11 md:h-12 rounded-full border border-gray-300 px-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${
-                            isProfileEditing ? "bg-white" : "bg-gray-100 cursor-not-allowed"
-                          }`}
+                          className={`w-full h-11 md:h-12 rounded-full border border-gray-300 px-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${isProfileEditing ? "bg-white" : "bg-gray-100 cursor-not-allowed"
+                            }`}
                           placeholder={profileLoading ? "Loading..." : ""}
                         />
                       </div>
@@ -805,7 +802,7 @@ const Dashboard = () => {
                   ) : (
                     familyMembers.map((member, index) => {
                       const fullName = `${member.firstName || ""} ${member.lastName || ""}`.trim();
-                      const relationshipLabel = member.relationship 
+                      const relationshipLabel = member.relationship
                         ? member.relationship.charAt(0).toUpperCase() + member.relationship.slice(1).replace(/-/g, " ")
                         : "Family Member";
                       const removeFromPlan = member.withActiveSubscription === false;
@@ -824,7 +821,7 @@ const Dashboard = () => {
                               <div className="text-sm md:text-base font-medium text-gray-900">
                                 {fullName || "Unnamed"}
                               </div>
-                         
+
                             </div>
                             <div className="flex items-center gap-1 shrink-0">
                               <button
@@ -852,18 +849,18 @@ const Dashboard = () => {
                           <label className={`flex items-center gap-2 ${subscriptionStatus === "active" ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}>
                             <input
                               type="checkbox"
-                              checked={removeFromPlan}
+                              checked={member.withActiveSubscription === false}
+                              disabled={subscriptionStatus === "active"}
                               onChange={() => {
                                 if (subscriptionStatus === "active") return;
-                                const newRemovedFromPlan = !removeFromPlan;
+
                                 dispatch(
                                   updateFamilyMemberSubscription({
                                     id: member._id,
-                                    withActiveSubscription: !newRemovedFromPlan,
+                                    withActiveSubscription: !member.withActiveSubscription,
                                   })
                                 );
                               }}
-                              disabled={subscriptionStatus === "active"}
                               className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 disabled:cursor-not-allowed"
                             />
                             <span className="text-xs font-sm text-gray-500">Remove from Membership Plan</span>
@@ -958,7 +955,7 @@ const Dashboard = () => {
                     </span>
                   </div>
                   <span className="text-xs md:text-sm text-[#c0bde9]">
-                    {profile.hospitalInfo?.city && profile.hospitalInfo?.state 
+                    {profile.hospitalInfo?.city && profile.hospitalInfo?.state
                       ? `${profile.hospitalInfo.city}, ${profile.hospitalInfo.state}`
                       : profile.hospitalInfo?.city || profile.hospitalInfo?.state || "1 mile away"}
                   </span>
@@ -989,7 +986,7 @@ const Dashboard = () => {
                           Based on your eligibility. Final discount is determined by the hospital.
                         </p>
                       </div>
-                     
+
                     </div>
                   </div>
                 )}
@@ -1051,9 +1048,8 @@ const Dashboard = () => {
                         }
                       }
                     }}
-                    className={`group w-full rounded-[26px] border-2 border-[#5225cc] bg-white px-6 py-5 flex flex-col items-center justify-between hover:bg-[#e2dfec] hover:shadow-md transition ${
-                      subscriptionWillCancel ? "min-h-[9.5rem] md:min-h-[9.5rem]" : "min-h-[8rem] md:min-h-[9rem]"
-                    }`}
+                    className={`group w-full rounded-[26px] border-2 border-[#5225cc] bg-white px-6 py-5 flex flex-col items-center justify-between hover:bg-[#e2dfec] hover:shadow-md transition ${subscriptionWillCancel ? "min-h-[9.5rem] md:min-h-[9.5rem]" : "min-h-[8rem] md:min-h-[9rem]"
+                      }`}
                   >
                     {subscriptionStatus === "inactive" && (
 
@@ -1073,13 +1069,12 @@ const Dashboard = () => {
                           Membership Status
                         </span>
                         <span
-                          className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] md:text-xs font-medium ${
-                            subscriptionStatus === "active"
-                              ? "bg-green-100 text-green-700"
-                              : subscriptionStatus === "cancelled"
-                                ? "bg-amber-100 text-amber-800"
-                                : "bg-[#ffd7da] text-[#d45360]"
-                          }`}
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] md:text-xs font-medium ${subscriptionStatus === "active"
+                            ? "bg-green-100 text-green-700"
+                            : subscriptionStatus === "cancelled"
+                              ? "bg-amber-100 text-amber-800"
+                              : "bg-[#ffd7da] text-[#d45360]"
+                            }`}
                         >
                           {subscriptionStatus === "active"
                             ? "Active"
