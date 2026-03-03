@@ -222,6 +222,19 @@ const BillDetails = () => {
     }
   };
 
+  const handleDeleteRevisedBill = async () => {
+    const revisedBillDoc = (bill?.supportingDocuments || []).find(
+      (doc) => doc.documentType === "revised_hospital_bill"
+    );
+    if (!revisedBillDoc?._id || !bill?.id) return;
+    const result = await dispatch(
+      deleteSupportingDocument({ billId: bill.id, docId: revisedBillDoc._id })
+    );
+    if (deleteSupportingDocument.fulfilled.match(result)) {
+      refetchBill();
+    }
+  };
+
   const handleRevisedBillUploadClick = () => {
     if (uploadingRevisedBill || uploadingSupportingDoc) return;
     if (revisedBillInputRef.current) {
@@ -318,9 +331,8 @@ const BillDetails = () => {
     );
   }
 
-  const isPending = bill.status === "Pending";
   const heading =
-    bill.status === "Submitted"
+    bill.status === "Submitted" 
       ? "View Submitted Bill"
       : bill.status === "Pending"
       ? "Bill Submission Details"
@@ -365,10 +377,8 @@ const BillDetails = () => {
                 </p>
               </div>
             )}
-            {isPending ? (
-              <>
-                {/* Pending view: only uploaded bill + basic info */}
-                <div className="flex flex-col md:flex-row gap-8">
+
+            <div className="flex flex-col md:flex-row gap-8">
                   {/* Uploaded Bill card */}
                   <div className="relative flex flex-col max-w-[360px] w-full">
                     {/* Floating label with actions */}
@@ -499,6 +509,55 @@ const BillDetails = () => {
                   )}
 
 
+                  {/* Revised Hospital Bill */}
+                  {revisedHospitalBill && (
+                    <div className="relative flex flex-col max-w-[360px] w-full mt-8 md:mt-0">
+                      <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md flex items-center gap-3">
+                        <span className="text-md font-medium text-gray-800">
+                          Revised Hospital Bill
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteRevisedBill()}
+                          disabled={uploadingRevisedBill}
+                          className="text-red-600 hover:text-red-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Delete revised bill"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m-9 0h10"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                      <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px]">
+                        <div className="w-full h-full min-h-[280px] max-h-[560px] mt-4 md:mt-5 pt-4 md:pt-5 flex flex-col items-center justify-center overflow-auto px-3 md:px-4">
+                          {isImageUrl(revisedHospitalBill.pdfUrl) ? (
+                            <img
+                              src={revisedHospitalBill.pdfUrl}
+                              alt="Revised bill"
+                              className="w-full max-h-[500px] object-contain rounded-lg"
+                            />
+                          ) : (
+                            <iframe
+                              src={getPdfViewerUrl(revisedHospitalBill.pdfUrl)}
+                              title="Revised bill"
+                              className="w-full min-h-[400px] flex-1 rounded-lg border-0"
+                            />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Supporting Documents */}
                   {filteredSupportingDocuments.length > 0 && (
                     <div className="relative flex flex-col max-w-[360px] w-full mt-8 md:mt-0">
@@ -577,8 +636,10 @@ const BillDetails = () => {
                   )}
                 </div>
 
-                {/* Bill Amount + Date Submitted */}
-                <div className="mt-8 max-w-[360px] w-full">
+                {/* Bill Info and Refund Section */}
+                <div className="mt-8 flex flex-col md:flex-row md:items-start md:justify-between gap-8">
+                  {/* Left: Bill Amount + Date Submitted */}
+                  <div className="max-w-[360px] w-full">
                   {/* Bill Amount */}
                   <div className="relative mb-4">
                     <div className="absolute -top-3 left-6 bg-white px-3 py-1 rounded-b-md">
@@ -606,382 +667,38 @@ const BillDetails = () => {
                       </span>
                     </div>
                   </div>
+                  </div>
 
-                  {/* Refund - only for flat-fee-paid bills */}
+                  {/* Right: Refund Section - only for flat-fee-paid bills */}
                   {bill.flatFeePaid && (
-                    <div className="mt-6 max-w-[360px] w-full">
-                      {refundError && (
-                        <p className="text-sm text-red-600 mb-2">{refundError}</p>
-                      )}
-                      {bill.refundStatus === "requested" || bill.refundRequested ? (
-                        <div className="w-full inline-flex items-center justify-center rounded-full border-2 border-green-500 bg-green-50 px-6 py-3 md:px-8 md:py-4 text-sm md:text-base font-semibold text-green-700">
-                          Refund request sent
-                        </div>
-                      ) : bill.refundStatus === "approved" || bill.refundStatus === "rejected" ? (
-                        <div className="text-sm text-gray-600">
-                          Refund {bill.refundStatus === "approved" ? "approved" : "rejected"}.
-                        </div>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={handleRequestRefund}
-                          disabled={refundLoading}
-                          className="w-full inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#7a3cff] to-[#15103b] px-6 py-3 md:px-8 md:py-4 text-sm md:text-base font-semibold text-white shadow-md hover:from-[#6a34e3] hover:to-[#120d33] disabled:opacity-70"
-                        >
-                          {refundLoading ? "Sending…" : "Submit Refund Request"}
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </>
-            ) : (
-              <>
-                {/* Submitted / other view: full layout */}
-                {/* Top layout: 3 to 6 columns depending on optional document cards */}
-                <div className={`grid grid-cols-1 gap-6 md:gap-8 ${(() => {
-                  const hasHipaa = bill.hipaaForm?.pdfUrl;
-                  const hasRevisedHospitalBill = true;
-                  const hasSupportingDocs = filteredSupportingDocuments.length > 0;
-                  const optionalCards = [hasHipaa, hasRevisedHospitalBill, hasSupportingDocs].filter(Boolean).length;
-                  if (optionalCards >= 3) return "lg:grid-cols-6";
-                  if (optionalCards === 2) return "lg:grid-cols-5";
-                  if (optionalCards === 1) return "lg:grid-cols-4";
-                  return "lg:grid-cols-3";
-                })()}`}>
-                  {/* Uploaded Bill */}
-                  <div className="relative flex flex-col">
-                    <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md flex items-center gap-3 flex-wrap">
-                      <span className="text-md font-medium text-gray-800">
-                        Uploaded Bill
-                      </span>
-                      {bill.documentTypeLabel && (
-                        <span className="text-xs text-gray-500 border-l border-gray-200 pl-3">
-                          Type: {bill.documentTypeLabel}
-                        </span>
-                      )}
-                      <button
-                        type="button"
-                        onClick={handleEditBillClick}
-                        className="text-purple-500 hover:text-purple-700"
-                        title="Edit / upload documents"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M4 20h4l9.268-9.268a2 2 0 000-2.828l-2.172-2.172a2 2 0 00-2.828 0L4 16v4z" />
-                        </svg>
-                      </button>
-                    </div>
-                    <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px] max-w-[340px] w-full mx-auto">
-                    
-
-                      {bill.pdfUrl ? (
-                        <>
-                          <div className="w-full h-full min-h-[280px] max-h-[560px] flex flex-col items-center justify-center overflow-auto mt-4 md:mt-5 px-3 md:px-4">
-                            {isImageUrl(bill.pdfUrl) ? (
-                              <img
-                                src={bill.pdfUrl}
-                                alt="Uploaded bill"
-                                className="w-full max-h-[500px] object-contain rounded-lg"
-                              />
-                            ) : (
-                              <iframe
-                                src={getPdfViewerUrl(bill.pdfUrl)}
-                                title="Uploaded bill"
-                                className="w-full min-h-[400px] flex-1 rounded-lg border-0"
-                              />
-                            )}
+                    <div className="flex items-start md:justify-end w-full md:w-auto">
+                      <div className="w-full md:max-w-[360px]">
+                        {refundError && (
+                          <p className="text-sm text-red-600 mb-2">{refundError}</p>
+                        )}
+                        {bill.refundStatus === "requested" || bill.refundRequested ? (
+                          <div className="w-full inline-flex items-center justify-center rounded-full border-2 border-green-500 bg-green-50 px-6 py-3 md:px-8 md:py-4 text-sm md:text-base font-semibold text-green-700">
+                            Refund request sent
                           </div>
-                       
-                        </>
-                      ) : (
-                        <img
-                          src={billPlaceholder}
-                          alt="Uploaded bill placeholder"
-                          className="w-full h-full max-h-[360px] object-contain rounded-2xl"
-                        />
-                      )}
-                    </div>
-                  </div>
-
-                  {/* HIPAA Authorization Form - same style as uploaded bill */}
-                  {bill.hipaaForm?.pdfUrl && (
-                    <div className="relative flex flex-col">
-                      <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md flex items-center gap-3">
-                        <span className="text-md font-medium text-gray-800">
-                          HIPAA Authorization Form
-                        </span>
-                        <button
-                          type="button"
-                          onClick={handleDeleteHipaaFormClick}
-                          disabled={deletingHipaa}
-                          className="text-purple-500 hover:text-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                          title="Remove HIPAA form"
-                        >
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
+                        ) : bill.refundStatus === "approved" || bill.refundStatus === "rejected" ? (
+                          <div className="text-sm text-gray-600">
+                            Refund {bill.refundStatus === "approved" ? "approved" : "rejected"}.
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={handleRequestRefund}
+                            disabled={refundLoading || !revisedHospitalBill}
+                            className="w-full inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#7a3cff] to-[#15103b] px-6 py-3 md:px-8 md:py-4 text-sm md:text-base font-semibold text-white shadow-md hover:from-[#6a34e3] hover:to-[#120d33] disabled:opacity-70"
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m-9 0h10"
-                            />
-                          </svg>
-                        </button>
-                      </div>
-                      <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px] max-w-[340px] w-full mx-auto">
-                        <div className="w-full mt-4 md:mt-5 flex flex-col overflow-hidden rounded-lg bg-gray-100" style={{ minHeight: "380px" }}>
-                          {isImageUrl(bill.hipaaForm.pdfUrl) ? (
-                            <img
-                              src={bill.hipaaForm.pdfUrl}
-                              alt="HIPAA Authorization Form"
-                              className="w-full max-h-[420px] object-contain rounded-lg"
-                            />
-                          ) : (
-                            <iframe
-                              src={getPdfViewerUrl(bill.hipaaForm.pdfUrl)}
-                              title="HIPAA Authorization Form"
-                              width="100%"
-                              height="420"
-                              className="rounded-lg border-0 bg-white"
-                              style={{ minHeight: "380px" }}
-                            />
-                          )}
-                        </div>
-                        <a
-                          href={bill.hipaaForm.pdfUrl}
-                          download={bill.hipaaForm.pdfFileName || "hipaa-form.pdf"}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-4 inline-flex items-center justify-center gap-2 rounded-full border-2 border-purple-200 px-4 py-2.5 text-sm font-medium text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition"
-                        >
-                          <span>Download HIPAA form</span>
-                        </a>
+                            {refundLoading ? "Sending…" : "Submit Refund Request"}
+                          </button>
+                        )}
                       </div>
                     </div>
                   )}
-
-               
-
-                  {/* Supporting Documents */}
-                  {filteredSupportingDocuments.length > 0 && (
-                    <div className="relative flex flex-col">
-                      <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md">
-                        <span className="text-md font-medium text-gray-800">
-                          Supporting Documents
-                        </span>
-                      </div>
-                      <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px] max-w-[340px] w-full mx-auto">
-                        <div className="w-full h-full max-h-[400px] overflow-y-auto thin-scrollbar mt-4 md:mt-5 space-y-3">
-                          {filteredSupportingDocuments.map((doc) => {
-                            const supportingTypeLabel = doc.documentType
-                              ? (DOCUMENT_TYPES.find((t) => t.value === doc.documentType)?.label || doc.documentType)
-                              : null;
-                            return (
-                            <div
-                              key={doc._id || doc.pdfUrl}
-                              className="flex items-center justify-between p-3 rounded-lg border border-purple-200 bg-purple-50/50"
-                            >
-                              <div className="flex flex-col gap-0.5 min-w-0 flex-1">
-                                <div className="flex items-center gap-2">
-                                  <svg
-                                    className="w-5 h-5 text-purple-600 flex-shrink-0"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                                    />
-                                  </svg>
-                                  <a
-                                    href={doc.pdfUrl}
-                                    download={doc.pdfFileName || "supporting-doc.pdf"}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-sm text-purple-700 hover:underline truncate"
-                                  >
-                                    {doc.pdfFileName || "Supporting document"}
-                                  </a>
-                                </div>
-                                {supportingTypeLabel && (
-                                  <span className="text-xs text-gray-500 pl-7">Type: {supportingTypeLabel}</span>
-                                )}
-                              </div>
-                              <button
-                                type="button"
-                                onClick={() => handleDeleteSupportingDocClick(doc)}
-                                disabled={deletingDoc}
-                                className="text-red-600 hover:text-red-800 p-1 disabled:opacity-50 flex-shrink-0"
-                                title="Remove document"
-                              >
-                                <svg
-                                  className="w-5 h-5"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m-9 0h10"
-                                  />
-                                </svg>
-                              </button>
-                            </div>
-                          );
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Upload New Bill */}
-                  <div className="relative flex flex-col">
-                    {/* Floating label tab */}
-                    <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md">
-                      <span className="text-md font-medium text-gray-800">
-                        Upload New Bill
-                      </span>
-                    </div>
-
-                    <div
-                      className="flex-1 rounded-[46px] border border-[#5d3aba] flex flex-col items-center justify-center text-center px-6 py-10 md:py-14 cursor-pointer hover:shadow-lg transition min-h-[420px] md:min-h-[520px] max-w-[340px] w-full mx-auto"
-                      onClick={handleUploadClick}
-                    >
-                      <div className="w-20 h-20 md:w-24 md:h-24 flex items-center justify-center mb-6">
-                        <img
-                          src={uploadImg}
-                          alt="Upload"
-                          className="w-12 h-12 md:w-14 md:h-14 object-contain"
-                        />
-                      </div>
-                      <p className="text-sm md:text-base font-medium text-gray-400">
-                        {uploadedFileName || "Upload Copy of New Bill"}
-                      </p>
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        className="hidden"
-                        onChange={handleFileChange}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Amounts & CTA */}
-                  <div className="flex flex-col justify-between gap-5 md:gap-6">
-                    <div className="space-y-6 md:space-y-7">
-                      {/* Amount Saved */}
-                      <div className="relative">
-                        <div className="absolute -top-3 left-6 bg-white px-3 py-1 rounded-b-md">
-                          <span className="text-xs font-medium text-gray-800">
-                            Amount Saved
-                          </span>
-                        </div>
-                        <div className="rounded-full border border-[#3d3654] px-6 py-4 md:py-5 flex items-center">
-                          <span className="text-base md:text-lg font-semibold text-gray-900">
-                            {bill.savedAmount}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Amount Paid to Us */}
-                      <div className="relative">
-                        <div className="absolute -top-3 left-6 bg-white px-3 py-1 rounded-b-md">
-                          <span className="text-xs font-medium text-gray-800">
-                            Amount Paid to Us
-                          </span>
-                        </div>
-                        <div className="rounded-full border border-[#3d3654] px-6 py-4 md:py-5 flex items-center">
-                          <span className="text-base md:text-lg font-semibold text-gray-900">
-                            {bill.amountPaidToUs}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Refund - only for flat-fee-paid bills */}
-                      {bill.flatFeePaid && (
-                        <>
-                          {refundError && (
-                            <p className="text-sm text-red-600 mb-2">{refundError}</p>
-                          )}
-                          {bill.refundStatus === "requested" || bill.refundRequested ? (
-                            <div className="w-full inline-flex items-center justify-center rounded-full border-2 border-green-500 bg-green-50 px-6 py-3 md:px-8 md:py-4 text-sm md:text-base font-semibold text-green-700">
-                              Refund request sent
-                            </div>
-                          ) : bill.refundStatus === "approved" || bill.refundStatus === "rejected" ? (
-                            <div className="text-sm text-gray-600">
-                              Refund {bill.refundStatus === "approved" ? "approved" : "rejected"}.
-                            </div>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={handleRequestRefund}
-                              disabled={refundLoading}
-                              className="w-full inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#7a3cff] to-[#15103b] px-6 py-3 md:px-8 md:py-4 text-sm md:text-base font-semibold text-white shadow-md hover:from-[#6a34e3] hover:to-[#120d33] disabled:opacity-70"
-                            >
-                              {refundLoading ? "Sending…" : "Submit Refund Request"}
-                            </button>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </div>
                 </div>
-
-                {/* Bottom row */}
-                <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-                  {/* Bill Amount */}
-                  <div className="relative">
-                    <div className="absolute -top-3 left-6 bg-white px-3 py-1 rounded-b-md">
-                      <span className="text-xs font-medium text-gray-800">
-                        Bill Amount
-                      </span>
-                    </div>
-                    <div className="rounded-full border border-[#3d3654] px-6 py-4 md:py-5 flex items-center">
-                      <span className="text-base md:text-lg font-semibold text-gray-900">
-                        {bill.amount}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* New Bill Amount */}
-                  <div className="relative">
-                    <div className="absolute -top-3 left-6 bg-white px-3 py-1 rounded-b-md">
-                      <span className="text-xs font-medium text-gray-800">
-                        New Bill Amount
-                      </span>
-                    </div>
-                    <div className="rounded-full border border-[#3d3654] px-6 py-4 md:py-5 flex items-center">
-                      <span className="text-base md:text-lg font-semibold text-gray-900">
-                        {bill.newAmount}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Date Submitted */}
-                  <div className="relative">
-                    <div className="absolute -top-3 left-6 bg-white px-3 py-1 rounded-b-md">
-                      <span className="text-xs font-medium text-gray-800">
-                        Date Submitted
-                      </span>
-                    </div>
-                    <div className="rounded-full border border-[#3d3654] px-6 py-4 md:py-5 flex items-center">
-                      <span className="text-base md:text-lg font-semibold text-gray-900">
-                        {bill.date}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
+            
           </section>
         </div>
       </main>
