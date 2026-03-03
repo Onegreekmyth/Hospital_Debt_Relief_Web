@@ -41,6 +41,7 @@ const BillDetails = () => {
   const [docToDelete, setDocToDelete] = useState(null);
   const [revisedUploadError, setRevisedUploadError] = useState("");
   const [uploadingRevisedBill, setUploadingRevisedBill] = useState(false);
+  const [revisedBillAmount, setRevisedBillAmount] = useState("");
   const revisedBillInputRef = useRef(null);
 
   // Check if pdfUrl is an image by extension (API can return PDF or image in pdfUrl)
@@ -170,7 +171,11 @@ const BillDetails = () => {
     if (!bill?.id || refundLoading) return;
     dispatch(clearRefundRequestError());
     try {
-      await dispatch(requestRefund(bill.id)).unwrap();
+      await dispatch(requestRefund({
+        billId: bill.id,
+        revisedAmount: revisedBillAmount || undefined
+      })).unwrap();
+      setRevisedBillAmount("");
       await refetchBill();
     } catch (_) {
       // Error shown via refundError from slice
@@ -639,23 +644,46 @@ const BillDetails = () => {
                 {/* Bill Info and Refund Section */}
                 <div className="mt-8 flex flex-col md:flex-row md:items-start md:justify-between gap-8">
                   {/* Left: Bill Amount + Date Submitted */}
-                  <div className="max-w-[360px] w-full">
-                  {/* Bill Amount */}
-                  <div className="relative mb-4">
-                    <div className="absolute -top-3 left-6 bg-white px-3 py-1 rounded-b-md">
-                      <span className="text-xs font-medium text-gray-800">
-                        Bill Amount
-                      </span>
+                  <div className="max-w-[800px] w-full">
+                  {/* Bill Amount + Revised Bill Amount Row */}
+                  <div className="flex gap-4 mb-4">
+                    {/* Bill Amount */}
+                    <div className="relative flex-1 max-w-[400px]">
+                      <div className="absolute -top-3 left-6 bg-white px-3 py-1 rounded-b-md">
+                        <span className="text-xs font-medium text-gray-800">
+                          Bill Amount
+                        </span>
+                      </div>
+                      <div className="rounded-full border border-[#3d3654] px-6 py-4 md:py-5 flex items-center">
+                        <span className="text-base md:text-lg font-semibold text-gray-900">
+                          {bill.amount}
+                        </span>
+                      </div>
                     </div>
-                    <div className="rounded-full border border-[#3d3654] px-6 py-4 md:py-5 flex items-center">
-                      <span className="text-base md:text-lg font-semibold text-gray-900">
-                        {bill.amount}
-                      </span>
-                    </div>
+
+                    {/* Revised Bill Amount - Only show when revised bill is uploaded */}
+                    {revisedHospitalBill && (
+                      <div className="relative flex-1">
+                        <div className="absolute -top-3 left-6 bg-white px-3 py-1 rounded-b-md">
+                          <span className="text-xs font-medium text-gray-800">
+                            Revised Bill Amount
+                          </span>
+                        </div>
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={revisedBillAmount}
+                          onChange={(e) => setRevisedBillAmount(e.target.value)}
+                          placeholder="Enter amount"
+                          className="w-full rounded-full border border-[#3d3654] px-6 py-4 md:py-5 text-base md:text-lg font-semibold text-gray-900 placeholder-gray-400"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {/* Date Submitted */}
-                  <div className="relative">
+                  <div className="relative max-w-[400px]">
                     <div className="absolute -top-3 left-6 bg-white px-3 py-1 rounded-b-md">
                       <span className="text-xs font-medium text-gray-800">
                         Date Submitted
@@ -672,7 +700,7 @@ const BillDetails = () => {
                   {/* Right: Refund Section - only for flat-fee-paid bills */}
                   {bill.flatFeePaid && (
                     <div className="flex items-start md:justify-end w-full md:w-auto">
-                      <div className="w-full md:max-w-[360px]">
+                      <div className="w-full md:max-w-[700px]">
                         {refundError && (
                           <p className="text-sm text-red-600 mb-2">{refundError}</p>
                         )}
@@ -688,7 +716,7 @@ const BillDetails = () => {
                           <button
                             type="button"
                             onClick={handleRequestRefund}
-                            disabled={refundLoading || !revisedHospitalBill}
+                            disabled={refundLoading || !revisedHospitalBill || !revisedBillAmount}
                             className="w-full inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#7a3cff] to-[#15103b] px-6 py-3 md:px-8 md:py-4 text-sm md:text-base font-semibold text-white shadow-md hover:from-[#6a34e3] hover:to-[#120d33] disabled:opacity-70"
                           >
                             {refundLoading ? "Sending…" : "Submit Refund Request"}

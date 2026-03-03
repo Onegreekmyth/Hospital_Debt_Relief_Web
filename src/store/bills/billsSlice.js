@@ -186,9 +186,14 @@ export const completeBillApplication = createAsyncThunk(
 
 export const requestRefund = createAsyncThunk(
   "bills/requestRefund",
-  async (billId, { rejectWithValue }) => {
+  async (payload, { rejectWithValue }) => {
     try {
-      const response = await axiosClient.post(`/bills/${billId}/request-refund`);
+      const billId = typeof payload === "string" ? payload : payload.billId;
+      const revisedAmount = typeof payload === "object" ? payload.revisedAmount : undefined;
+      
+      const data = revisedAmount ? { revisedAmount } : {};
+      
+      const response = await axiosClient.post(`/bills/${billId}/request-refund`, data);
       if (response.data?.success === false) {
         return rejectWithValue(
           response.data?.message || "Failed to submit refund request."
