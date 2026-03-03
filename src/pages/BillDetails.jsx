@@ -661,8 +661,8 @@ const BillDetails = () => {
                       </div>
                     </div>
 
-                    {/* Revised Bill Amount - Only show when revised bill is uploaded */}
-                    {revisedHospitalBill && (
+                    {/* Revised Bill Amount - Only show when revised bill is uploaded and no refund yet */}
+                    {revisedHospitalBill && !(bill.refundRequested || bill.refundStatus === "requested") && (
                       <div className="relative flex-1">
                         <div className="absolute -top-3 left-6 bg-white px-3 py-1 rounded-b-md">
                           <span className="text-xs font-medium text-gray-800">

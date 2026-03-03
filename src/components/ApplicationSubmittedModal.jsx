@@ -65,7 +65,13 @@ const ApplicationSubmittedModal = ({
   const billStatus = billData?.status?.toLowerCase();
   const isBillPending = billStatus === "pending";
   const isBillApproved = billStatus === "approved";
-  const showSubmitMyBillButton = !isBillPending && !isBillApproved;
+  // treat submitted, approved, processing, refunded as 'already submitted'
+  const isBillSubmitted =
+    billStatus === "submitted" ||
+    billStatus === "approved" ||
+    billStatus === "processing" ||
+    billStatus === "refunded";
+  const showSubmitMyBillButton = !isBillPending && !isBillApproved && !isBillSubmitted;
 
   const showFlatFeeButton =
     (!hasActiveSubscription || !isBillPatientInSubscription) &&
