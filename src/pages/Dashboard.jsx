@@ -9,6 +9,7 @@ import AddFamilyMembersModal from "../components/AddFamilyMembersModal";
 import ApplicationSubmittedModal from "../components/ApplicationSubmittedModal";
 import BillReceivedModal from "../components/BillReceivedModal";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
+import SubscriptionDetailsModal from "../components/SubscriptionDetailsModal";
 import HospitalMap from "../components/HospitalMap";
 import uploadImg from "../assets/upload-img.png";
 import rightArrow from "../assets/right-arrow.png";
@@ -46,6 +47,7 @@ const Dashboard = () => {
   const [submittedBillId, setSubmittedBillId] = useState(null);
   const [submittedBillData, setSubmittedBillData] = useState(null);
   const [isCancelSubscriptionOpen, setIsCancelSubscriptionOpen] = useState(false);
+  const [isSubscriptionDetailsOpen, setIsSubscriptionDetailsOpen] = useState(false);
   const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState(null);
   const [billReceivedModalBillId, setBillReceivedModalBillId] = useState(null);
@@ -241,11 +243,10 @@ const Dashboard = () => {
 
   // Sync local "remove from plan" state from API (family members + account holder from profile)
   useEffect(() => {
-    if (familyMembers.length > 0) {
-      setFamilyMembersRemoveFromPlan(
-        familyMembers.map((m) => m.withActiveSubscription === false)
-      );
-    }
+    // always rebuild array to mirror current familyMembers
+    setFamilyMembersRemoveFromPlan(
+      familyMembers.map((m) => m.withActiveSubscription === false)
+    );
   }, [familyMembers]);
 
   useEffect(() => {
@@ -348,6 +349,7 @@ const Dashboard = () => {
       isBillModalOpen ||
       isSubmissionModalOpen ||
       isSubscriptionModalOpen ||
+      isSubscriptionDetailsOpen ||
       isAddFamilyModalOpen ||
       isApplicationSubmittedModalOpen ||
       isCancelSubscriptionOpen ||
@@ -376,11 +378,13 @@ const Dashboard = () => {
     .filter(Boolean)
     .join(" ")
     .trim();
-  // Subscription plan count: account holder + family members with withActiveSubscription !== false
-  const effectivePlanCount =
-    (accountHolderRemoveFromPlan ? 0 : 1) +
-    familyMembers.filter((m) => m.withActiveSubscription !== false).length;
-  const householdCount = Math.max(effectivePlanCount, 1);
+  // Subscription plan count: account holder + family members that are not removed
+  const selectedMemberCount =
+    familyMembers.length - familyMembersRemoveFromPlan.filter((r) => r === true).length;
+  const effectivePlanCount = (accountHolderRemoveFromPlan ? 0 : 1) + selectedMemberCount;
+  // allow zero when everyone is excluded; the subscription modal already
+  // shows a warning and disables the start button when householdCount < 1
+  const householdCount = effectivePlanCount;
 
   const getSubscriptionInfoForHousehold = (count) => {
     if (count <= 3) {
@@ -409,8 +413,14 @@ const Dashboard = () => {
 
   const subscriptionInfo = getSubscriptionInfoForHousehold(householdCount);
 
-  const hasMemberActiveSubscription = memberToDelete?.withActiveSubscription === true && subscriptionStatus === "active";
+  const effectiveStatus =
+    subscriptionStatus === "active" && subscriptionWillCancel
+      ? "cancelled"
+      : subscriptionStatus;
+
+  const hasMemberActiveSubscription = memberToDelete?.withActiveSubscription === true && effectiveStatus === "active";
   const message = hasMemberActiveSubscription ? "Have an active subscription? Please cancel the subscription to make Changes." : "Are you sure you want to delete this family member? This action cannot be undone.";
+  const isSubscriptionLocked = subscriptionStatus === "active";
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar onOpenAddFamilyMembers={() => setIsAddFamilyModalOpen(true)} />
@@ -769,12 +779,12 @@ const Dashboard = () => {
                         {accountHolderName || (profileLoading ? "Loading..." : "—")}
                       </span>
                     </div>
-                    <label className={`flex items-center gap-2 ${subscriptionStatus === "active" ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}>
+                    <label className={`flex items-center gap-2 ${isSubscriptionLocked ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}>
                       <input
                         type="checkbox"
                         checked={accountHolderRemoveFromPlan}
                         onChange={(e) => {
-                          if (subscriptionStatus === "active") return;
+                          if (isSubscriptionLocked) return;
                           const checked = e.target.checked;
                           setAccountHolderRemoveFromPlan(checked);
                           dispatch(
@@ -783,7 +793,7 @@ const Dashboard = () => {
                             })
                           );
                         }}
-                        disabled={subscriptionStatus === "active"}
+                        disabled={isSubscriptionLocked}
                         className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 disabled:cursor-not-allowed"
                       />
                       <span className="text-xs font-sm text-gray-500">Remove from Membership Plan</span>
@@ -805,7 +815,7 @@ const Dashboard = () => {
                       const relationshipLabel = member.relationship
                         ? member.relationship.charAt(0).toUpperCase() + member.relationship.slice(1).replace(/-/g, " ")
                         : "Family Member";
-                      const removeFromPlan = member.withActiveSubscription === false;
+                      const removed = familyMembersRemoveFromPlan[index] === true;
                       return (
                         <div key={member._id || index} className="space-y-2 relative pt-2">
                           <div className="absolute -top-3 left-6 bg-white px-2 py-0.5 rounded-b-md z-10">
@@ -846,22 +856,29 @@ const Dashboard = () => {
                               </button>
                             </div>
                           </div>
-                          <label className={`flex items-center gap-2 ${subscriptionStatus === "active" ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}>
+                          <label className={`flex items-center gap-2 ${isSubscriptionLocked ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}>
                             <input
                               type="checkbox"
-                              checked={member.withActiveSubscription === false}
-                              disabled={subscriptionStatus === "active"}
+                              checked={removed}
+                              disabled={isSubscriptionLocked}
+                              className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 disabled:cursor-not-allowed"
                               onChange={() => {
-                                if (subscriptionStatus === "active") return;
-
+                                if (isSubscriptionLocked) return;
+                                const newRemoved = !removed;
+                                // toggle local remove state immediately
+                                setFamilyMembersRemoveFromPlan((prev) => {
+                                  const next = [...prev];
+                                  next[index] = newRemoved;
+                                  return next;
+                                });
+                                // send updated subscription status: active if not removed
                                 dispatch(
                                   updateFamilyMemberSubscription({
                                     id: member._id,
-                                    withActiveSubscription: !member.withActiveSubscription,
+                                    withActiveSubscription: !newRemoved,
                                   })
                                 );
                               }}
-                              className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 disabled:cursor-not-allowed"
                             />
                             <span className="text-xs font-sm text-gray-500">Remove from Membership Plan</span>
                           </label>
@@ -1023,26 +1040,19 @@ const Dashboard = () => {
                     role="button"
                     tabIndex={0}
                     onClick={() => {
-                      if (subscriptionStatus === "active") {
-                        if (!subscriptionWillCancel) {
-                          // Active and not scheduled to cancel: allow user to cancel now
-                          dispatch(clearCancelError());
-                          setIsCancelSubscriptionOpen(true);
-                        }
-                        // Active but already scheduled to cancel: show info only, no modal
+                      if (effectiveStatus === "active" || effectiveStatus === "cancelled") {
+                        // simply show details modal when user already has a membership (active or cancelled)
+                        setIsSubscriptionDetailsOpen(true);
                       } else {
-                        // No active subscription: open subscription details/start modal
+                        // No active subscription: open subscription start modal
                         setIsSubscriptionModalOpen(true);
                       }
                     }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
                         e.preventDefault();
-                        if (subscriptionStatus === "active") {
-                          if (!subscriptionWillCancel) {
-                            dispatch(clearCancelError());
-                            setIsCancelSubscriptionOpen(true);
-                          }
+                        if (effectiveStatus === "active" || effectiveStatus === "cancelled") {
+                          setIsSubscriptionDetailsOpen(true);
                         } else {
                           setIsSubscriptionModalOpen(true);
                         }
@@ -1051,7 +1061,7 @@ const Dashboard = () => {
                     className={`group w-full rounded-[26px] border-2 border-[#5225cc] bg-white px-6 py-5 flex flex-col items-center justify-between hover:bg-[#e2dfec] hover:shadow-md transition ${subscriptionWillCancel ? "min-h-[9.5rem] md:min-h-[9.5rem]" : "min-h-[8rem] md:min-h-[9rem]"
                       }`}
                   >
-                    {subscriptionStatus === "inactive" && (
+                    {effectiveStatus === "inactive" && (
 
                       <div className="text-center">
                         <p className="text-base md:text-lg font-semibold text-[#5225cc]">
@@ -1069,22 +1079,22 @@ const Dashboard = () => {
                           Membership Status
                         </span>
                         <span
-                          className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] md:text-xs font-medium ${subscriptionStatus === "active"
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] md:text-xs font-medium ${effectiveStatus === "active"
                             ? "bg-green-100 text-green-700"
-                            : subscriptionStatus === "cancelled"
+                            : effectiveStatus === "cancelled"
                               ? "bg-amber-100 text-amber-800"
                               : "bg-[#ffd7da] text-[#d45360]"
                             }`}
                         >
-                          {subscriptionStatus === "active"
+                          {effectiveStatus === "active"
                             ? "Active"
-                            : subscriptionStatus === "cancelled"
+                            : effectiveStatus === "cancelled"
                               ? "Cancelled"
                               : "Inactive"}
                         </span>
                       </div>
 
-                      {subscriptionStatus === "active" && (
+                      {effectiveStatus === "active" && (
                         <>
                           <span className="text-[11px] md:text-xs text-[#5225cc]">
                             Membership Date: {subscriptionDate}
@@ -1130,10 +1140,15 @@ const Dashboard = () => {
       <BillInformationModal
         isOpen={isBillModalOpen}
         onClose={() => setIsBillModalOpen(false)}
-        isSubscriptionActive={subscriptionStatus === "active"}
+        // active flag remains true only while subscription not cancelled
+        isSubscriptionActive={effectiveStatus === "active"}
+        // show service date field anytime there is a subscription (active or cancelled)
+        hasSubscription={effectiveStatus !== "inactive"}
         subscriptionStartDate={subscriptionStartDateISO}
         accountHolderName={[profile?.firstName, profile?.lastName].filter(Boolean).join(" ").trim()}
+        accountHolderRemoveFromPlan={accountHolderRemoveFromPlan}
         familyMembers={familyMembers}
+        familyMembersRemoveFromPlan={familyMembersRemoveFromPlan}
         onSubmitted={(billData) => {
           setIsBillModalOpen(false);
           // Store bill ID and data for the submitted modal
@@ -1154,7 +1169,7 @@ const Dashboard = () => {
         billId={submittedBillId}
         billData={submittedBillData}
         profile={profile}
-        hasActiveSubscription={subscriptionStatus === "active"}
+        hasActiveSubscription={effectiveStatus === "active"}
         familyMembers={familyMembers}
         onBillUpdated={async () => {
           if (!submittedBillId) return;
@@ -1193,7 +1208,7 @@ const Dashboard = () => {
         householdCount={householdCount}
         subscriptionInfo={subscriptionInfo}
         planId={subscriptionInfo?.planId}
-        hasActiveSubscription={subscriptionStatus === "active"}
+        hasActiveSubscription={effectiveStatus === "active"}
         onStartSubscription={() => {
           // This will be called after successful redirect from Stripe
           // The webhook will update the subscription status in the database
@@ -1208,6 +1223,23 @@ const Dashboard = () => {
           } else {
             setIsSubscriptionModalOpen(false);
           }
+        }}
+      />
+
+      {/* Subscription details for existing/cancelled plans */}
+      <SubscriptionDetailsModal
+        isOpen={isSubscriptionDetailsOpen}
+        onClose={() => setIsSubscriptionDetailsOpen(false)}
+        effectiveStatus={effectiveStatus}
+        subscriptionDate={subscriptionDate}
+        subscriptionEndDate={subscriptionEndDate}
+        subscriptionWillCancel={subscriptionWillCancel}
+        subscriptionInfo={subscriptionInfo}
+        onCancelClick={() => {
+          // when user clicks cancel inside details modal
+          dispatch(clearCancelError());
+          setIsSubscriptionDetailsOpen(false);
+          setIsCancelSubscriptionOpen(true);
         }}
       />
 
@@ -1255,8 +1287,9 @@ const Dashboard = () => {
                   try {
                     await dispatch(cancelSubscription()).unwrap();
                     const { userData } = await dispatch(fetchProfile()).unwrap();
-                    setSubscriptionStatus(userData?.subscription?.status || "inactive");
-                    setSubscriptionTier(userData?.subscription?.planId || null);
+                    // Apply full subscription data to local state so UI (including cancel text)
+                    // updates immediately without needing a page refresh.
+                    applySubscriptionFromData(userData?.subscription || null);
                     setIsCancelSubscriptionOpen(false);
                   } catch (e) {
                     // Error already in cancelSubscriptionError

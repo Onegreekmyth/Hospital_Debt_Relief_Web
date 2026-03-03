@@ -24,10 +24,15 @@ const BillInformationModal = ({
   isOpen, 
   onClose, 
   onSubmitted, 
+  // whether the subscription is currently active (used for date validation)
   isSubscriptionActive = true,
+  // overall subscription flag (active or cancelled) controls field visibility
+  hasSubscription = false,
   subscriptionStartDate = null,
   accountHolderName = "",
-  familyMembers = []
+  accountHolderRemoveFromPlan = false,
+  familyMembers = [],
+  familyMembersRemoveFromPlan = []
 }) => {
   const dispatch = useDispatch();
   const { uploadLoading, uploadError: reduxUploadError } = useSelector(
@@ -49,21 +54,23 @@ const BillInformationModal = ({
 
   if (!isOpen) return null;
 
-  // Build patient options from account holder and family members
+  // Build patient options from account holder and family members, plus inclusion map
   const patientOptions = [];
+  const patientIncluded = {};
   if (accountHolderName) {
     patientOptions.push({ value: accountHolderName, label: `Account Holder: ${accountHolderName}` });
+    patientIncluded[accountHolderName] = !accountHolderRemoveFromPlan;
   }
-  familyMembers.forEach((member) => {
+  familyMembers.forEach((member, idx) => {
     const name = typeof member === "string"
       ? (member || "").trim()
       : [member?.firstName, member?.lastName].filter(Boolean).join(" ").trim();
     if (name) {
-      // Use relationship from API (e.g. spouse, child, brother) or fallback for string members
       const relationship = typeof member === "object" && member?.relationship
         ? member.relationship.charAt(0).toUpperCase() + member.relationship.slice(1).replace(/-/g, " ")
         : "Family Member";
       patientOptions.push({ value: name, label: `${relationship}: ${name}` });
+      patientIncluded[name] = !(familyMembersRemoveFromPlan[idx] === true);
     }
   });
 
@@ -186,12 +193,15 @@ const BillInformationModal = ({
       return;
     }
 
-    if (!serviceDate && isSubscriptionActive) {
+    // allow free-form service date for excluded members; enforce only if active and included
+    const patientNeedsServiceDate = isSubscriptionActive && patientIncluded[patientName];
+
+    if (!serviceDate && patientNeedsServiceDate) {
       setSubmitError("Please select a service date.");
       return;
     }
 
-    if (isSubscriptionActive && subscriptionStartDate && serviceDate) {
+    if (patientNeedsServiceDate && subscriptionStartDate && serviceDate) {
       const serviceDateStr = serviceDate.trim();
       const subStartStr = typeof subscriptionStartDate === "string"
         ? subscriptionStartDate.slice(0, 10)
@@ -330,11 +340,13 @@ const BillInformationModal = ({
             </div>
           </div>
 
-          {/* Service Date - only for active subscriptions */}
-          {isSubscriptionActive && (
+          {/* Service Date - visible whenever there is any subscription (active or cancelled);
+              validation only for active, included members */}
+          {hasSubscription && (
             <div className="flex flex-col gap-2">
               <label className="text-xs md:text-sm font-medium text-gray-700">
                 Service Date
+               
               </label>
               <div className="relative">
                 <input
