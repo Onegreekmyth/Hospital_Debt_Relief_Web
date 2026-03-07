@@ -97,6 +97,7 @@ const BillDetails = () => {
       documentTypeLabel,
       serviceDate: apiBill.serviceDate || apiBill.submittedAt || apiBill.createdAt || null,
       amount: formatCurrency(apiBill.billAmount),
+      displayAmount: apiBill.revisedAmount != null ? formatCurrency(apiBill.revisedAmount) : formatCurrency(apiBill.billAmount),
       newAmount: formatCurrency(apiBill.billAmount * 0.55),
       savedAmount: formatCurrency(apiBill.billAmount * 0.45),
       amountPaidToUs: "$299.00",
@@ -109,6 +110,8 @@ const BillDetails = () => {
       flatFeePaid: apiBill.flatFeePaid === true,
       refundRequested: apiBill.refundRequested === true,
       refundStatus: apiBill.refundStatus || "none",
+      rawStatus: apiBill.status,
+      revisedAmount: apiBill.revisedAmount != null ? apiBill.revisedAmount : undefined,
     };
   };
 
@@ -144,7 +147,9 @@ const BillDetails = () => {
         setError("");
         const response = await axiosClient.get(`/bills/${id}`);
         if (response.data.success) {
-          setBill(transformApiBill(response.data.data));
+          const data = response.data.data;
+          setBill(transformApiBill(data));
+          setRevisedBillAmount(data.revisedAmount != null ? String(data.revisedAmount) : "");
         } else {
           setError("Bill not found");
         }
@@ -162,6 +167,13 @@ const BillDetails = () => {
     };
     fetchBill();
   }, [id, navigate]);
+
+  // When bill is inactive (user didn't complete second modal), open the application modal so they can continue
+  useEffect(() => {
+    if (!loading && bill?.rawStatus === "inactive") {
+      setShowApplicationModal(true);
+    }
+  }, [loading, bill?.rawStatus]);
 
   const handleEditBillClick = () => {
     setShowApplicationModal(true);
@@ -647,17 +659,20 @@ const BillDetails = () => {
                   <div className="max-w-[800px] w-full">
                   {/* Bill Amount + Revised Bill Amount Row */}
                   <div className="flex gap-4 mb-4">
-                    {/* Bill Amount */}
+                    {/* Bill Amount - show revised when set, else original */}
                     <div className="relative flex-1 max-w-[400px]">
                       <div className="absolute -top-3 left-6 bg-white px-3 py-1 rounded-b-md">
                         <span className="text-xs font-medium text-gray-800">
-                          Bill Amount
+                          {bill.revisedAmount != null ? "Bill amount (revised)" : "Bill Amount"}
                         </span>
                       </div>
-                      <div className="rounded-full border border-[#3d3654] px-6 py-4 md:py-5 flex items-center">
+                      <div className="rounded-full border border-[#3d3654] px-6 py-4 md:py-5 flex flex-col items-center justify-center">
                         <span className="text-base md:text-lg font-semibold text-gray-900">
-                          {bill.amount}
+                          {bill.displayAmount ?? bill.amount}
                         </span>
+                        {bill.revisedAmount != null && (
+                          <span className="text-xs text-gray-500 mt-0.5">Original: {bill.amount}</span>
+                        )}
                       </div>
                     </div>
 
