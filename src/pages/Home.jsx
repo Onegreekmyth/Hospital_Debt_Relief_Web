@@ -249,7 +249,8 @@ const HomePage = () => {
 
       const response = await axiosClient.post(
         "/hospitals/calculate-eligibility",
-        payload
+        payload,
+        { timeout: 120000 }
       );
 
       setEligibilityResponse(response.data);
