@@ -10,11 +10,15 @@ const INACTIVITY_TIME = 5 * 60 * 1000;
 
 let inactivityTimer;
 
+const isLoggedIn = () => !!localStorage.getItem('token');
+
 // Reset timer function
 const resetInactivityTimer = () => {
   if (inactivityTimer) {
     clearTimeout(inactivityTimer);
   }
+
+  if (!isLoggedIn()) return;
 
   inactivityTimer = setTimeout(() => {
     logoutUser();
@@ -22,6 +26,8 @@ const resetInactivityTimer = () => {
 };
 
 const logoutUser = () => {
+  if (!isLoggedIn()) return;
+
   localStorage.removeItem('token');
   localStorage.removeItem('user');
   localStorage.removeItem('isAuthenticated');
@@ -35,10 +41,8 @@ axiosClient.interceptors.request.use(
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      resetInactivityTimer();
     }
-
-    // Reset timer whenever API is called
-    resetInactivityTimer();
 
     return config;
   },
@@ -48,19 +52,22 @@ axiosClient.interceptors.request.use(
 // Response interceptor
 axiosClient.interceptors.response.use(
   (response) => {
-    // Also reset timer on successful response
-    resetInactivityTimer();
+    if (isLoggedIn()) {
+      resetInactivityTimer();
+    }
     return response;
   },
   (error) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && isLoggedIn()) {
       logoutUser();
     }
     return Promise.reject(error);
   }
 );
 
-// Start timer initially
-resetInactivityTimer();
+// Only start timer if user is already logged in
+if (isLoggedIn()) {
+  resetInactivityTimer();
+}
 
 export default axiosClient;

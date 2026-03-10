@@ -129,15 +129,20 @@ const BillHistory = () => {
   }));
 
   const filteredBills = transformedBills.filter((bill) => {
-    // Never show inactive bills
-    if (bill.rawStatus === "inactive") return false;
     if (filter === "Submitted") return bill.status === "Submitted";
-    if (filter === "Pending") return bill.status === "Pending";
+    if (filter === "Pending") return bill.rawStatus === "pending";
     if (filter === "Approved") return bill.status === "Approved";
+    if (filter === "Incomplete") return bill.rawStatus === "inactive";
     return true;
   });
 
+  const displayStatus = (bill) =>
+    bill.rawStatus === "inactive" ? "Incomplete" : bill.status;
+
   const getStatusBadgeClasses = (status) => {
+    if (status === "Incomplete") {
+      return "bg-amber-100 text-amber-800";
+    }
     if (status === "Submitted") {
       return "bg-[#C7F5C4] text-[#1B8F3A]";
     }
@@ -226,6 +231,16 @@ const BillHistory = () => {
                   <button
                     type="button"
                     onClick={() => {
+                      setFilter("Incomplete");
+                      setIsFilterOpen(false);
+                    }}
+                    className="block w-full text-left px-5 py-2 hover:bg-purple-50 text-gray-800"
+                  >
+                    Incomplete
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
                       setFilter("All");
                       setIsFilterOpen(false);
                     }}
@@ -294,10 +309,10 @@ const BillHistory = () => {
                         <td className="px-6 py-4 text-right pr-8 md:pr-10">
                           <span
                             className={`inline-flex items-center rounded-full px-4 py-1 text-xs md:text-sm font-medium ${getStatusBadgeClasses(
-                              bill.status
+                              displayStatus(bill)
                             )}`}
                           >
-                            {bill.status}
+                            {displayStatus(bill)}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-center">

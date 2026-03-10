@@ -62,16 +62,20 @@ const ApplicationSubmittedModal = ({
     );
     return member ? member.withActiveSubscription !== false : true;
   })();
+  const rawStatus = billData?.rawStatus?.toLowerCase?.() || billData?.status?.toLowerCase?.();
   const billStatus = billData?.status?.toLowerCase();
-  const isBillPending = billStatus === "pending";
-  const isBillApproved = billStatus === "approved";
-  // treat submitted, approved, processing, refunded as 'already submitted'
+  const isBillInactive = rawStatus === "inactive";
+  const isBillPending = rawStatus === "pending";
+  const isBillApproved = billStatus === "approved" || rawStatus === "approved";
   const isBillSubmitted =
+    rawStatus === "submitted" ||
     billStatus === "submitted" ||
     billStatus === "approved" ||
+    rawStatus === "processing" ||
     billStatus === "processing" ||
     billStatus === "refunded";
-  const showSubmitMyBillButton = !isBillPending && !isBillApproved && !isBillSubmitted;
+  const showSubmitMyBillButton =
+    isBillInactive || (!isBillPending && !isBillApproved && !isBillSubmitted);
 
   const showFlatFeeButton =
     (!hasActiveSubscription || !isBillPatientInSubscription) &&
