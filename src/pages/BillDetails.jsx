@@ -43,6 +43,7 @@ const BillDetails = () => {
   const [uploadingRevisedBill, setUploadingRevisedBill] = useState(false);
   const [revisedBillAmount, setRevisedBillAmount] = useState("");
   const revisedBillInputRef = useRef(null);
+  const [previewDoc, setPreviewDoc] = useState(null); // { url, title }
 
   // Check if pdfUrl is an image by extension (API can return PDF or image in pdfUrl)
   const isImageUrl = (url) => {
@@ -434,7 +435,6 @@ const BillDetails = () => {
                     </div>
 
                     <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px]">
-                      
                       {bill.pdfUrl ? (
                         <>
                           <div className="w-full h-full min-h-[280px] max-h-[560px] mt-4 md:mt-5 pt-4 md:pt-5 flex flex-col items-center justify-center overflow-auto px-3 md:px-4">
@@ -442,17 +442,28 @@ const BillDetails = () => {
                               <img
                                 src={bill.pdfUrl}
                                 alt="Uploaded bill"
-                                className="w-full max-h-[500px] object-contain rounded-lg"
+                                className="w-full max-h-[500px] object-contain rounded-lg cursor-zoom-in"
+                                onClick={() =>
+                                  setPreviewDoc({
+                                    url: bill.pdfUrl,
+                                    title: "Uploaded Bill",
+                                  })
+                                }
                               />
                             ) : (
                               <iframe
                                 src={getPdfViewerUrl(bill.pdfUrl)}
                                 title="Uploaded bill"
-                                className="w-full min-h-[400px] flex-1 rounded-lg border-0"
+                                className="w-full min-h-[400px] flex-1 rounded-lg border-0 cursor-zoom-in"
+                                onClick={() =>
+                                  setPreviewDoc({
+                                    url: bill.pdfUrl,
+                                    title: "Uploaded Bill",
+                                  })
+                                }
                               />
                             )}
                           </div>
-                       
                         </>
                       ) : (
                         <img
@@ -494,12 +505,21 @@ const BillDetails = () => {
                         </button>
                       </div>
                       <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px]">
-                        <div className="w-full mt-4 md:mt-5 flex flex-col overflow-hidden rounded-lg bg-gray-100" style={{ minHeight: "380px" }}>
+                        <div
+                          className="w-full mt-4 md:mt-5 flex flex-col overflow-hidden rounded-lg bg-gray-100"
+                          style={{ minHeight: "380px" }}
+                        >
                           {isImageUrl(bill.hipaaForm.pdfUrl) ? (
                             <img
                               src={bill.hipaaForm.pdfUrl}
                               alt="HIPAA Authorization Form"
-                              className="w-full max-h-[420px] object-contain rounded-lg"
+                              className="w-full max-h-[420px] object-contain rounded-lg cursor-zoom-in"
+                              onClick={() =>
+                                setPreviewDoc({
+                                  url: bill.hipaaForm.pdfUrl,
+                                  title: "HIPAA Authorization Form",
+                                })
+                              }
                             />
                           ) : (
                             <iframe
@@ -507,7 +527,13 @@ const BillDetails = () => {
                               title="HIPAA Authorization Form"
                               width="100%"
                               height="420"
-                              className="rounded-lg border-0 bg-white"
+                              className="rounded-lg border-0 bg-white cursor-zoom-in"
+                              onClick={() =>
+                                setPreviewDoc({
+                                  url: bill.hipaaForm.pdfUrl,
+                                  title: "HIPAA Authorization Form",
+                                })
+                              }
                               style={{ minHeight: "380px" }}
                             />
                           )}
@@ -561,13 +587,25 @@ const BillDetails = () => {
                             <img
                               src={revisedHospitalBill.pdfUrl}
                               alt="Revised bill"
-                              className="w-full max-h-[500px] object-contain rounded-lg"
+                              className="w-full max-h-[500px] object-contain rounded-lg cursor-zoom-in"
+                              onClick={() =>
+                                setPreviewDoc({
+                                  url: revisedHospitalBill.pdfUrl,
+                                  title: "Revised Hospital Bill",
+                                })
+                              }
                             />
                           ) : (
                             <iframe
                               src={getPdfViewerUrl(revisedHospitalBill.pdfUrl)}
                               title="Revised bill"
-                              className="w-full min-h-[400px] flex-1 rounded-lg border-0"
+                              className="w-full min-h-[400px] flex-1 rounded-lg border-0 cursor-zoom-in"
+                              onClick={() =>
+                                setPreviewDoc({
+                                  url: revisedHospitalBill.pdfUrl,
+                                  title: "Revised Hospital Bill",
+                                })
+                              }
                             />
                           )}
                         </div>
@@ -781,6 +819,44 @@ const BillDetails = () => {
           supportingDocuments={bill.supportingDocuments || []}
           onBillUpdated={refetchBill}
         />
+      )}
+
+      {/* Fullscreen document preview (bills, HIPAA form, revised bill) */}
+      {previewDoc?.url && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="relative w-full max-w-5xl max-h-[90vh] bg-white rounded-2xl shadow-2xl p-4 md:p-6">
+            <button
+              type="button"
+              onClick={() => setPreviewDoc(null)}
+              className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 text-gray-600"
+              aria-label="Close preview"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            {previewDoc.title && (
+              <h2 className="pr-10 mb-3 md:mb-4 text-lg md:text-xl font-semibold text-gray-900">
+                {previewDoc.title}
+              </h2>
+            )}
+            <div className="w-full max-h-[75vh] flex items-center justify-center overflow-auto bg-gray-50 rounded-lg">
+              {isImageUrl(previewDoc.url) ? (
+                <img
+                  src={previewDoc.url}
+                  alt={previewDoc.title || "Document preview"}
+                  className="max-h-[72vh] w-auto object-contain"
+                />
+              ) : (
+                <iframe
+                  src={getPdfViewerUrl(previewDoc.url)}
+                  title={previewDoc.title || "Document preview"}
+                  className="w-full h-[72vh] rounded-lg border-0 bg-white"
+                />
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
