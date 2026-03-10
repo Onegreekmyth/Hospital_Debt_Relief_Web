@@ -992,11 +992,9 @@ useEffect(() => {
 
                 {/* Nearby Hospitals Heading */}
                 <div className="mb-5 md:mb-6">
-                  <h4 className="text-xl md:text-2xl font-semibold text-black">
-                    Nearby&nbsp;Hospitals
-                  </h4>
+                  
                   <p className="mt-1 text-xs md:text-sm text-gray-600">
-                    Based on your location and household info.
+                    Based on the specific Hospital Selected and household details Provided.
                   </p>
                 </div>
 
