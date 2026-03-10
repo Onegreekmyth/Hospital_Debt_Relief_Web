@@ -241,13 +241,28 @@ const Dashboard = () => {
       });
   }, [dispatch, navigate]);
 
-  // Sync local "remove from plan" state from API (family members + account holder from profile)
-  useEffect(() => {
-    // always rebuild array to mirror current familyMembers
-    setFamilyMembersRemoveFromPlan(
-      familyMembers.map((m) => m.withActiveSubscription === false)
-    );
-  }, [familyMembers]);
+    const effectiveStatus =
+    subscriptionStatus === "active" && subscriptionWillCancel
+      ? "cancelled"
+      : subscriptionStatus;
+
+useEffect(() => {
+  setFamilyMembersRemoveFromPlan((prev) => {
+    return familyMembers.map((m, index) => {
+      // keep existing value if already present
+      if (prev[index] !== undefined) {
+        return prev[index];
+      }
+
+      // default for new member
+      if (effectiveStatus !== "active") {
+        return false; // unchecked when account inactive
+      }
+
+      return m.withActiveSubscription === false;
+    });
+  });
+}, [familyMembers, effectiveStatus]);
 
   useEffect(() => {
     if (profile && Object.prototype.hasOwnProperty.call(profile, "withActiveSubscription")) {
@@ -413,10 +428,7 @@ const Dashboard = () => {
 
   const subscriptionInfo = getSubscriptionInfoForHousehold(householdCount);
 
-  const effectiveStatus =
-    subscriptionStatus === "active" && subscriptionWillCancel
-      ? "cancelled"
-      : subscriptionStatus;
+
 
   const hasMemberActiveSubscription = memberToDelete?.withActiveSubscription === true && effectiveStatus === "active";
   const message = hasMemberActiveSubscription ? "Have an active subscription? Please cancel the subscription to make Changes." : "Are you sure you want to delete this family member? This action cannot be undone.";

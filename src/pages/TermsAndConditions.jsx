@@ -247,20 +247,12 @@ const TermsAndConditionsPage = () => {
                   <strong>Email Address:</strong>
                 </p>
                 <a
-                  href="mailto:info@hospitaldebtrelief.com"
+                  href="mailto:support@hospitaldebtrelief.com"
                   className="text-purple-600 hover:text-purple-700 font-medium block mb-4"
                 >
-                  info@hospitaldebtrelief.com
+                  support@hospitaldebtrelief.com
                 </a>
-                <p className="text-[14px] md:text-[16px] text-gray-700 mb-1">
-                  <strong>Telephone number:</strong>
-                </p>
-                <a
-                  href="tel:5863377750"
-                  className="text-purple-600 hover:text-purple-700 font-medium"
-                >
-                  5863377750
-                </a>
+               
               </div>
             </div>
           </div>

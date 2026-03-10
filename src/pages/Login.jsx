@@ -129,14 +129,14 @@ const Login = () => {
         <p className="mt-6 sm:mt-8 text-center text-[11px] sm:text-[12px] md:text-[13px] text-gray-600 leading-relaxed px-1">
           By continuing, you agree to our{" "}
           <a
-            href="#"
+            href="/terms-and-conditions"
             className="text-purple-700 hover:text-purple-800 font-medium underline underline-offset-2"
           >
             Terms of Service
           </a>{" "}
           and our{" "}
           <a
-            href="#"
+            href="/privacy-policy"
             className="text-purple-700 hover:text-purple-800 font-medium underline underline-offset-2"
           >
             Privacy Policy

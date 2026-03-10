@@ -224,10 +224,10 @@ const PrivacyPolicyPage = () => {
                   <strong>Email Address:</strong>
                 </p>
                 <a
-                  href="mailto:info@hospitaldebtrelief.com"
+                  href="mailto:support@hospitaldebtrelief.com"
                   className="text-purple-600 hover:text-purple-700 font-medium"
                 >
-                  info@hospitaldebtrelief.com
+                  support@hospitaldebtrelief.com
                 </a>
               </div>
             </div>
