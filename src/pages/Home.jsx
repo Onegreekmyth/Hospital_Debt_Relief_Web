@@ -4,8 +4,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import heroImg from "../assets/hero-img.jpg";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import SuccessModal from "../components/SuccessModal";
 import axiosClient from "../api/axiosClient";
+import SuccessModal from "../components/SuccessModal";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchHospitals,
@@ -53,6 +53,7 @@ const HomePage = () => {
   const [recaptchaError, setRecaptchaError] = useState("");
   const formSectionRef = useRef(null);
   const existingBillRef = useRef(null);
+  const [bannerUrl, setBannerUrl] = useState(heroImg);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -79,6 +80,28 @@ const HomePage = () => {
     status,
   } = useSelector((state) => state.hospitals);
   const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+
+  // Load dynamic homepage banner from backend (fallback to bundled hero image)
+  useEffect(() => {
+    let active = true;
+    const fetchBanner = async () => {
+      try {
+        const res = await axiosClient.get("/homepage/banner");
+        if (!active) return;
+        const url = res.data?.data?.imageUrl;
+        if (url) {
+          setBannerUrl(url);
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Failed to load homepage banner, using default image:", error);
+      }
+    };
+    fetchBanner();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // When nothing selected: show ALL US states (usStates.json = 50) and ALL cities (usCitiesByState = every city in JSON). When state selected: show that state's cities only.
   const stateOptions = useMemo(() => {
@@ -314,7 +337,7 @@ const HomePage = () => {
       <section
         className="relative flex flex-col items-center justify-center text-center px-4 md:px-6 pt-32 md:pt-40 pb-20 md:pb-28 min-h-[90vh] md:min-h-[90vh] bg-no-repeat bg-center"
         style={{
-          backgroundImage: `linear-gradient(rgba(136, 126, 156, 0.55), rgba(191, 184, 207, 0.55)), url(${heroImg})`,
+          backgroundImage: `linear-gradient(rgba(136, 126, 156, 0.55), rgba(191, 184, 207, 0.55)), url(${bannerUrl})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
