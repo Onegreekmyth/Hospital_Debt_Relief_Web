@@ -319,7 +319,7 @@ const HomePage = () => {
           backgroundPosition: "center",
         }}
       >
-        <div className="max-w-3xl text-black">
+        <div className="max-w-3xl text-black -mt-12 md:mt-0">
           <h1 className="text-[20px] md:text-[28px] leading-[1.2] md:leading-tight lg:text-[42px] font-bold text-black">
             We provide the tools to help you save money on your hospital bills.
           </h1>
