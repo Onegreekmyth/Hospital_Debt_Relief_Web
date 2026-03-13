@@ -728,10 +728,23 @@ const HomePage = () => {
                 </span>
                 <input
                   type="number"
+                  min={0}
                   className="h-14 w-full rounded-full border border-purple-200 bg-white pl-10 pr-6 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300"
                   placeholder=""
                   value={householdIncome}
-                  onChange={(e) => setHouseholdIncome(e.target.value)}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    if (v === "") {
+                      setHouseholdIncome("");
+                      return;
+                    }
+                    const n = parseFloat(v);
+                    if (!isNaN(n) && n < 0) {
+                      setHouseholdIncome("0");
+                      return;
+                    }
+                    setHouseholdIncome(v);
+                  }}
                 />
               </div>
               {incomeError && (
