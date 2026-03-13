@@ -337,12 +337,12 @@ const HomePage = () => {
       <section
         className="relative flex flex-col items-center justify-center text-center px-4 md:px-6 pt-32 md:pt-40 pb-20 md:pb-28 min-h-[90vh] md:min-h-[90vh] bg-no-repeat bg-center"
         style={{
-          backgroundImage: `linear-gradient(rgba(136, 126, 156, 0.55), rgba(191, 184, 207, 0.55)), url(${bannerUrl})`,
+          backgroundImage: `linear-gradient(rgba(136, 126, 156, 0.55), rgba(191, 184, 207, 0.55)), url(${heroImg})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
-        <div className="max-w-3xl text-black -mt-12 md:mt-0">
+        <div className="max-w-3xl text-black -mt-12 md:mt-20">
           <h1 className="text-[20px] md:text-[28px] leading-[1.2] md:leading-tight lg:text-[42px] font-bold text-black">
             We provide the tools to help you save money on your hospital bills.
           </h1>
