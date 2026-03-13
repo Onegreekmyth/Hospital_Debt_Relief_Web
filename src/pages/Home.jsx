@@ -704,10 +704,23 @@ const HomePage = () => {
               </label>
               <input
                 type="number"
+                min={1}
                 className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
                 placeholder="Enter total members"
                 value={householdSize}
-                onChange={(e) => setHouseholdSize(e.target.value)}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (v === "") {
+                    setHouseholdSize("");
+                    return;
+                  }
+                  const n = parseInt(v, 10);
+                  if (!Number.isNaN(n) && n < 1) {
+                    setHouseholdSize("1");
+                    return;
+                  }
+                  setHouseholdSize(v);
+                }}
               />
               {sizeError && (
                 <p className="mt-1 text-xs text-red-600">{sizeError}</p>

@@ -6,7 +6,7 @@ const faqs = [
   {
     question: "What are the benefits of using HospitalDebtRelief.com?",
     answer: [
-      "Backed Our Money Back Guarantee.",
+      "Backed by Our Money Back Guarantee.",
       "Simple & Easy Process.",
       "We provide you with the right tools to save you money.",
     ],
