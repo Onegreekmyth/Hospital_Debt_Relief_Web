@@ -15,6 +15,8 @@ import usStates from "../data/usStates.json";
 import usStateNameToCode from "../data/usStateNameToCode.json";
 import usCitiesByState from "../data/usCitiesByState.json";
 
+const HOMEPAGE_BANNER_STORAGE_KEY = "homepageBanner";
+
 const HomePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -53,7 +55,7 @@ const HomePage = () => {
   const [recaptchaError, setRecaptchaError] = useState("");
   const formSectionRef = useRef(null);
   const existingBillRef = useRef(null);
-  const [bannerUrl, setBannerUrl] = useState(heroImg);
+  const [remoteBannerUrl, setRemoteBannerUrl] = useState(null);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -81,7 +83,21 @@ const HomePage = () => {
   } = useSelector((state) => state.hospitals);
   const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
-  // Load dynamic homepage banner from backend (fallback to bundled hero image)
+  // Try to use cached banner first so it appears instantly if unchanged
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(HOMEPAGE_BANNER_STORAGE_KEY);
+      if (!stored) return;
+      const parsed = JSON.parse(stored);
+      if (parsed?.imageUrl) {
+        setRemoteBannerUrl(parsed.imageUrl);
+      }
+    } catch {
+      // ignore cache errors
+    }
+  }, []);
+
+  // Load dynamic homepage banner from backend
   useEffect(() => {
     let active = true;
     const fetchBanner = async () => {
@@ -89,8 +105,32 @@ const HomePage = () => {
         const res = await axiosClient.get("/homepage/banner");
         if (!active) return;
         const url = res.data?.data?.imageUrl;
+        const updatedAt = res.data?.data?.updatedAt;
         if (url) {
-          setBannerUrl(url);
+          // If cached banner matches, reuse it
+          try {
+            const stored = localStorage.getItem(HOMEPAGE_BANNER_STORAGE_KEY);
+            if (stored) {
+              const parsed = JSON.parse(stored);
+              if (parsed?.imageUrl === url && parsed?.updatedAt === updatedAt) {
+                setRemoteBannerUrl((prev) => prev || url);
+                return;
+              }
+            }
+          } catch {
+            // ignore cache errors
+          }
+
+          // Cache mismatch or no cache: set new URL immediately so it starts loading as background
+          setRemoteBannerUrl(url);
+          try {
+            localStorage.setItem(
+              HOMEPAGE_BANNER_STORAGE_KEY,
+              JSON.stringify({ imageUrl: url, updatedAt: updatedAt || null })
+            );
+          } catch {
+            // ignore storage errors
+          }
         }
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -337,7 +377,7 @@ const HomePage = () => {
       <section
         className="relative flex flex-col items-center justify-center text-center px-4 md:px-6 pt-32 md:pt-40 pb-20 md:pb-28 min-h-[90vh] md:min-h-[90vh] bg-no-repeat bg-center"
         style={{
-          backgroundImage: `linear-gradient(rgba(136, 126, 156, 0.55), rgba(191, 184, 207, 0.55)), url(${heroImg})`,
+          backgroundImage: `linear-gradient(rgba(136, 126, 156, 0.55), rgba(191, 184, 207, 0.55)), url(${remoteBannerUrl || heroImg})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
