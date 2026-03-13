@@ -16,6 +16,7 @@ import {
   clearRefundRequestError
 } from "../store/bills/billsSlice";
 import { DOCUMENT_TYPES } from "../components/BillInformationModal";
+import { fetchProfile } from "../store/user/userSlice";
 
 const BillDetails = () => {
   const { id } = useParams();
@@ -90,10 +91,16 @@ const BillDetails = () => {
     const documentTypeLabel = apiBill.documentType
       ? (DOCUMENT_TYPES.find((t) => t.value === apiBill.documentType)?.label || apiBill.documentType)
       : null;
+    const hospitalName =
+      apiBill.hospitalName ||
+      apiBill.hospital?.name ||
+      apiBill.hospitalInfo?.name ||
+      null;
     return {
       id: apiBill._id,
       patientName: apiBill.patientName || null,
-      hospital: apiBill.patientName || "N/A",
+      hospitalName,
+      hospital: hospitalName || "N/A",
       documentType: apiBill.documentType || null,
       documentTypeLabel,
       serviceDate: apiBill.serviceDate || apiBill.submittedAt || apiBill.createdAt || null,
@@ -139,6 +146,13 @@ const BillDetails = () => {
       document.body.style.overflow = "unset";
     };
   }, [showHipaaDeleteConfirm, showApplicationModal]);
+
+  // Ensure profile (including hospitalInfo) is loaded so HIPAA form has hospital name
+  useEffect(() => {
+    if (!profile?.hospitalInfo) {
+      dispatch(fetchProfile()).catch(() => {});
+    }
+  }, [dispatch, profile?.hospitalInfo]);
 
   useEffect(() => {
     const fetchBill = async () => {
