@@ -348,7 +348,7 @@ const HomePage = () => {
     {
       question: "How does the Money Back Guarantee work?",
       answer: [
-        "If your bill hasn't been reduced by more than the cost of our service within 60 days of submitting your completed application and documents, you are eligible for a refund. To request one, go to your "Bill History" tab, select the original bill, and upload a copy of your most recent revised statement. Enter the new balance and submit your request for processing."
+        "If your bill hasn't been reduced by more than the cost of our service within 60 days of submitting your completed application and documents, you are eligible for a refund. To request one, go to your \"Bill History\" tab, select the original bill, and upload a copy of your most recent revised statement. Enter the new balance and submit your request for processing."
       ],
     },
     {
