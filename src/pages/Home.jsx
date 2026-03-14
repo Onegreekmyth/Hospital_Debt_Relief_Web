@@ -277,13 +277,13 @@ const HomePage = () => {
       hasError = true;
     }
 
- if(!existingBill) {
-  setExistingBillError("Please select if you have an existing hospital bills.");
-  hasError = true;
- } else if(existingBill === "yes" && (!billAmount || Number(billAmount) <= 0)) {
-  setBillAmountError("Please enter a valid bill amount.");
-  hasError = true;
- }
+    if (!existingBill) {
+      setExistingBillError("Please select if you have an existing hospital bills.");
+      hasError = true;
+    } else if (existingBill === "yes" && (!billAmount || Number(billAmount) <= 0)) {
+      setBillAmountError("Please enter a valid bill amount.");
+      hasError = true;
+    }
 
     if (hasError) {
       return;
@@ -317,12 +317,12 @@ const HomePage = () => {
       );
 
       setEligibilityResponse(response.data);
-      
+
       // Save eligibility request ID to localStorage for linking to user account
       if (response.data?.data?.eligibilityRequestId) {
         localStorage.setItem('pendingEligibilityRequestId', response.data.data.eligibilityRequestId);
       }
-      
+
       setIsModalOpen(true);
     } catch (error) {
       const message =
@@ -382,7 +382,7 @@ const HomePage = () => {
           backgroundPosition: "center",
         }}
       >
-        <div className="max-w-3xl text-black -mt-12 md:mt-20">
+        <div className="max-w-3xl text-black -mt-10 md:mt-0">
           <h1 className="text-[20px] md:text-[28px] leading-[1.2] md:leading-tight lg:text-[42px] font-bold text-black">
             We provide the tools to help you save money on your hospital bills.
           </h1>
@@ -508,9 +508,8 @@ const HomePage = () => {
                           <button
                             type="button"
                             key={state}
-                            className={`w-full px-4 py-2 text-left text-sm hover:bg-purple-50 ${
-                              selectedState === state ? "bg-purple-50 font-semibold text-purple-700" : "text-gray-700"
-                            }`}
+                            className={`w-full px-4 py-2 text-left text-sm hover:bg-purple-50 ${selectedState === state ? "bg-purple-50 font-semibold text-purple-700" : "text-gray-700"
+                              }`}
                             onClick={() => {
                               setSelectedState(state);
                               setSelectedCity("");
@@ -584,9 +583,8 @@ const HomePage = () => {
                           <button
                             type="button"
                             key={city}
-                            className={`w-full px-4 py-2 text-left text-sm hover:bg-purple-50 ${
-                              selectedCity === city ? "bg-purple-50 font-semibold text-purple-700" : "text-gray-700"
-                            }`}
+                            className={`w-full px-4 py-2 text-left text-sm hover:bg-purple-50 ${selectedCity === city ? "bg-purple-50 font-semibold text-purple-700" : "text-gray-700"
+                              }`}
                             onClick={() => {
                               setSelectedCity(city);
                               setCityError("");
@@ -780,7 +778,7 @@ const HomePage = () => {
               )}
             </div>
           </div>
-{/* 
+          {/* 
           This is not needed for now as we are not processing bills in collections.
           {existingBill === "yes" && (
             <div className="flex justify-start pt-2">
