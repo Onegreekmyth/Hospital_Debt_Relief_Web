@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import HipaaAuthorizationModal from "./HipaaAuthorizationModal";
@@ -50,6 +50,18 @@ const ApplicationSubmittedModal = ({
   const [hipaaEmailConsent, setHipaaEmailConsent] = useState(null);
   const [hipaaEmailConsentError, setHipaaEmailConsentError] = useState("");
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const existing = billData?.hipaaEmailConsent;
+    if (existing === "unencrypted_consent" || existing === "encrypted_required") {
+      setHipaaEmailConsent(existing);
+      setHipaaEmailConsentError("");
+      return;
+    }
+    setHipaaEmailConsent(null);
+    setHipaaEmailConsentError("");
+  }, [isOpen, billData?.hipaaEmailConsent]);
+
   const displayUploadError = uploadErrorFromSlice || uploadError;
 
   // Only show $299 flat fee when user has no active subscription, or the bill's patient is not included in the subscription
@@ -98,6 +110,7 @@ const ApplicationSubmittedModal = ({
           successUrl,
           cancelUrl,
           billId: billId || undefined,
+          hipaaEmailConsent,
         })
       ).unwrap();
       if (checkoutUrl) window.location.href = checkoutUrl;
@@ -115,12 +128,6 @@ const ApplicationSubmittedModal = ({
 
   const handleCompleteApplication = async () => {
     if (!billId || completeLoading) return;
-    if (!hipaaEmailConsent) {
-      setHipaaEmailConsentError(
-        "Please select one HIPAA email communication option before submitting."
-      );
-      return;
-    }
     try {
       setHipaaEmailConsentError("");
       await dispatch(
@@ -135,6 +142,12 @@ const ApplicationSubmittedModal = ({
   };
 
   const handleSubmitMyBill = () => {
+    if (!hipaaEmailConsent) {
+      setHipaaEmailConsentError(
+        "Please select one HIPAA email communication option before submitting."
+      );
+      return;
+    }
     if (showFlatFeeButton) {
       handlePayFlatFee();
     } else if (!isBillPending) {
