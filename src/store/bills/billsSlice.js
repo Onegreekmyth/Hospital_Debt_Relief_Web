@@ -162,11 +162,19 @@ export const deleteSupportingDocument = createAsyncThunk(
 
 export const completeBillApplication = createAsyncThunk(
   "bills/completeBillApplication",
-  async (billId, { rejectWithValue }) => {
+  async (payload, { rejectWithValue }) => {
     try {
-      const response = await axiosClient.patch(
-        `/bills/${billId}/complete-application`
-      );
+      const billId = typeof payload === "string" ? payload : payload?.billId;
+      const hipaaEmailConsent =
+        typeof payload === "object" ? payload?.hipaaEmailConsent : undefined;
+
+      const url = `/bills/${billId}/complete-application`;
+
+      const response =
+        hipaaEmailConsent !== undefined
+          ? await axiosClient.patch(url, { hipaaEmailConsent })
+          : await axiosClient.patch(url);
+
       if (response.data?.success === false) {
         return rejectWithValue(
           response.data?.message || "Failed to complete application."

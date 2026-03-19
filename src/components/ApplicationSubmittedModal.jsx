@@ -46,6 +46,9 @@ const ApplicationSubmittedModal = ({
   const [isHipaaOpen, setIsHipaaOpen] = useState(false);
   const [docToDelete, setDocToDelete] = useState(null);
   const [isSelectingDocType, setIsSelectingDocType] = useState(false);
+  // Single-choice HIPAA communication preference (radio behavior using checkboxes UI)
+  const [hipaaEmailConsent, setHipaaEmailConsent] = useState(null);
+  const [hipaaEmailConsentError, setHipaaEmailConsentError] = useState("");
 
   const displayUploadError = uploadErrorFromSlice || uploadError;
 
@@ -112,8 +115,17 @@ const ApplicationSubmittedModal = ({
 
   const handleCompleteApplication = async () => {
     if (!billId || completeLoading) return;
+    if (!hipaaEmailConsent) {
+      setHipaaEmailConsentError(
+        "Please select one HIPAA email communication option before submitting."
+      );
+      return;
+    }
     try {
-      await dispatch(completeBillApplication(billId)).unwrap();
+      setHipaaEmailConsentError("");
+      await dispatch(
+        completeBillApplication({ billId, hipaaEmailConsent })
+      ).unwrap();
       onBillUpdated?.();
       onBillSubmittedSuccess?.(billId);
       onClose();
@@ -577,6 +589,53 @@ const ApplicationSubmittedModal = ({
         {/* Single Submit My Bill button - hidden when bill is pending or approved */}
         {showSubmitMyBillButton && (
           <>
+            {/* HIPAA email communication preference */}
+            <div className="mb-3 md:mb-4 p-3 md:p-4 rounded-2xl border border-purple-200 bg-purple-50/50">
+              <p className="text-xs md:text-sm font-semibold text-gray-900 mb-2">
+                HIPAA Email Communication Preference
+              </p>
+              <div className="space-y-2">
+                <label className="flex items-start gap-2 text-[11px] md:text-sm text-gray-700">
+                  <input
+                    type="checkbox"
+                    checked={hipaaEmailConsent === "unencrypted_consent"}
+                    onChange={() => {
+                      setHipaaEmailConsent("unencrypted_consent");
+                      setHipaaEmailConsentError("");
+                    }}
+                    className="mt-1 h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                  />
+                  <span>
+                    I CONSENT to receiving unencrypted emails containing my PHI. I
+                    understand the risks and choose to communicate this way for my
+                    convenience.
+                  </span>
+                </label>
+
+                <label className="flex items-start gap-2 text-[11px] md:text-sm text-gray-700">
+                  <input
+                    type="checkbox"
+                    checked={hipaaEmailConsent === "encrypted_required"}
+                    onChange={() => {
+                      setHipaaEmailConsent("encrypted_required");
+                      setHipaaEmailConsentError("");
+                    }}
+                    className="mt-1 h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                  />
+                  <span>
+                    I REQUIRE all emails containing PHI to be sent via a secure,
+                    encrypted portal or encrypted email service.
+                  </span>
+                </label>
+              </div>
+
+              {hipaaEmailConsentError && (
+                <p className="mt-2 text-[11px] md:text-sm text-red-600">
+                  {hipaaEmailConsentError}
+                </p>
+              )}
+            </div>
+
             {(flatFeeError || completeError) && (
               <p className="text-sm text-red-600 mb-2">{flatFeeError || completeError}</p>
             )}
