@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import HipaaAuthorizationModal from "./HipaaAuthorizationModal";
+import ElectronicConsentModal from "./ElectronicConsentModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import {
   uploadSupportingDocument,
   deleteSupportingDocument,
   completeBillApplication,
   deleteHipaaForm,
+  deleteElectronicConsentForm,
 } from "../store/bills/billsSlice";
 import { createCheckoutSession, clearCheckoutError } from "../store/payments/paymentsSlice";
 import { DOCUMENT_TYPES } from "./BillInformationModal";
@@ -33,6 +35,7 @@ const ApplicationSubmittedModal = ({
     completeApplicationLoading: completeLoading,
     completeApplicationError: completeError,
     hipaaDeleteLoading: deletingHipaa,
+    electronicConsentDeleteLoading: deletingElectronicConsent,
   } = useSelector((state) => state.bills);
   const { checkoutLoading: flatFeeLoading, checkoutError: flatFeeError } = useSelector(
     (state) => state.payments
@@ -44,22 +47,14 @@ const ApplicationSubmittedModal = ({
   const [supportingDocumentType, setSupportingDocumentType] = useState("");
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [isHipaaOpen, setIsHipaaOpen] = useState(false);
+  const [isElectronicConsentOpen, setIsElectronicConsentOpen] = useState(false);
   const [docToDelete, setDocToDelete] = useState(null);
   const [isSelectingDocType, setIsSelectingDocType] = useState(false);
-  // Single-choice HIPAA communication preference (radio behavior using checkboxes UI)
-  const [hipaaEmailConsent, setHipaaEmailConsent] = useState(null);
-  const [hipaaEmailConsentError, setHipaaEmailConsentError] = useState("");
+  const [submitValidationError, setSubmitValidationError] = useState("");
 
   useEffect(() => {
     if (!isOpen) return;
-    const existing = billData?.hipaaEmailConsent;
-    if (existing === "unencrypted_consent" || existing === "encrypted_required") {
-      setHipaaEmailConsent(existing);
-      setHipaaEmailConsentError("");
-      return;
-    }
-    setHipaaEmailConsent(null);
-    setHipaaEmailConsentError("");
+    setSubmitValidationError("");
   }, [isOpen, billData?.hipaaEmailConsent]);
 
   const displayUploadError = uploadErrorFromSlice || uploadError;
@@ -110,7 +105,7 @@ const ApplicationSubmittedModal = ({
           successUrl,
           cancelUrl,
           billId: billId || undefined,
-          hipaaEmailConsent,
+          hipaaEmailConsent: billData?.hipaaEmailConsent,
         })
       ).unwrap();
       if (checkoutUrl) window.location.href = checkoutUrl;
@@ -129,9 +124,9 @@ const ApplicationSubmittedModal = ({
   const handleCompleteApplication = async () => {
     if (!billId || completeLoading) return;
     try {
-      setHipaaEmailConsentError("");
+      setSubmitValidationError("");
       await dispatch(
-        completeBillApplication({ billId, hipaaEmailConsent })
+        completeBillApplication({ billId })
       ).unwrap();
       onBillUpdated?.();
       onBillSubmittedSuccess?.(billId);
@@ -142,9 +137,9 @@ const ApplicationSubmittedModal = ({
   };
 
   const handleSubmitMyBill = () => {
-    if (!hipaaEmailConsent) {
-      setHipaaEmailConsentError(
-        "Please select one HIPAA email communication option before submitting."
+    if (!billData?.hipaaEmailConsent) {
+      setSubmitValidationError(
+        "Please complete and e-sign the Consent for Electronic Communication form before submitting."
       );
       return;
     }
@@ -240,6 +235,14 @@ const ApplicationSubmittedModal = ({
     if (!billId || deletingHipaa) return;
     const result = await dispatch(deleteHipaaForm(billId));
     if (deleteHipaaForm.fulfilled.match(result)) {
+      onBillUpdated?.();
+    }
+  };
+
+  const handleDeleteElectronicConsentForm = async () => {
+    if (!billId || deletingElectronicConsent) return;
+    const result = await dispatch(deleteElectronicConsentForm(billId));
+    if (deleteElectronicConsentForm.fulfilled.match(result)) {
       onBillUpdated?.();
     }
   };
@@ -380,6 +383,54 @@ const ApplicationSubmittedModal = ({
             className="w-full mb-4 md:mb-6 rounded-full border-2 border-purple-700 bg-white text-purple-700 font-semibold text-xs md:text-base py-2.5 md:py-4 hover:bg-purple-50 transition-colors"
           >
             HIPAA Authorization Form
+          </button>
+        )}
+
+        {billData?.electronicConsentForm?.pdfUrl ? (
+          <div className="mb-4 md:mb-6 flex items-center justify-between p-3 rounded-lg border border-purple-200 bg-purple-50/50">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <svg
+                className="w-5 h-5 text-purple-600 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                />
+              </svg>
+              <a
+                href={billData.electronicConsentForm.pdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs md:text-sm text-purple-700 hover:underline truncate"
+              >
+                {billData.electronicConsentForm.pdfFileName || "Electronic Consent Form"}
+              </a>
+            </div>
+            <button
+              type="button"
+              onClick={handleDeleteElectronicConsentForm}
+              disabled={deletingElectronicConsent}
+              className="p-1.5 rounded-full text-red-600 hover:bg-red-50 hover:text-red-800 disabled:opacity-50 flex-shrink-0"
+              title="Remove consent form"
+              aria-label="Remove consent form"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setIsElectronicConsentOpen(true)}
+            className="w-full mb-4 md:mb-6 rounded-full border-2 border-purple-700 bg-white text-purple-700 font-semibold text-xs md:text-base py-2.5 md:py-4 hover:bg-purple-50 transition-colors"
+          >
+            Consent for Electronic Communication & Disclosure
           </button>
         )}
 
@@ -602,55 +653,8 @@ const ApplicationSubmittedModal = ({
         {/* Single Submit My Bill button - hidden when bill is pending or approved */}
         {showSubmitMyBillButton && (
           <>
-            {/* HIPAA email communication preference */}
-            <div className="mb-3 md:mb-4 p-3 md:p-4 rounded-2xl border border-purple-200 bg-purple-50/50">
-              <p className="text-xs md:text-sm font-semibold text-gray-900 mb-2">
-                HIPAA Email Communication Preference
-              </p>
-              <div className="space-y-2">
-                <label className="flex items-start gap-2 text-[11px] md:text-sm text-gray-700">
-                  <input
-                    type="checkbox"
-                    checked={hipaaEmailConsent === "unencrypted_consent"}
-                    onChange={() => {
-                      setHipaaEmailConsent("unencrypted_consent");
-                      setHipaaEmailConsentError("");
-                    }}
-                    className="mt-1 h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                  />
-                  <span>
-                    I CONSENT to receiving unencrypted emails containing my PHI. I
-                    understand the risks and choose to communicate this way for my
-                    convenience.
-                  </span>
-                </label>
-
-                <label className="flex items-start gap-2 text-[11px] md:text-sm text-gray-700">
-                  <input
-                    type="checkbox"
-                    checked={hipaaEmailConsent === "encrypted_required"}
-                    onChange={() => {
-                      setHipaaEmailConsent("encrypted_required");
-                      setHipaaEmailConsentError("");
-                    }}
-                    className="mt-1 h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                  />
-                  <span>
-                    I REQUIRE all emails containing PHI to be sent via a secure,
-                    encrypted portal or encrypted email service.
-                  </span>
-                </label>
-              </div>
-
-              {hipaaEmailConsentError && (
-                <p className="mt-2 text-[11px] md:text-sm text-red-600">
-                  {hipaaEmailConsentError}
-                </p>
-              )}
-            </div>
-
-            {(flatFeeError || completeError) && (
-              <p className="text-sm text-red-600 mb-2">{flatFeeError || completeError}</p>
+            {(submitValidationError || flatFeeError || completeError) && (
+              <p className="text-sm text-red-600 mb-2">{submitValidationError || flatFeeError || completeError}</p>
             )}
             <button
               type="button"
@@ -675,6 +679,17 @@ const ApplicationSubmittedModal = ({
       <HipaaAuthorizationModal
         isOpen={isHipaaOpen}
         onClose={() => setIsHipaaOpen(false)}
+        billId={billId}
+        billData={billData}
+        profile={profile}
+        onSuccess={() => {
+          onBillUpdated?.();
+        }}
+      />
+
+      <ElectronicConsentModal
+        isOpen={isElectronicConsentOpen}
+        onClose={() => setIsElectronicConsentOpen(false)}
         billId={billId}
         billData={billData}
         profile={profile}

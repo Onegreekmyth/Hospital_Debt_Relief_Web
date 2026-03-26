@@ -102,6 +102,64 @@ export const deleteHipaaForm = createAsyncThunk(
   }
 );
 
+export const uploadElectronicConsentForm = createAsyncThunk(
+  "bills/uploadElectronicConsentForm",
+  async ({ billId, pdfBlob, hipaaEmailConsent }, { rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      formData.append("pdf", pdfBlob, "electronic-consent-form.pdf");
+      formData.append("hipaaEmailConsent", hipaaEmailConsent);
+
+      const response = await axiosClient.post(
+        `/bills/${billId}/electronic-consent-form`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          timeout: 30000,
+        }
+      );
+
+      if (response.data?.success === false) {
+        return rejectWithValue(
+          response.data?.message || "Failed to upload electronic consent form."
+        );
+      }
+      return response.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Failed to upload electronic consent form. Please try again.";
+      return rejectWithValue(message);
+    }
+  }
+);
+
+export const deleteElectronicConsentForm = createAsyncThunk(
+  "bills/deleteElectronicConsentForm",
+  async (billId, { rejectWithValue }) => {
+    try {
+      const response = await axiosClient.delete(
+        `/bills/${billId}/electronic-consent-form`
+      );
+      if (response.data?.success === false) {
+        return rejectWithValue(
+          response.data?.message || "Failed to remove electronic consent form."
+        );
+      }
+      return { billId, ...response.data };
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Failed to remove electronic consent form. Please try again.";
+      return rejectWithValue(message);
+    }
+  }
+);
+
 export const uploadSupportingDocument = createAsyncThunk(
   "bills/uploadSupportingDocument",
   async ({ billId, file, documentType }, { rejectWithValue }) => {
@@ -250,6 +308,10 @@ const billsSlice = createSlice({
     hipaaUploadError: "",
     hipaaDeleteLoading: false,
     hipaaDeleteError: "",
+    electronicConsentUploadLoading: false,
+    electronicConsentUploadError: "",
+    electronicConsentDeleteLoading: false,
+    electronicConsentDeleteError: "",
     supportingDocUploadLoading: false,
     supportingDocUploadError: "",
     supportingDocDeleteLoading: false,
@@ -270,6 +332,12 @@ const billsSlice = createSlice({
     },
     clearHipaaDeleteError: (state) => {
       state.hipaaDeleteError = "";
+    },
+    clearElectronicConsentUploadError: (state) => {
+      state.electronicConsentUploadError = "";
+    },
+    clearElectronicConsentDeleteError: (state) => {
+      state.electronicConsentDeleteError = "";
     },
     clearSupportingDocUploadError: (state) => {
       state.supportingDocUploadError = "";
@@ -318,6 +386,32 @@ const billsSlice = createSlice({
         state.hipaaDeleteError =
           action.payload || "Failed to remove HIPAA form. Please try again.";
       })
+      .addCase(uploadElectronicConsentForm.pending, (state) => {
+        state.electronicConsentUploadLoading = true;
+        state.electronicConsentUploadError = "";
+      })
+      .addCase(uploadElectronicConsentForm.fulfilled, (state) => {
+        state.electronicConsentUploadLoading = false;
+      })
+      .addCase(uploadElectronicConsentForm.rejected, (state, action) => {
+        state.electronicConsentUploadLoading = false;
+        state.electronicConsentUploadError =
+          action.payload ||
+          "Failed to upload electronic consent form. Please try again.";
+      })
+      .addCase(deleteElectronicConsentForm.pending, (state) => {
+        state.electronicConsentDeleteLoading = true;
+        state.electronicConsentDeleteError = "";
+      })
+      .addCase(deleteElectronicConsentForm.fulfilled, (state) => {
+        state.electronicConsentDeleteLoading = false;
+      })
+      .addCase(deleteElectronicConsentForm.rejected, (state, action) => {
+        state.electronicConsentDeleteLoading = false;
+        state.electronicConsentDeleteError =
+          action.payload ||
+          "Failed to remove electronic consent form. Please try again.";
+      })
       .addCase(deleteBill.pending, (state) => {
         state.billDeleteLoading = true;
         state.billDeleteError = "";
@@ -361,6 +455,8 @@ export const {
   clearUploadError,
   clearHipaaUploadError,
   clearHipaaDeleteError,
+  clearElectronicConsentUploadError,
+  clearElectronicConsentDeleteError,
   clearSupportingDocUploadError,
   clearSupportingDocDeleteError,
   clearRefundRequestError,

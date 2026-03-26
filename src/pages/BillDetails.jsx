@@ -10,6 +10,7 @@ import billPlaceholder from "../assets/bill-history.png";
 import axiosClient from "../api/axiosClient";
 import {
   deleteHipaaForm,
+  deleteElectronicConsentForm,
   deleteSupportingDocument,
   uploadSupportingDocument,
   requestRefund,
@@ -25,6 +26,8 @@ const BillDetails = () => {
   const { 
     hipaaDeleteLoading: deletingHipaa, 
     hipaaDeleteError: hipaaDeleteErrorFromSlice,
+    electronicConsentDeleteLoading: deletingElectronicConsent,
+    electronicConsentDeleteError: electronicConsentDeleteErrorFromSlice,
     supportingDocDeleteLoading: deletingDoc,
     supportingDocUploadLoading: uploadingSupportingDoc,
     supportingDocUploadError: supportingDocUploadErrorFromSlice,
@@ -38,6 +41,7 @@ const BillDetails = () => {
   const fileInputRef = useRef(null);
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [showHipaaDeleteConfirm, setShowHipaaDeleteConfirm] = useState(false);
+  const [showElectronicConsentDeleteConfirm, setShowElectronicConsentDeleteConfirm] = useState(false);
   const [showApplicationModal, setShowApplicationModal] = useState(false);
   const [docToDelete, setDocToDelete] = useState(null);
   const [revisedUploadError, setRevisedUploadError] = useState("");
@@ -115,6 +119,8 @@ const BillDetails = () => {
       pdfUrl: apiBill.pdfUrl || apiBill.pdf,
       supportingDocuments: apiBill.supportingDocuments || [],
       hipaaForm: apiBill.hipaaForm || null,
+      electronicConsentForm: apiBill.electronicConsentForm || null,
+      hipaaEmailConsent: apiBill.hipaaEmailConsent || null,
       flatFeePaid: apiBill.flatFeePaid === true,
       refundRequested: apiBill.refundRequested === true,
       refundStatus: apiBill.refundStatus || "none",
@@ -231,11 +237,27 @@ const BillDetails = () => {
     setShowHipaaDeleteConfirm(true);
   };
 
+  const handleDeleteElectronicConsentFormClick = () => {
+    setShowElectronicConsentDeleteConfirm(true);
+  };
+
   const handleConfirmDeleteHipaaForm = async () => {
     if (!bill?.id || !bill.hipaaForm?.pdfUrl) return;
     const result = await dispatch(deleteHipaaForm(bill.id));
     if (deleteHipaaForm.fulfilled.match(result)) {
       setBill((prev) => (prev ? { ...prev, hipaaForm: null } : null));
+    }
+  };
+
+  const handleConfirmDeleteElectronicConsentForm = async () => {
+    if (!bill?.id || !bill.electronicConsentForm?.pdfUrl) return;
+    const result = await dispatch(deleteElectronicConsentForm(bill.id));
+    if (deleteElectronicConsentForm.fulfilled.match(result)) {
+      setBill((prev) => (
+        prev
+          ? { ...prev, electronicConsentForm: null, hipaaEmailConsent: null }
+          : null
+      ));
     }
   };
 
@@ -402,6 +424,11 @@ const BillDetails = () => {
                 <p className="text-sm text-red-600">{hipaaDeleteErrorFromSlice}</p>
               </div>
             )}
+            {electronicConsentDeleteErrorFromSlice && (
+              <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200">
+                <p className="text-sm text-red-600">{electronicConsentDeleteErrorFromSlice}</p>
+              </div>
+            )}
             {(revisedUploadError || supportingDocUploadErrorFromSlice) && (
               <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200">
                 <p className="text-sm text-red-600">
@@ -560,6 +587,82 @@ const BillDetails = () => {
                           className="mt-4 inline-flex items-center justify-center gap-2 rounded-full border-2 border-purple-200 px-4 py-2.5 text-sm font-medium text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition"
                         >
                           <span>Download HIPAA form</span>
+                        </a>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Electronic Consent Form */}
+                  {bill.electronicConsentForm?.pdfUrl && (
+                    <div className="relative flex flex-col max-w-[360px] w-full mt-8 md:mt-0">
+                      <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md flex items-center gap-3">
+                        <span className="text-md font-medium text-gray-800">
+                          Electronic Consent Form
+                        </span>
+                        <button
+                          type="button"
+                          onClick={handleDeleteElectronicConsentFormClick}
+                          disabled={deletingElectronicConsent}
+                          className="text-purple-500 hover:text-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Remove consent form"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m-9 0h10"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                      <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px]">
+                        <div
+                          className="w-full mt-4 md:mt-5 flex flex-col overflow-hidden rounded-lg bg-gray-100"
+                          style={{ minHeight: "380px" }}
+                        >
+                          {isImageUrl(bill.electronicConsentForm.pdfUrl) ? (
+                            <img
+                              src={bill.electronicConsentForm.pdfUrl}
+                              alt="Electronic Consent Form"
+                              className="w-full max-h-[420px] object-contain rounded-lg cursor-zoom-in"
+                              onClick={() =>
+                                setPreviewDoc({
+                                  url: bill.electronicConsentForm.pdfUrl,
+                                  title: "Electronic Consent Form",
+                                })
+                              }
+                            />
+                          ) : (
+                            <iframe
+                              src={getPdfViewerUrl(bill.electronicConsentForm.pdfUrl)}
+                              title="Electronic Consent Form"
+                              width="100%"
+                              height="420"
+                              className="rounded-lg border-0 bg-white cursor-zoom-in"
+                              onClick={() =>
+                                setPreviewDoc({
+                                  url: bill.electronicConsentForm.pdfUrl,
+                                  title: "Electronic Consent Form",
+                                })
+                              }
+                              style={{ minHeight: "380px" }}
+                            />
+                          )}
+                        </div>
+                        <a
+                          href={bill.electronicConsentForm.pdfUrl}
+                          download={bill.electronicConsentForm.pdfFileName || "electronic-consent-form.pdf"}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-4 inline-flex items-center justify-center gap-2 rounded-full border-2 border-purple-200 px-4 py-2.5 text-sm font-medium text-purple-700 hover:text-purple-900 hover:border-purple-300 hover:bg-purple-50 transition"
+                        >
+                          <span>Download consent form</span>
                         </a>
                       </div>
                     </div>
@@ -804,6 +907,14 @@ const BillDetails = () => {
         onConfirm={handleConfirmDeleteHipaaForm}
         title="Remove HIPAA form"
         message="Remove HIPAA Authorization Form from this bill? You can upload a new one later."
+      />
+
+      <ConfirmDeleteModal
+        isOpen={showElectronicConsentDeleteConfirm}
+        onClose={() => setShowElectronicConsentDeleteConfirm(false)}
+        onConfirm={handleConfirmDeleteElectronicConsentForm}
+        title="Remove consent form"
+        message="Remove Consent for Electronic Communication form from this bill? You can upload a new one later."
       />
 
       <ConfirmDeleteModal
