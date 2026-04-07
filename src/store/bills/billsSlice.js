@@ -277,6 +277,43 @@ export const requestRefund = createAsyncThunk(
   }
 );
 
+export const saveApplicationForm = createAsyncThunk(
+  "bills/saveApplicationForm",
+  async ({ billId, annotations }, { rejectWithValue }) => {
+    try {
+      const response = await axiosClient.patch(
+        `/bills/${billId}/application-form/save`,
+        { annotations }
+      );
+      if (response.data?.success === false) {
+        return rejectWithValue(response.data?.message || "Failed to save application form.");
+      }
+      return { billId, data: response.data };
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || error.message || "Failed to save application form."
+      );
+    }
+  }
+);
+
+export const submitApplicationForm = createAsyncThunk(
+  "bills/submitApplicationForm",
+  async (billId, { rejectWithValue }) => {
+    try {
+      const response = await axiosClient.post(`/bills/${billId}/application-form/submit`);
+      if (response.data?.success === false) {
+        return rejectWithValue(response.data?.message || "Failed to submit application.");
+      }
+      return { billId, data: response.data };
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || error.message || "Failed to submit application."
+      );
+    }
+  }
+);
+
 export const deleteBill = createAsyncThunk(
   "bills/deleteBill",
   async (billId, { rejectWithValue }) => {
@@ -322,6 +359,10 @@ const billsSlice = createSlice({
     completeApplicationError: "",
     refundRequestLoading: false,
     refundRequestError: "",
+    applicationSaveLoading: false,
+    applicationSaveError: "",
+    applicationSubmitLoading: false,
+    applicationSubmitError: "",
   },
   reducers: {
     clearUploadError: (state) => {
@@ -347,6 +388,12 @@ const billsSlice = createSlice({
     },
     clearRefundRequestError: (state) => {
       state.refundRequestError = "";
+    },
+    clearApplicationSaveError: (state) => {
+      state.applicationSaveError = "";
+    },
+    clearApplicationSubmitError: (state) => {
+      state.applicationSubmitError = "";
     },
   },
   extraReducers: (builder) => {
@@ -447,6 +494,28 @@ const billsSlice = createSlice({
         state.refundRequestLoading = false;
         state.refundRequestError =
           action.payload || "Failed to submit refund request. Please try again.";
+      })
+      .addCase(saveApplicationForm.pending, (state) => {
+        state.applicationSaveLoading = true;
+        state.applicationSaveError = "";
+      })
+      .addCase(saveApplicationForm.fulfilled, (state) => {
+        state.applicationSaveLoading = false;
+      })
+      .addCase(saveApplicationForm.rejected, (state, action) => {
+        state.applicationSaveLoading = false;
+        state.applicationSaveError = action.payload || "Failed to save application form.";
+      })
+      .addCase(submitApplicationForm.pending, (state) => {
+        state.applicationSubmitLoading = true;
+        state.applicationSubmitError = "";
+      })
+      .addCase(submitApplicationForm.fulfilled, (state) => {
+        state.applicationSubmitLoading = false;
+      })
+      .addCase(submitApplicationForm.rejected, (state, action) => {
+        state.applicationSubmitLoading = false;
+        state.applicationSubmitError = action.payload || "Failed to submit application.";
       });
   },
 });
@@ -460,5 +529,7 @@ export const {
   clearSupportingDocUploadError,
   clearSupportingDocDeleteError,
   clearRefundRequestError,
+  clearApplicationSaveError,
+  clearApplicationSubmitError,
 } = billsSlice.actions;
 export default billsSlice.reducer;

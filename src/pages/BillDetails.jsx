@@ -73,6 +73,9 @@ const BillDetails = () => {
         processing: "Submitted",
         approved: "Refunded",
         rejected: "Pending",
+        application_added: "Application Added",
+        application_submitted: "Application Submitted",
+        application_info_requested: "Changes Requested",
       };
       return statusMap[backendStatus] || "Pending";
     };
@@ -126,6 +129,7 @@ const BillDetails = () => {
       refundStatus: apiBill.refundStatus || "none",
       rawStatus: apiBill.status,
       revisedAmount: apiBill.revisedAmount != null ? apiBill.revisedAmount : undefined,
+      applicationForm: apiBill.applicationForm || null,
     };
   };
 
@@ -803,6 +807,73 @@ const BillDetails = () => {
                           );
                           })}
                         </div>
+                      </div>
+                    </div>
+                  )}
+                  {/* Application Form Card */}
+                  {bill.applicationForm?.pdfUrl && (
+                    <div className="relative flex flex-col max-w-[360px] w-full mt-8 md:mt-0">
+                      <div className="absolute -top-4 left-6 bg-white px-4 py-1 rounded-b-md flex items-center gap-3">
+                        <span className="text-md font-medium text-gray-800">
+                          Application Form
+                        </span>
+                        {bill.rawStatus === "application_info_requested" && (
+                          <span className="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-medium">
+                            Changes Requested
+                          </span>
+                        )}
+                        {bill.rawStatus === "application_submitted" && (
+                          <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full font-medium">
+                            Submitted
+                          </span>
+                        )}
+                      </div>
+                      <div className="border border-[#d0c5ff] rounded-[32px] px-4 pt-6 pb-6 md:px-6 md:pt-8 md:pb-7 flex flex-col min-h-[420px] md:min-h-[520px]">
+                        <div className="w-full h-full min-h-[280px] max-h-[560px] mt-4 md:mt-5 pt-4 md:pt-5 flex flex-col items-center justify-center overflow-auto px-3 md:px-4">
+                          {isImageUrl(bill.applicationForm.pdfUrl) ? (
+                            <img
+                              src={bill.applicationForm.pdfUrl}
+                              alt="Application form"
+                              className="w-full max-h-[500px] object-contain rounded-lg"
+                            />
+                          ) : (
+                            <iframe
+                              src={getPdfViewerUrl(bill.applicationForm.pdfUrl)}
+                              title="Application form"
+                              className="w-full min-h-[400px] flex-1 rounded-lg border-0"
+                            />
+                          )}
+                        </div>
+                        {/* Admin Note */}
+                        {bill.applicationForm.adminNote && bill.rawStatus === "application_info_requested" && (
+                          <div className="mt-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+                            <p className="text-xs font-semibold text-amber-800">Note from team:</p>
+                            <p className="text-xs text-amber-700 mt-1">{bill.applicationForm.adminNote}</p>
+                          </div>
+                        )}
+                        {/* Action Button */}
+                        <button
+                          type="button"
+                          onClick={() => navigate(`/bill-history/${bill.id}/application-form`)}
+                          className="mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#7a3cff] to-[#15103b] px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:from-[#6a34e3] hover:to-[#120d33] transition"
+                        >
+                          {bill.rawStatus === "application_added" || bill.rawStatus === "application_info_requested" ? (
+                            <>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                              </svg>
+                              Fill Out Application
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                              </svg>
+                              View Application
+                            </>
+                          )}
+                        </button>
                       </div>
                     </div>
                   )}

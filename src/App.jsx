@@ -9,6 +9,7 @@ import MonthlyPlansPage from "./pages/MonthlyPlans";
 import Login from "./pages/Login";
 import BillHistory from "./pages/BillHistory";
 import BillDetails from "./pages/BillDetails";
+import ApplicationForm from "./pages/ApplicationForm";
 import FAQPage from "./pages/Faq";
 import CharityCarePage from "./pages/CharityCare";
 import CommittedSolutionPage from "./pages/CommittedSolution";
@@ -49,6 +50,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/bill-history" element={<BillHistory />} />
         <Route path="/bill-history/:id" element={<BillDetails />} />
+        <Route path="/bill-history/:id/application-form" element={<ApplicationForm />} />
       </Route>
     </Routes>
     <DonateButton />

@@ -73,6 +73,9 @@ const BillHistory = () => {
       processing: "Submitted",
       approved: "Approved",
       rejected: "Pending",
+      application_added: "Application Added",
+      application_submitted: "Application Submitted",
+      application_info_requested: "Changes Requested",
     };
     return statusMap[backendStatus] || "Pending";
   };
@@ -143,7 +146,7 @@ const BillHistory = () => {
     if (status === "Incomplete") {
       return "bg-amber-100 text-amber-800";
     }
-    if (status === "Submitted") {
+    if (status === "Submitted" || status === "Application Submitted") {
       return "bg-[#C7F5C4] text-[#1B8F3A]";
     }
     if (status === "Pending") {
@@ -151,6 +154,12 @@ const BillHistory = () => {
     }
     if (status === "Approved") {
       return "bg-[#C7F5C4] text-[#1B8F3A]";
+    }
+    if (status === "Application Added") {
+      return "bg-blue-100 text-blue-800";
+    }
+    if (status === "Changes Requested") {
+      return "bg-amber-100 text-amber-800";
     }
     return "bg-[#FFD6DA] text-[#D35662]";
   };
