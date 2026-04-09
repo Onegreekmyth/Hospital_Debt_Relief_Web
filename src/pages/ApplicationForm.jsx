@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import PdfEditor from "../components/PdfEditor";
@@ -25,13 +25,19 @@ const ApplicationForm = () => {
   const [pdfBlobUrl, setPdfBlobUrl] = useState(null);
   const [saveError, setSaveError] = useState("");
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  // Track blob URL in a ref so we can revoke only when truly replaced or
+  // on final unmount — avoids StrictMode revoking a URL that's still needed.
+  const blobUrlRef = useRef(null);
 
   useEffect(() => {
+    let cancelled = false;
+
     const fetchData = async () => {
       try {
         setLoading(true);
         setError("");
         const response = await axiosClient.get(`/bills/${billId}/application-form`);
+        if (cancelled) return;
         if (response.data.success) {
           setApplicationData(response.data.data);
 
@@ -43,9 +49,14 @@ const ApplicationForm = () => {
                 `/bills/${billId}/document-proxy?key=${encodeURIComponent(pdfKey)}`,
                 { responseType: "blob", timeout: 60000 }
               );
+              if (cancelled) return;
+              // Revoke previous blob URL before creating a new one
+              if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
               const blobUrl = URL.createObjectURL(pdfRes.data);
+              blobUrlRef.current = blobUrl;
               setPdfBlobUrl(blobUrl);
             } catch (pdfErr) {
+              if (cancelled) return;
               console.error("Failed to fetch PDF via proxy:", pdfErr);
               setError("Failed to load the PDF file. Please try again.");
             }
@@ -54,6 +65,7 @@ const ApplicationForm = () => {
           setError("Application form not found");
         }
       } catch (err) {
+        if (cancelled) return;
         if (err.response?.status === 401) {
           navigate("/login");
           return;
@@ -64,17 +76,24 @@ const ApplicationForm = () => {
           "Failed to load application form"
         );
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     if (billId) fetchData();
 
-    // Cleanup blob URL on unmount
     return () => {
-      if (pdfBlobUrl) URL.revokeObjectURL(pdfBlobUrl);
+      cancelled = true;
     };
   }, [billId, navigate]);
+
+  // Revoke blob URL only on true final unmount
+  useEffect(() => () => {
+      if (blobUrlRef.current) {
+        URL.revokeObjectURL(blobUrlRef.current);
+        blobUrlRef.current = null;
+      }
+    }, []);
 
   const handleSave = useCallback(
     async (annotationsJson) => {
