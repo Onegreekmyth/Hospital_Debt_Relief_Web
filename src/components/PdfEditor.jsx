@@ -235,6 +235,8 @@ const PdfEditor = ({
             const textObj = new fabric.IText("Type here", {
               left: pointer.x,
               top: pointer.y,
+              originX: "left",
+              originY: "top",
               fontFamily: fontFamilyRef.current,
               fontSize: fontSizeRef.current,
               fill: fontColorRef.current,
