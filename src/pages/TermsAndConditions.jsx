@@ -36,27 +36,86 @@ const TermsAndConditionsPage = () => {
             {/* Agreement between User and www.HospitalDebtRelief.com */}
             <div className="mb-8 md:mb-12">
               <h2 className="text-[20px] md:text-[26px] font-bold text-gray-900 mb-4">
-                Agreement between User and <a href="https://www.HospitalDebtRelief.com" className="text-purple-700 hover:text-purple-800 underline">www.HospitalDebtRelief.com</a>
+                Agreement between User and{" "}
+                <a
+                  href="https://www.HospitalDebtRelief.com"
+                  className="text-purple-700 hover:text-purple-800 underline"
+                >
+                  www.HospitalDebtRelief.com
+                </a>
               </h2>
               <p className="text-[14px] md:text-[16px] leading-7 mb-4">
-                Welcome to <a href="https://www.HospitalDebtRelief.com" className="text-purple-700 hover:text-purple-800 underline">www.HospitalDebtRelief.com</a>. The <a href="https://www.HospitalDebtRelief.com" className="text-purple-700 hover:text-purple-800 underline">www.HospitalDebtRelief.com</a> website (the "Site") is a <b>Software-as-a-Service (SaaS) and financial advocacy platform</b> operated by Uncovered Solutions LLC.
+                Welcome to{" "}
+                <a
+                  href="https://www.HospitalDebtRelief.com"
+                  className="text-purple-700 hover:text-purple-800 underline"
+                >
+                  www.HospitalDebtRelief.com
+                </a>
+                . The{" "}
+                <a
+                  href="https://www.HospitalDebtRelief.com"
+                  className="text-purple-700 hover:text-purple-800 underline"
+                >
+                  www.HospitalDebtRelief.com
+                </a>{" "}
+                website (the "Site") is a{" "}
+                <b>
+                  Software-as-a-Service (SaaS) and financial advocacy platform
+                </b>{" "}
+                operated by Uncovered Solutions LLC.
               </p>
               <p className="text-[14px] md:text-[16px] leading-7 mb-4">
-                <a href="https://www.HospitalDebtRelief.com" className="text-purple-700 hover:text-purple-800 underline">www.HospitalDebtRelief.com</a> is offered to you conditioned on your acceptance without modification of the terms, conditions, and notices contained herein (the "Terms"). Your use of the Site constitutes your agreement to all such Terms. Please read these terms carefully.
+                <a
+                  href="https://www.HospitalDebtRelief.com"
+                  className="text-purple-700 hover:text-purple-800 underline"
+                >
+                  www.HospitalDebtRelief.com
+                </a>{" "}
+                is offered to you conditioned on your acceptance without
+                modification of the terms, conditions, and notices contained
+                herein (the "Terms"). Your use of the Site constitutes your
+                agreement to all such Terms. Please read these terms carefully.
               </p>
               <p className="text-[14px] md:text-[16px] leading-7 mb-4">
-                <b>Service Description and Purpose</b> <a href="https://www.HospitalDebtRelief.com" className="text-purple-700 hover:text-purple-800 underline">www.HospitalDebtRelief.com</a> provides a specialized advocacy software interface designed to help users navigate <b>Section 501(r) of the Internal Revenue Code</b>. Our software assists users in determining their potential eligibility for <b>"Charity Care" (Hospital Financial Assistance)</b>—a government-mandated program that non-profit hospitals must provide to qualifying individuals.
+                <b>Service Description and Purpose</b>{" "}
+                <a
+                  href="https://www.HospitalDebtRelief.com"
+                  className="text-purple-700 hover:text-purple-800 underline"
+                >
+                  www.HospitalDebtRelief.com
+                </a>{" "}
+                provides a specialized advocacy software interface designed to
+                help users navigate{" "}
+                <b>Section 501(r) of the Internal Revenue Code</b>. Our software
+                assists users in determining their potential eligibility for{" "}
+                <b>"Charity Care" (Hospital Financial Assistance)</b>—a
+                government-mandated program that non-profit hospitals must
+                provide to qualifying individuals.
               </p>
               <p className="text-[14px] md:text-[16px] leading-7 mb-4">
-                Users may create an account to utilize our automated tools, which facilitate the preparation, organization, and submission of financial assistance applications to healthcare providers.
+                Users may create an account to utilize our automated tools,
+                which facilitate the preparation, organization, and submission
+                of financial assistance applications to healthcare providers.
               </p>
               <p className="text-[14px] md:text-[16px] leading-7 mb-4">
-                <b>Not an Insurance or Medical Benefit Provider</b> Uncovered Solutions LLC is a <b>technology and advocacy company</b>. <b>We are not</b> an insurance company, a medical benefit provider, or a health insurance agent.
+                <b>Not an Insurance or Medical Benefit Provider</b> Uncovered
+                Solutions LLC is a <b>technology and advocacy company</b>.{" "}
+                <b>We are not</b> an insurance company, a medical benefit
+                provider, or a health insurance agent.
               </p>
               <ul className="list-disc pl-6 text-[14px] md:text-[16px] mb-4">
                 <li>We do not provide medical coverage or health benefits.</li>
-                <li>We do not underwrite risk or guarantee the payment of medical claims.</li>
-                <li>Payments made on this Site are <b>software usage and advocacy fees</b> for the platform’s tools; they are not insurance premiums or payments for medical services.</li>
+                <li>
+                  We do not underwrite risk or guarantee the payment of medical
+                  claims.
+                </li>
+                <li>
+                  Payments made on this Site are{" "}
+                  <b>software usage and advocacy fees</b> for the platform’s
+                  tools; they are not insurance premiums or payments for medical
+                  services.
+                </li>
               </ul>
             </div>
 
