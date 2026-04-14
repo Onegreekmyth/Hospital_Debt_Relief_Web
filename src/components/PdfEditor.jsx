@@ -253,12 +253,9 @@ const PdfEditor = ({
             fc.add(textObj);
             fc.setActiveObject(textObj);
             fc.renderAll();
-            // Enter editing after fabric finishes its mousedown processing
-            setTimeout(() => {
-              textObj.enterEditing();
-              textObj.selectAll();
-              fc.renderAll();
-            }, 100);
+            // Switch to SELECT so the user can immediately move/resize the
+            // new text box. Double-click will enter editing mode.
+            setActiveTool(TOOLS.SELECT);
           }
 
           if (tool === TOOLS.RECTANGLE) {
