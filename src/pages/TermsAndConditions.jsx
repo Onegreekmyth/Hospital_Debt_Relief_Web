@@ -35,16 +35,23 @@ const TermsAndConditionsPage = () => {
             {/* Agreement between User and www.HospitalDebtRelief.com */}
             <div className="mb-8 md:mb-12">
               <h2 className="text-[20px] md:text-[26px] font-bold text-gray-900 mb-4">
-                Agreement between User and www.HospitalDebtRelief.com
+                Agreement between User and <a href="https://www.HospitalDebtRelief.com" className="text-purple-600 hover:text-purple-700 underline">www.HospitalDebtRelief.com</a>
               </h2>
               <p className="text-[14px] md:text-[16px] leading-7 mb-4">
-                Welcome to www.HospitalDebtRelief.com. The www.HospitalDebtRelief.com website (the "Site") is composed of various web pages operated by Uncovered Solutions LLC. www.HospitalDebtRelief.com is offered to you conditioned on your acceptance without modification of the terms, conditions, and notices contained herein (the "Terms"). Your use of www.HospitalDebtRelief.com constitutes your agreement to all such Terms. Please read these terms carefully, and keep a copy of them for your reference.
+                Welcome to <a href="https://www.HospitalDebtRelief.com" className="text-purple-600 hover:text-purple-700 underline">www.HospitalDebtRelief.com</a>. The www.HospitalDebtRelief.com website (the "Site") is a <strong>Software-as-a-Service (SaaS)</strong> and financial advocacy platform operated by Uncovered Solutions LLC.<br/>
+                <a href="https://www.HospitalDebtRelief.com" className="text-purple-600 hover:text-purple-700 underline">www.HospitalDebtRelief.com</a> is offered to you conditioned on your acceptance without modification of the terms, conditions, and notices contained herein (the "Terms"). Your use of the Site constitutes your agreement to all such Terms. Please read these terms carefully.
               </p>
+              <h3 className="text-[17px] md:text-[20px] font-semibold text-gray-900 mb-2 mt-6">Service Description and Purpose</h3>
               <p className="text-[14px] md:text-[16px] leading-7 mb-4">
-                www.HospitalDebtRelief.com is an E-Commerce Site.
+                <a href="https://www.HospitalDebtRelief.com" className="text-purple-600 hover:text-purple-700 underline">www.HospitalDebtRelief.com</a> provides a specialized advocacy software interface designed to help users navigate Section 501(r) of the Internal Revenue Code. Our software assists users in determining their potential eligibility for <strong>"Charity Care" (Hospital Financial Assistance)</strong>—a government-mandated program that non-profit hospitals must provide to qualifying individuals.<br/>
+                Users may create an account to utilize our automated tools, which facilitate the preparation, organization, and submission of financial assistance applications to healthcare providers.
               </p>
+              <h3 className="text-[17px] md:text-[20px] font-semibold text-gray-900 mb-2 mt-6">Not an Insurance or Medical Benefit Provider</h3>
               <p className="text-[14px] md:text-[16px] leading-7 mb-4">
-                Purpose is to determine hospital financial assistance or "charity care" eligibility. Users can create an account in order to notify us of their intent to transact business with us by purchasing services intended to submit their application on their behalf.
+                Uncovered Solutions LLC is a technology and advocacy company. We are <strong>not</strong> an insurance company, a medical benefit provider, or a health insurance agent.<br/>
+                We do not provide medical coverage or health benefits.<br/>
+                We do not underwrite risk or guarantee the payment of medical claims.<br/>
+                Payments made on this Site are software usage and advocacy fees for the platform’s tools; they are <strong>not</strong> insurance premiums or payments for medical services.
               </p>
             </div>
 
