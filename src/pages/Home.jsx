@@ -374,8 +374,9 @@ const HomePage = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 pb-20 pt-32 text-center md:px-6 md:pt-40">
+      <section className="relative flex min-h-[92vh] items-center justify-center overflow-hidden px-4 pb-16 pt-28 text-center md:px-6 md:pt-32">
         <div className="absolute inset-0 bg-gradient-to-br from-[#1a0533] via-[#2d0a6e] to-[#1e0550]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,rgba(124,58,237,0.45),transparent_55%)]" />
         <div className="absolute -right-24 -top-24 h-[420px] w-[420px] rounded-full bg-[#7c3aed]/40 blur-3xl" />
         <div className="absolute -bottom-24 -left-20 h-[320px] w-[320px] rounded-full bg-[#a78bfa]/30 blur-3xl" />
         <div className="absolute left-[12%] top-[45%] h-[180px] w-[180px] rounded-full bg-[#f0c040]/10 blur-3xl" />
@@ -388,13 +389,13 @@ const HomePage = () => {
           }}
         />
 
-        <div className="relative z-10 mx-auto w-full max-w-4xl">
+        <div className="relative z-10 mx-auto w-full max-w-3xl">
           <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-[#f0c040]/35 bg-[#f0c040]/15 px-5 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#f0c040] md:text-xs">
             <span className="text-[10px]">★</span>
             <span>Free Eligibility Check - No Obligation</span>
           </div>
 
-          <h1 className="text-balance font-serif text-[40px] font-black leading-[1.02] tracking-[-0.02em] text-white md:text-[62px] lg:text-[76px]">
+          <h1 className="text-balance font-serif text-[48px] font-black leading-[0.98] tracking-[-0.02em] text-white md:text-[72px] lg:text-[78px]">
             Your Hospital Bill
             <br />
             Could Be
@@ -402,12 +403,12 @@ const HomePage = () => {
             <span className="text-[#f0c040]">Reduced to Zero</span>
           </h1>
 
-          <p className="mx-auto mt-5 max-w-2xl text-[16px] leading-relaxed text-white/75 md:text-[20px]">
+          <p className="mx-auto mt-4 max-w-xl text-[16px] leading-relaxed text-white/75 md:text-[20px]">
             Millions of Americans <strong className="font-semibold text-white">qualify for up to 100% savings</strong>{" "}
             on out-of-pocket hospital expenses - and never even know it. Find out in 2 minutes.
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-6 md:gap-8">
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-6 md:gap-8">
             <div className="text-center">
               <p className="font-serif text-[30px] font-bold leading-none text-[#f0c040]">100%</p>
               <p className="mt-1 text-[11px] uppercase tracking-[0.12em] text-white/55">Max Savings</p>
@@ -424,21 +425,25 @@ const HomePage = () => {
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              formSectionRef.current?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              });
-              setTimeout(() => {
-                existingBillRef.current?.focus();
-              }, 300);
-            }}
-            className="mt-10 inline-flex items-center gap-2 rounded-full bg-[#f0c040] px-7 py-3 text-sm font-bold text-[#2d0a6e] shadow-[0_8px_32px_rgba(240,192,64,0.35)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(240,192,64,0.45)] md:px-10 md:py-4 md:text-base"
-          >
-            Check My Eligibility Now <span className="text-lg">→</span>
-          </button>
+          <div className="relative mt-9 inline-flex">
+            <span className="pointer-events-none absolute -inset-1 rounded-full bg-[#f0c040]/35 blur-sm" />
+            <span className="pointer-events-none absolute -inset-2 rounded-full border border-[#f0c040]/70 opacity-70 animate-ping" />
+            <button
+              type="button"
+              onClick={() => {
+                formSectionRef.current?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                });
+                setTimeout(() => {
+                  existingBillRef.current?.focus();
+                }, 300);
+              }}
+              className="relative inline-flex items-center gap-2 rounded-full border border-[#f5d26a] bg-[#f0c040] px-7 py-3 text-sm font-bold text-[#2d0a6e] shadow-[0_8px_32px_rgba(240,192,64,0.35)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(240,192,64,0.45)] md:px-10 md:py-4 md:text-base"
+            >
+              Check My Eligibility Now <span className="text-lg">→</span>
+            </button>
+          </div>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4 md:gap-6">
             {[
