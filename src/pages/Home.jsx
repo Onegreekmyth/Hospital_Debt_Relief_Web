@@ -374,28 +374,56 @@ const HomePage = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section
-        className="relative flex flex-col items-center justify-center text-center px-4 md:px-6 pt-32 md:pt-40 pb-20 md:pb-28 min-h-[90vh] md:min-h-[90vh] bg-no-repeat bg-center"
-        style={{
-          backgroundImage: `linear-gradient(rgba(136, 126, 156, 0.55), rgba(191, 184, 207, 0.55)), url(${remoteBannerUrl || heroImg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="max-w-3xl text-black -mt-10 md:mt-0">
-          <h1 className="text-[20px] md:text-[28px] leading-[1.2] md:leading-tight lg:text-[42px] font-bold text-black">
-            We provide the tools to help you save money on your hospital bills.
+      <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 pb-20 pt-32 text-center md:px-6 md:pt-40">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1a0533] via-[#2d0a6e] to-[#1e0550]" />
+        <div className="absolute -right-24 -top-24 h-[420px] w-[420px] rounded-full bg-[#7c3aed]/40 blur-3xl" />
+        <div className="absolute -bottom-24 -left-20 h-[320px] w-[320px] rounded-full bg-[#a78bfa]/30 blur-3xl" />
+        <div className="absolute left-[12%] top-[45%] h-[180px] w-[180px] rounded-full bg-[#f0c040]/10 blur-3xl" />
+        <div
+          className="absolute inset-0 opacity-[0.05]"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.6) 1px, transparent 0)",
+            backgroundSize: "22px 22px",
+          }}
+        />
+
+        <div className="relative z-10 mx-auto w-full max-w-4xl">
+          <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-[#f0c040]/35 bg-[#f0c040]/15 px-5 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#f0c040] md:text-xs">
+            <span className="text-[10px]">★</span>
+            <span>Free Eligibility Check - No Obligation</span>
+          </div>
+
+          <h1 className="text-balance font-serif text-[40px] font-black leading-[1.02] tracking-[-0.02em] text-white md:text-[62px] lg:text-[76px]">
+            Your Hospital Bill
+            <br />
+            Could Be
+            <br />
+            <span className="text-[#f0c040]">Reduced to Zero</span>
           </h1>
-          <br />
-          <h6 className="text-[14px] md:text-[20px] leading-[1.4] md:leading-tight lg:text-[18px]">
-            Receive up to a 100% reduction on your current hospital bills,
-            whether you have insurance or not. You can also explore our low
-            monthly membership plans starting at just $7/month to be prepared
-            for future hospital bills.
-          </h6>
-          <p className="mt-4 text-black/90 text-[11px] md:text-[14px] leading-relaxed px-2">
-            All backed by our money back Guarantee
+
+          <p className="mx-auto mt-5 max-w-2xl text-[16px] leading-relaxed text-white/75 md:text-[20px]">
+            Millions of Americans <strong className="font-semibold text-white">qualify for up to 100% savings</strong>{" "}
+            on out-of-pocket hospital expenses - and never even know it. Find out in 2 minutes.
           </p>
+
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-6 md:gap-8">
+            <div className="text-center">
+              <p className="font-serif text-[30px] font-bold leading-none text-[#f0c040]">100%</p>
+              <p className="mt-1 text-[11px] uppercase tracking-[0.12em] text-white/55">Max Savings</p>
+            </div>
+            <div className="h-10 w-px bg-white/20" />
+            <div className="text-center">
+              <p className="font-serif text-[30px] font-bold leading-none text-[#f0c040]">2 Min</p>
+              <p className="mt-1 text-[11px] uppercase tracking-[0.12em] text-white/55">To Qualify</p>
+            </div>
+            <div className="h-10 w-px bg-white/20" />
+            <div className="text-center">
+              <p className="font-serif text-[30px] font-bold leading-none text-[#f0c040]">$0</p>
+              <p className="mt-1 text-[11px] uppercase tracking-[0.12em] text-white/55">Cost To Check</p>
+            </div>
+          </div>
+
           <button
             type="button"
             onClick={() => {
@@ -407,11 +435,28 @@ const HomePage = () => {
                 existingBillRef.current?.focus();
               }, 300);
             }}
-            className="mt-6 md:mt-7 inline-flex items-center border-2 border-purple-700 rounded-full bg-white text-purple-700 hover:bg-purple-50 px-5 md:px-6 py-2.5 md:py-3 text-xs md:text-sm font-semibold shadow"
+            className="mt-10 inline-flex items-center gap-2 rounded-full bg-[#f0c040] px-7 py-3 text-sm font-bold text-[#2d0a6e] shadow-[0_8px_32px_rgba(240,192,64,0.35)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(240,192,64,0.45)] md:px-10 md:py-4 md:text-base"
           >
-            Check qualification
+            Check My Eligibility Now <span className="text-lg">→</span>
           </button>
+
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4 md:gap-6">
+            {[
+              "100% Free to Check",
+              "No Credit Card Required",
+              "Most Local Hospitals Covered",
+              "Results in Minutes",
+            ].map((item) => (
+              <div key={item} className="flex items-center gap-2 text-xs text-white/60 md:text-[13px]">
+                <span className="flex h-[18px] w-[18px] items-center justify-center rounded-full border border-[#a78bfa]/40 bg-[#7c3aed]/35 text-[10px] text-[#d7c8ff]">
+                  ✓
+                </span>
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
         </div>
+
       </section>
 
       {/* Qualification Form / Savings Calculator */}
