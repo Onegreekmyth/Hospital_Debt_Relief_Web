@@ -371,6 +371,21 @@ const HomePage = () => {
 
   return (
     <div className="font-sans text-gray-900">
+      <style>
+        {`
+          @keyframes heroPulseRing {
+            0% {
+              box-shadow: 0 8px 32px rgba(240, 192, 64, 0.35), 0 0 0 0 rgba(240, 192, 64, 0.5);
+            }
+            70% {
+              box-shadow: 0 8px 32px rgba(240, 192, 64, 0.35), 0 0 0 18px rgba(240, 192, 64, 0);
+            }
+            100% {
+              box-shadow: 0 8px 32px rgba(240, 192, 64, 0.35), 0 0 0 0 rgba(240, 192, 64, 0);
+            }
+          }
+        `}
+      </style>
       <Navbar />
 
       {/* Hero Section */}
@@ -425,25 +440,22 @@ const HomePage = () => {
             </div>
           </div>
 
-          <div className="relative mt-9 inline-flex">
-            <span className="pointer-events-none absolute -inset-1 rounded-full bg-[#f0c040]/35 blur-sm" />
-            <span className="pointer-events-none absolute -inset-2 rounded-full border border-[#f0c040]/70 opacity-70 animate-ping" />
-            <button
-              type="button"
-              onClick={() => {
-                formSectionRef.current?.scrollIntoView({
-                  behavior: "smooth",
-                  block: "start",
-                });
-                setTimeout(() => {
-                  existingBillRef.current?.focus();
-                }, 300);
-              }}
-              className="relative inline-flex items-center gap-2 rounded-full border border-[#f5d26a] bg-[#f0c040] px-7 py-3 text-sm font-bold text-[#2d0a6e] shadow-[0_8px_32px_rgba(240,192,64,0.35)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(240,192,64,0.45)] md:px-10 md:py-4 md:text-base"
-            >
-              Check My Eligibility Now <span className="text-lg">→</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => {
+              formSectionRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+              setTimeout(() => {
+                existingBillRef.current?.focus();
+              }, 300);
+            }}
+            className="relative mt-9 inline-flex items-center gap-2 rounded-full border border-[#f5d26a] bg-[#f0c040] px-7 py-3 text-sm font-bold text-[#2d0a6e] transition hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(240,192,64,0.45)] md:px-10 md:py-4 md:text-base"
+            style={{ animation: "heroPulseRing 2.5s 2s infinite" }}
+          >
+            Check My Eligibility Now <span className="text-lg">→</span>
+          </button>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4 md:gap-6">
             {[
