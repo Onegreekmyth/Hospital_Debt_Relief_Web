@@ -1,53 +1,97 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosClient from "../../api/axiosClient";
 
-export const createCheckoutSession = createAsyncThunk(
-  "payments/createCheckoutSession",
-  async ({ planId, successUrl, cancelUrl, billId, hipaaEmailConsent }, { rejectWithValue }) => {
+export const donate = createAsyncThunk(
+  "payments/donate",
+  async ({ amountInCents, dataDescriptor, dataValue }, { rejectWithValue }) => {
     try {
-      const response = await axiosClient.post(
-        "/payments/create-checkout-session",
-        {
-          planId,
-          successUrl,
-          cancelUrl,
-          ...(billId ? { billId } : {}),
-          ...(hipaaEmailConsent ? { hipaaEmailConsent } : {}),
-        }
-      );
-
-      if (response.data?.success && response.data?.data?.url) {
-        return response.data.data.url;
-      }
-
+      const response = await axiosClient.post("/payments/donate", {
+        amountInCents,
+        dataDescriptor,
+        dataValue,
+      });
+      if (response.data?.success) return response.data.data;
       return rejectWithValue(
-        response.data?.message || "Failed to create checkout session"
+        response.data?.message || "Failed to process donation"
       );
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message ||
           error.response?.data?.error ||
           error.message ||
-          "Failed to create checkout session"
+          "Failed to process donation"
       );
     }
   }
 );
 
-export const syncStripeSession = createAsyncThunk(
-  "payments/syncStripeSession",
-  async ({ sessionId }, { rejectWithValue }) => {
+export const fetchBillingStatus = createAsyncThunk(
+  "payments/fetchBillingStatus",
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosClient.post("/payments/sync-session", {
-        sessionId,
-      });
-      return response.data;
+      const response = await axiosClient.get("/payments/billing-status");
+      if (response.data?.success) return response.data.data;
+      return rejectWithValue(
+        response.data?.message || "Failed to load billing status"
+      );
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to load billing status"
+      );
+    }
+  }
+);
+
+export const chargeFlatFee = createAsyncThunk(
+  "payments/chargeFlatFee",
+  async (
+    { billId, hipaaEmailConsent, dataDescriptor, dataValue },
+    { rejectWithValue }
+  ) => {
+    try {
+      const payload = { billId, hipaaEmailConsent };
+      if (dataDescriptor && dataValue) {
+        payload.dataDescriptor = dataDescriptor;
+        payload.dataValue = dataValue;
+      }
+      const response = await axiosClient.post("/payments/charge-flat-fee", payload);
+      if (response.data?.success) return response.data.data;
+      return rejectWithValue(
+        response.data?.message || "Failed to process payment"
+      );
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message ||
           error.response?.data?.error ||
           error.message ||
-          "Failed to sync membership"
+          "Failed to process payment"
+      );
+    }
+  }
+);
+
+export const subscribe = createAsyncThunk(
+  "payments/subscribe",
+  async ({ planId, dataDescriptor, dataValue }, { rejectWithValue }) => {
+    try {
+      const payload = { planId };
+      if (dataDescriptor && dataValue) {
+        payload.dataDescriptor = dataDescriptor;
+        payload.dataValue = dataValue;
+      }
+      const response = await axiosClient.post("/payments/subscribe", payload);
+      if (response.data?.success) return response.data.data;
+      return rejectWithValue(
+        response.data?.message || "Failed to start membership"
+      );
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message ||
+          "Failed to start membership"
       );
     }
   }
@@ -75,53 +119,24 @@ export const cancelSubscription = createAsyncThunk(
   }
 );
 
-export const createDonationSession = createAsyncThunk(
-  "payments/createDonationSession",
-  async ({ amountInCents, successUrl, cancelUrl }, { rejectWithValue }) => {
-    try {
-      const response = await axiosClient.post(
-        "/payments/create-donation-session",
-        { amountInCents, successUrl, cancelUrl }
-      );
-      if (response.data?.success && response.data?.data?.url) {
-        return response.data.data.url;
-      }
-      return rejectWithValue(
-        response.data?.message || "Failed to start donation"
-      );
-    } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message ||
-          error.response?.data?.error ||
-          error.message ||
-          "Failed to start donation"
-      );
-    }
-  }
-);
-
 const paymentsSlice = createSlice({
   name: "payments",
   initialState: {
-    checkoutLoading: false,
-    checkoutError: "",
-    checkoutUrl: "",
-    syncLoading: false,
-    syncError: "",
+    paymentLoading: false,
+    paymentError: "",
     cancelLoading: false,
     cancelError: "",
     donationLoading: false,
     donationError: "",
+    billingStatus: null,
+    billingStatusLoading: false,
   },
   reducers: {
-    clearCheckoutError: (state) => {
-      state.checkoutError = "";
+    clearPaymentError: (state) => {
+      state.paymentError = "";
     },
     clearDonationError: (state) => {
       state.donationError = "";
-    },
-    clearSyncError: (state) => {
-      state.syncError = "";
     },
     clearCancelError: (state) => {
       state.cancelError = "";
@@ -129,29 +144,38 @@ const paymentsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(createCheckoutSession.pending, (state) => {
-        state.checkoutLoading = true;
-        state.checkoutError = "";
-        state.checkoutUrl = "";
+      .addCase(donate.pending, (state) => {
+        state.donationLoading = true;
+        state.donationError = "";
       })
-      .addCase(createCheckoutSession.fulfilled, (state, action) => {
-        state.checkoutLoading = false;
-        state.checkoutUrl = action.payload;
+      .addCase(donate.fulfilled, (state) => {
+        state.donationLoading = false;
       })
-      .addCase(createCheckoutSession.rejected, (state, action) => {
-        state.checkoutLoading = false;
-        state.checkoutError = action.payload || "Failed to start membership.";
+      .addCase(donate.rejected, (state, action) => {
+        state.donationLoading = false;
+        state.donationError = action.payload || "Donation failed.";
       })
-      .addCase(syncStripeSession.pending, (state) => {
-        state.syncLoading = true;
-        state.syncError = "";
+      .addCase(chargeFlatFee.pending, (state) => {
+        state.paymentLoading = true;
+        state.paymentError = "";
       })
-      .addCase(syncStripeSession.fulfilled, (state) => {
-        state.syncLoading = false;
+      .addCase(chargeFlatFee.fulfilled, (state) => {
+        state.paymentLoading = false;
       })
-      .addCase(syncStripeSession.rejected, (state, action) => {
-        state.syncLoading = false;
-        state.syncError = action.payload || "Failed to sync membership.";
+      .addCase(chargeFlatFee.rejected, (state, action) => {
+        state.paymentLoading = false;
+        state.paymentError = action.payload || "Payment failed.";
+      })
+      .addCase(subscribe.pending, (state) => {
+        state.paymentLoading = true;
+        state.paymentError = "";
+      })
+      .addCase(subscribe.fulfilled, (state) => {
+        state.paymentLoading = false;
+      })
+      .addCase(subscribe.rejected, (state, action) => {
+        state.paymentLoading = false;
+        state.paymentError = action.payload || "Membership failed.";
       })
       .addCase(cancelSubscription.pending, (state) => {
         state.cancelLoading = true;
@@ -164,19 +188,20 @@ const paymentsSlice = createSlice({
         state.cancelLoading = false;
         state.cancelError = action.payload || "Failed to cancel membership.";
       })
-      .addCase(createDonationSession.pending, (state) => {
-        state.donationLoading = true;
-        state.donationError = "";
+      .addCase(fetchBillingStatus.pending, (state) => {
+        state.billingStatusLoading = true;
       })
-      .addCase(createDonationSession.fulfilled, (state, action) => {
-        state.donationLoading = false;
+      .addCase(fetchBillingStatus.fulfilled, (state, action) => {
+        state.billingStatusLoading = false;
+        state.billingStatus = action.payload;
       })
-      .addCase(createDonationSession.rejected, (state, action) => {
-        state.donationLoading = false;
-        state.donationError = action.payload || "Failed to start donation.";
+      .addCase(fetchBillingStatus.rejected, (state) => {
+        state.billingStatusLoading = false;
+        state.billingStatus = null;
       });
   },
 });
 
-export const { clearCheckoutError, clearSyncError, clearCancelError, clearDonationError } = paymentsSlice.actions;
+export const { clearPaymentError, clearDonationError, clearCancelError } =
+  paymentsSlice.actions;
 export default paymentsSlice.reducer;

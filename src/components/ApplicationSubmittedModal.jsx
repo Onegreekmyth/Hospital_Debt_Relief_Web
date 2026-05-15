@@ -11,7 +11,12 @@ import {
   deleteHipaaForm,
   deleteElectronicConsentForm,
 } from "../store/bills/billsSlice";
-import { createCheckoutSession, clearCheckoutError } from "../store/payments/paymentsSlice";
+import {
+  chargeFlatFee,
+  fetchBillingStatus,
+  clearPaymentError,
+} from "../store/payments/paymentsSlice";
+import PaymentModal from "./PaymentModal";
 import { DOCUMENT_TYPES } from "./BillInformationModal";
 
 const ApplicationSubmittedModal = ({
@@ -37,9 +42,13 @@ const ApplicationSubmittedModal = ({
     hipaaDeleteLoading: deletingHipaa,
     electronicConsentDeleteLoading: deletingElectronicConsent,
   } = useSelector((state) => state.bills);
-  const { checkoutLoading: flatFeeLoading, checkoutError: flatFeeError } = useSelector(
-    (state) => state.payments
-  );
+  const {
+    paymentLoading: flatFeeLoading,
+    paymentError: flatFeeError,
+    billingStatus,
+  } = useSelector((state) => state.payments);
+  const [paymentOpen, setPaymentOpen] = useState(false);
+  const freeTrialActive = billingStatus?.freeTrialActive === true;
 
   const [uploadError, setUploadError] = useState("");
   const [uploadedFileName, setUploadedFileName] = useState("");
@@ -55,7 +64,8 @@ const ApplicationSubmittedModal = ({
   useEffect(() => {
     if (!isOpen) return;
     setSubmitValidationError("");
-  }, [isOpen, billData?.hipaaEmailConsent]);
+    dispatch(fetchBillingStatus());
+  }, [isOpen, billData?.hipaaEmailConsent, dispatch]);
 
   const displayUploadError = uploadErrorFromSlice || uploadError;
 
@@ -91,27 +101,42 @@ const ApplicationSubmittedModal = ({
     (!hasActiveSubscription || !isBillPatientInSubscription) &&
     !isBillPending;
   
-  const handlePayFlatFee = async () => {
-    dispatch(clearCheckoutError());
-    const baseUrl = window.location.origin;
-    const successUrl = billId
-      ? `${baseUrl}/dashboard?flat_fee_success=1&session_id={CHECKOUT_SESSION_ID}&bill_id=${billId}`
-      : `${baseUrl}/dashboard?flat_fee_success=1&session_id={CHECKOUT_SESSION_ID}`;
-    const cancelUrl = `${baseUrl}/dashboard?subscription=cancelled`;
-    try {
-      const checkoutUrl = await dispatch(
-        createCheckoutSession({
-          planId: "one_time_flat",
-          successUrl,
-          cancelUrl,
-          billId: billId || undefined,
-          hipaaEmailConsent: billData?.hipaaEmailConsent,
-        })
-      ).unwrap();
-      if (checkoutUrl) window.location.href = checkoutUrl;
-    } catch (err) {
-      console.error("Pay $299 flat fee error:", err);
+  const completeAfterFlatFee = () => {
+    onBillUpdated?.();
+    onBillSubmittedSuccess?.(billId);
+    onClose();
+  };
+
+  const handlePayFlatFeeClick = async () => {
+    dispatch(clearPaymentError());
+    if (freeTrialActive) {
+      try {
+        await dispatch(
+          chargeFlatFee({
+            billId,
+            hipaaEmailConsent: billData?.hipaaEmailConsent,
+          })
+        ).unwrap();
+        completeAfterFlatFee();
+      } catch (err) {
+        console.error("Waived flat fee error:", err);
+      }
+      return;
     }
+    setPaymentOpen(true);
+  };
+
+  const handleFlatFeePayment = async ({ dataDescriptor, dataValue }) => {
+    await dispatch(
+      chargeFlatFee({
+        billId,
+        hipaaEmailConsent: billData?.hipaaEmailConsent,
+        dataDescriptor,
+        dataValue,
+      })
+    ).unwrap();
+    setPaymentOpen(false);
+    completeAfterFlatFee();
   };
 
   if (!isOpen) return null;
@@ -144,7 +169,7 @@ const ApplicationSubmittedModal = ({
       return;
     }
     if (showFlatFeeButton) {
-      handlePayFlatFee();
+      handlePayFlatFeeClick();
     } else if (!isBillPending) {
       handleCompleteApplication();
     }
@@ -653,6 +678,12 @@ const ApplicationSubmittedModal = ({
         {/* Single Submit My Bill button - hidden when bill is pending or approved */}
         {showSubmitMyBillButton && (
           <>
+            {showFlatFeeButton && freeTrialActive && (
+              <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg p-3 mb-2">
+                Introductory offer: $0 flat fee (normally $299) for your first{" "}
+                {billingStatus?.freeTrialDays || 90} days. No credit card required.
+              </p>
+            )}
             {(submitValidationError || flatFeeError || completeError) && (
               <p className="text-sm text-red-600 mb-2">{submitValidationError || flatFeeError || completeError}</p>
             )}
@@ -663,7 +694,11 @@ const ApplicationSubmittedModal = ({
               className="w-full py-2.5 md:py-3 rounded-full bg-gradient-to-r from-purple-700 to-purple-900 text-white font-bold text-xs md:text-base mb-2.5 md:mb-4 hover:from-purple-600 hover:to-purple-800 transition-all shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {showFlatFeeButton
-                ? (flatFeeLoading ? "Redirecting to payment..." : "Submit My Bill")
+                ? (flatFeeLoading
+                    ? "Processing..."
+                    : freeTrialActive
+                      ? "Submit My Bill ($0)"
+                      : "Submit My Bill")
                 : (completeLoading ? "Submitting..." : "Submit My Bill")}
             </button>
           </>
@@ -705,6 +740,17 @@ const ApplicationSubmittedModal = ({
         title="Remove supporting document"
         message="Remove this supporting document from the bill? You can upload it again later."
         memberName={docToDelete?.pdfFileName ? `"${docToDelete.pdfFileName}"` : undefined}
+      />
+
+      <PaymentModal
+        isOpen={paymentOpen}
+        onClose={() => setPaymentOpen(false)}
+        title="Pay $299 flat fee"
+        description="One-time fee to submit this bill for processing."
+        amountLabel="$299.00"
+        loading={flatFeeLoading}
+        error={flatFeeError}
+        onSubmit={handleFlatFeePayment}
       />
     </div>
   );

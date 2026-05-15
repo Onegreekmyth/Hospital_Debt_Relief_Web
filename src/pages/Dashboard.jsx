@@ -13,7 +13,7 @@ import SubscriptionDetailsModal from "../components/SubscriptionDetailsModal";
 import HospitalMap from "../components/HospitalMap";
 import uploadImg from "../assets/upload-img.png";
 import rightArrow from "../assets/right-arrow.png";
-import { syncStripeSession, cancelSubscription, clearCancelError } from "../store/payments/paymentsSlice";
+import { cancelSubscription, clearCancelError } from "../store/payments/paymentsSlice";
 import {
   createFamilyMember,
   updateFamilyMember,
@@ -136,90 +136,16 @@ const Dashboard = () => {
   const [eligibilityStatus, setEligibilityStatus] = useState("eligible"); // "eligible" | "ineligible"
   const [discountPercentage, setDiscountPercentage] = useState(40); // Example: calculated by backend
 
-  // Handle Stripe redirect: flat fee success -> go to bill details; subscription success -> sync and stay on dashboard
-  useEffect(() => {
-    const flatFeeSuccess = searchParams.get("flat_fee_success");
-    const sessionId = searchParams.get("session_id");
-    const billIdFromUrl = searchParams.get("bill_id");
-    const subscriptionParam = searchParams.get("subscription");
-
-    if (flatFeeSuccess === "1" && sessionId) {
-      const afterPaymentSuccess = async () => {
-        try {
-          await dispatch(syncStripeSession({ sessionId })).unwrap();
-        } catch (err) {
-          console.error("Failed to sync flat fee session:", err);
-        } finally {
-          searchParams.delete("flat_fee_success");
-          searchParams.delete("session_id");
-          searchParams.delete("bill_id");
-          setSearchParams(searchParams, { replace: true });
-          if (billIdFromUrl) {
-            setBillReceivedModalBillId(billIdFromUrl);
-          }
-        }
-      };
-      afterPaymentSuccess();
-      return;
+  const refreshSubscriptionFromProfile = async () => {
+    try {
+      const { userData } = await dispatch(fetchProfile()).unwrap();
+      if (userData?.subscription) {
+        applySubscriptionFromData(userData.subscription);
+      }
+    } catch (err) {
+      console.error("Failed to refresh subscription:", err);
     }
-
-    if (subscriptionParam === "success" && sessionId) {
-      // Sync subscription status from Stripe (works in dev when webhook can't reach localhost)
-      const syncSession = async () => {
-        try {
-          await dispatch(syncStripeSession({ sessionId })).unwrap();
-          const { userData } = await dispatch(fetchProfile()).unwrap();
-          if (userData?.subscription) {
-            const sub = userData.subscription;
-            const isCancelledAtPeriodEnd = sub.cancelAtPeriodEnd;
-            // Treat cancel-at-period-end as "cancelled" in UI even if backend status is still "active"
-            const uiStatus = isCancelledAtPeriodEnd
-              ? "cancelled"
-              : sub.status || "inactive";
-
-            setSubscriptionStatus(uiStatus);
-            setSubscriptionTier(sub.planId || null);
-            setSubscriptionStartDateISO(sub.currentPeriodStart || null);
-
-            const start = sub.currentPeriodStart ? new Date(sub.currentPeriodStart) : null;
-            const end = sub.currentPeriodEnd ? new Date(sub.currentPeriodEnd) : null;
-
-            setSubscriptionDate(
-              start
-                ? start.toLocaleDateString("en-US", {
-                  month: "2-digit",
-                  day: "2-digit",
-                  year: "numeric",
-                })
-                : ""
-            );
-            setSubscriptionEndDate(
-              end
-                ? end.toLocaleDateString("en-US", {
-                  month: "2-digit",
-                  day: "2-digit",
-                  year: "numeric",
-                })
-                : ""
-            );
-          }
-        } catch (err) {
-          console.error("Failed to sync subscription:", err);
-        } finally {
-          searchParams.delete("subscription");
-          searchParams.delete("session_id");
-          setSearchParams(searchParams, { replace: true });
-        }
-      };
-      syncSession();
-    } else if (subscriptionParam === "success") {
-      searchParams.delete("subscription");
-      setSearchParams(searchParams, { replace: true });
-    } else if (subscriptionParam === "cancelled") {
-      searchParams.delete("subscription");
-      setSearchParams(searchParams, { replace: true });
-    }
-  }, [searchParams, setSearchParams, dispatch, navigate]);
+  };
 
   // Fetch user profile on component mount
   useEffect(() => {
@@ -1225,8 +1151,8 @@ useEffect(() => {
         planId={subscriptionInfo?.planId}
         hasActiveSubscription={effectiveStatus === "active"}
         onStartSubscription={() => {
-          // This will be called after successful redirect from Stripe
-          // The webhook will update the subscription status in the database
+          refreshSubscriptionFromProfile();
+          setIsSubscriptionModalOpen(false);
         }}
         onCancelSubscription={() => {
           // When user clicks "Cancel My Membership Plan" inside the subscription box
