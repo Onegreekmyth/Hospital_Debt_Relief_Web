@@ -11,6 +11,7 @@ const PaymentModal = ({
   onSubmit,
   loading = false,
   error = "",
+  showDonorFields = false,
 }) => {
   const [config, setConfig] = useState(null);
   const [configError, setConfigError] = useState("");
@@ -20,6 +21,9 @@ const PaymentModal = ({
   const [cvv, setCvv] = useState("");
   const [localError, setLocalError] = useState("");
   const [processing, setProcessing] = useState(false);
+  const [donorEmail, setDonorEmail] = useState("");
+  const [donorFirstName, setDonorFirstName] = useState("");
+  const [donorLastName, setDonorLastName] = useState("");
 
   useEffect(() => {
     if (!isOpen) return;
@@ -28,6 +32,9 @@ const PaymentModal = ({
     setExpMonth("");
     setExpYear("");
     setCvv("");
+    setDonorEmail("");
+    setDonorFirstName("");
+    setDonorLastName("");
 
     let cancelled = false;
     (async () => {
@@ -87,7 +94,12 @@ const PaymentModal = ({
         year: expYear,
         cardCode: cvv,
       });
-      await onSubmit(opaque);
+      await onSubmit({
+        ...opaque,
+        donorEmail: donorEmail.trim() || undefined,
+        donorFirstName: donorFirstName.trim() || undefined,
+        donorLastName: donorLastName.trim() || undefined,
+      });
     } catch (err) {
       setLocalError(err.message || "Payment failed");
     } finally {
@@ -130,6 +142,50 @@ const PaymentModal = ({
           <p className="mt-4 text-sm text-red-600">{configError}</p>
         ) : (
           <form onSubmit={handlePay} className="mt-4 space-y-3">
+            {showDonorFields && (
+              <>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      First name (optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={donorFirstName}
+                      onChange={(e) => setDonorFirstName(e.target.value)}
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                      disabled={busy}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      Last name (optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={donorLastName}
+                      onChange={(e) => setDonorLastName(e.target.value)}
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                      disabled={busy}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Email (optional)
+                  </label>
+                  <input
+                    type="email"
+                    autoComplete="email"
+                    value={donorEmail}
+                    onChange={(e) => setDonorEmail(e.target.value)}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                    placeholder="you@example.com"
+                    disabled={busy}
+                  />
+                </div>
+              </>
+            )}
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">
                 Card number

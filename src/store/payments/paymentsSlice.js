@@ -3,12 +3,25 @@ import axiosClient from "../../api/axiosClient";
 
 export const donate = createAsyncThunk(
   "payments/donate",
-  async ({ amountInCents, dataDescriptor, dataValue }, { rejectWithValue }) => {
+  async (
+    {
+      amountInCents,
+      dataDescriptor,
+      dataValue,
+      donorEmail,
+      donorFirstName,
+      donorLastName,
+    },
+    { rejectWithValue }
+  ) => {
     try {
       const response = await axiosClient.post("/payments/donate", {
         amountInCents,
         dataDescriptor,
         dataValue,
+        donorEmail,
+        donorFirstName,
+        donorLastName,
       });
       if (response.data?.success) return response.data.data;
       return rejectWithValue(

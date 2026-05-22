@@ -26,10 +26,23 @@ const DonateButton = () => {
   const amountCents = DONATION_OPTIONS_CENTS[amountIndex];
   const amountDollars = (amountCents / 100).toFixed(2);
 
-  const handleDonateOpaque = async ({ dataDescriptor, dataValue }) => {
+  const handleDonateOpaque = async ({
+    dataDescriptor,
+    dataValue,
+    donorEmail,
+    donorFirstName,
+    donorLastName,
+  }) => {
     dispatch(clearDonationError());
     await dispatch(
-      donate({ amountInCents: amountCents, dataDescriptor, dataValue })
+      donate({
+        amountInCents: amountCents,
+        dataDescriptor,
+        dataValue,
+        donorEmail,
+        donorFirstName,
+        donorLastName,
+      })
     ).unwrap();
     setPaymentOpen(false);
     setOpen(false);
@@ -118,6 +131,7 @@ const DonateButton = () => {
         amountLabel={`$${amountDollars}`}
         loading={donationLoading}
         error={donationError}
+        showDonorFields
         onSubmit={handleDonateOpaque}
       />
     </>
