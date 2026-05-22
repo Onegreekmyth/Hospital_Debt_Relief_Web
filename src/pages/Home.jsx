@@ -34,6 +34,8 @@ const HomePage = () => {
   const [cityDropdownOpen, setCityDropdownOpen] = useState(false);
   const [citySearch, setCitySearch] = useState("");
   const [hospitalSearch, setHospitalSearch] = useState("");
+  const [hospitalNotListed, setHospitalNotListed] = useState(false);
+  const [customHospitalName, setCustomHospitalName] = useState("");
   const stateDropdownRef = useRef(null);
   const cityDropdownRef = useRef(null);
   const hospitalDropdownRef = useRef(null);
@@ -198,11 +200,31 @@ const HomePage = () => {
   }, [selectedState, selectedCity]);
 
   const handleSelectHospital = (hospital) => {
+    setHospitalNotListed(false);
+    setCustomHospitalName("");
     setSelectedHospital(hospital.Name);
     setSelectedHospitalId(hospital._id);
     setHospitalInputActive(false);
     setHospitalSearch("");
+    setHospitalError("");
   };
+
+  const handleHospitalNotListedChange = (checked) => {
+    setHospitalNotListed(checked);
+    setHospitalError("");
+    if (checked) {
+      setSelectedHospital("");
+      setSelectedHospitalId("");
+      setHospitalInputActive(false);
+      setHospitalSearch("");
+    } else {
+      setCustomHospitalName("");
+    }
+  };
+
+  const displayHospitalName = hospitalNotListed
+    ? customHospitalName.trim()
+    : selectedHospital;
 
   const filteredStateOptions = useMemo(() =>
     stateOptions.filter((s) => s.toLowerCase().includes(stateSearch.toLowerCase())),
@@ -257,7 +279,16 @@ const HomePage = () => {
 
     let hasError = false;
 
-    if (!selectedHospitalId) {
+    if (hospitalNotListed) {
+      if (!customHospitalName.trim()) {
+        setHospitalError("Please enter your hospital name.");
+        hasError = true;
+      }
+      if (!selectedState) {
+        setStateError("Please select the state where the hospital is located.");
+        hasError = true;
+      }
+    } else if (!selectedHospitalId) {
       setHospitalError("Please select a local hospital.");
       hasError = true;
     }
@@ -301,7 +332,6 @@ const HomePage = () => {
 
     try {
       const payload = {
-        hospitalId: selectedHospitalId,
         householdIncome: Number(householdIncome),
         householdSize: Number(householdSize),
         isInCollections: !notInCollections,
@@ -310,6 +340,12 @@ const HomePage = () => {
         city: selectedCity,
         billAmount: existingBill === "yes" ? Number(billAmount) : undefined,
       };
+
+      if (hospitalNotListed) {
+        payload.customHospitalName = customHospitalName.trim();
+      } else {
+        payload.hospitalId = selectedHospitalId;
+      }
 
       const response = await axiosClient.post(
         "/hospitals/calculate-eligibility",
@@ -673,10 +709,14 @@ const HomePage = () => {
               <label className="text-sm md:text-base font-medium text-gray-900">
                 Local Hospital <span className="text-red-500">*</span>
               </label>
-              <div className="relative" ref={hospitalDropdownRef}>
+              <div
+                className={`relative ${hospitalNotListed ? "pointer-events-none opacity-50" : ""}`}
+                ref={hospitalDropdownRef}
+              >
                 <button
                   type="button"
-                  className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-700 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-purple-300"
+                  disabled={hospitalNotListed}
+                  className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-700 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-purple-300 disabled:cursor-not-allowed"
                   onClick={() => {
                     setHospitalInputActive((prev) => !prev);
                     setHospitalSearch("");
@@ -747,6 +787,41 @@ const HomePage = () => {
                   </div>
                 )}
               </div>
+
+              <label className="mt-1 flex cursor-pointer items-start gap-2.5">
+                <input
+                  type="checkbox"
+                  className="mt-1 h-4 w-4 shrink-0 rounded border-purple-300 text-purple-700 focus:ring-purple-400"
+                  checked={hospitalNotListed}
+                  onChange={(e) => handleHospitalNotListedChange(e.target.checked)}
+                />
+                <span className="text-sm text-gray-800">
+                  My Hospital Isn&apos;t Listed
+                </span>
+              </label>
+
+              {hospitalNotListed && (
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-medium text-gray-900">
+                    Hospital name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    className="h-14 w-full rounded-full border border-purple-200 bg-white px-6 text-sm md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                    placeholder="Enter hospital name"
+                    value={customHospitalName}
+                    onChange={(e) => {
+                      setCustomHospitalName(e.target.value);
+                      setHospitalError("");
+                    }}
+                  />
+                  <p className="text-xs text-gray-500">
+                    We&apos;ll search US hospital records and financial assistance
+                    policies using the same eligibility engine.
+                  </p>
+                </div>
+              )}
+
               {hospitalError && (
                 <p className="mt-1 text-xs text-red-600">{hospitalError}</p>
               )}
@@ -913,7 +988,7 @@ const HomePage = () => {
       <SuccessModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        hospitalName={selectedHospital}
+        hospitalName={displayHospitalName}
         eligibilityResponse={eligibilityResponse}
         eligibilityError={eligibilityError}
         hasExistingBill={existingBill === "yes"}
