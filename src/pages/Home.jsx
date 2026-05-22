@@ -3,6 +3,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate, useLocation } from "react-router-dom";
 import heroImg from "../assets/hero-img.jpg";
 import Navbar from "../components/Navbar";
+import FreeTrialBanner from "../components/FreeTrialBanner";
 import Footer from "../components/Footer";
 import axiosClient from "../api/axiosClient";
 import SuccessModal from "../components/SuccessModal";
@@ -386,10 +387,11 @@ const HomePage = () => {
           }
         `}
       </style>
-      <Navbar />
+      <FreeTrialBanner className="fixed top-0 left-0 right-0 z-[60]" />
+      <Navbar showTrialBanner />
 
       {/* Hero Section */}
-      <section className="relative flex min-h-[92vh] items-center justify-center overflow-hidden px-4 pb-16 pt-28 text-center md:px-6 md:pt-32">
+      <section className="relative flex min-h-[92vh] items-center justify-center overflow-hidden px-4 pb-16 pt-36 text-center md:px-6 md:pt-40">
         <div className="absolute inset-0 bg-gradient-to-br from-[#1a0533] via-[#2d0a6e] to-[#1e0550]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,rgba(124,58,237,0.45),transparent_55%)]" />
         <div className="absolute -right-24 -top-24 h-[420px] w-[420px] rounded-full bg-[#7c3aed]/40 blur-3xl" />

@@ -3,7 +3,7 @@ import { useLocation, Link, useNavigate } from "react-router-dom";
 import primaryLogo from "../assets/primary-logo.png";
 import uploadImg from "../assets/upload-img.png";
 
-const Navbar = ({ onOpenAddFamilyMembers }) => {
+const Navbar = ({ onOpenAddFamilyMembers, showTrialBanner = false }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isResourcesOpen, setIsResourcesOpen] = useState(false);
@@ -64,7 +64,11 @@ const Navbar = ({ onOpenAddFamilyMembers }) => {
 
   return (
     <>
-      <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] md:w-[88%]">
+      <header
+        className={`fixed left-1/2 -translate-x-1/2 z-50 w-[92%] md:w-[88%] ${
+          showTrialBanner ? "top-11 sm:top-12" : "top-4"
+        }`}
+      >
         <div
           className={`flex items-center justify-between rounded-full border border-purple-300 backdrop-blur-xl px-3 md:px-8 h-16 md:h-16 shadow-lg transition-colors ${
             isScrolled ? "bg-gray-100/90" : "bg-white/90"
