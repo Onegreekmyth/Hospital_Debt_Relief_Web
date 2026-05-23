@@ -8,6 +8,7 @@ import {
   formatExpMonthDisplay,
   formatExpYearDisplay,
 } from "../utils/cardFormatting";
+import AuthorizeNetLogo from "./AuthorizeNetLogo";
 
 const PaymentModal = ({
   isOpen,
@@ -136,9 +137,10 @@ const PaymentModal = ({
       aria-modal="true"
     >
       <div
-        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+        className="flex w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-xl sm:max-w-2xl sm:flex-row"
         onClick={(e) => e.stopPropagation()}
       >
+        <div className="min-w-0 flex-1 p-6">
         <h2 className="text-xl font-bold text-gray-900">{title}</h2>
         {description && (
           <p className="mt-1.5 text-sm text-gray-600">{description}</p>
@@ -285,6 +287,17 @@ const PaymentModal = ({
         >
           Cancel
         </button>
+        </div>
+
+        <aside
+          className="flex shrink-0 flex-col items-center justify-center border-t border-gray-100 bg-[#f8fafc] px-6 py-5 sm:w-44 sm:border-l sm:border-t-0 md:w-48"
+          aria-label="Payment processor"
+        >
+          <AuthorizeNetLogo />
+          <p className="mt-3 text-center text-[10px] leading-snug text-gray-500">
+            Secured by Authorize.Net
+          </p>
+        </aside>
       </div>
     </div>
   );
