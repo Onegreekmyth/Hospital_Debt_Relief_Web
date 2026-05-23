@@ -127,11 +127,7 @@ export function tokenizeCard({ apiLoginId, clientKey, cardNumber, month, year, c
     const normalizedCvv = digitsOnly(cardCode);
 
     if (!isValidCardNumber(normalizedCard)) {
-      reject(
-        new Error(
-          "Please enter a valid card number (sandbox test: 4111111111111111)."
-        )
-      );
+      reject(new Error("Please enter a valid card number."));
       return;
     }
 

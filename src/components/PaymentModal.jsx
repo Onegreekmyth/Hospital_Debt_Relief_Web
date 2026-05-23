@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axiosClient from "../api/axiosClient";
 import { loadAcceptJs, tokenizeCard } from "../utils/acceptJs";
+import {
+  cardDigitsOnly,
+  formatCardNumberDisplay,
+  formatCvvDisplay,
+  formatExpMonthDisplay,
+  formatExpYearDisplay,
+} from "../utils/cardFormatting";
 
 const PaymentModal = ({
   isOpen,
@@ -83,6 +90,17 @@ const PaymentModal = ({
       setLocalError("Please enter all card details");
       return;
     }
+    if (showDonorFields) {
+      const email = donorEmail.trim();
+      if (!email) {
+        setLocalError("Email is required to send your receipt.");
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        setLocalError("Please enter a valid email address.");
+        return;
+      }
+    }
 
     setProcessing(true);
     try {
@@ -129,15 +147,6 @@ const PaymentModal = ({
           <p className="mt-3 text-lg font-semibold text-[#2e1570]">{amountLabel}</p>
         )}
 
-        {config?.sandbox && (
-          <div className="mt-3 rounded-lg border border-blue-200 bg-blue-50 p-3 text-xs text-blue-900">
-            <p className="font-semibold">Sandbox test card</p>
-            <p className="mt-1 font-mono">4111111111111111</p>
-            <p className="mt-1">Expiry: any future date (e.g. 12 / 30) · CVV: 123</p>
-            <p className="mt-1 text-blue-800">Digits only — no spaces or dashes.</p>
-          </div>
-        )}
-
         {configError && !config ? (
           <p className="mt-4 text-sm text-red-600">{configError}</p>
         ) : (
@@ -172,17 +181,21 @@ const PaymentModal = ({
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">
-                    Email (optional)
+                    Email for receipt <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="email"
                     autoComplete="email"
+                    required
                     value={donorEmail}
                     onChange={(e) => setDonorEmail(e.target.value)}
                     className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
                     placeholder="you@example.com"
                     disabled={busy}
                   />
+                  <p className="mt-1 text-xs text-gray-500">
+                    We&apos;ll email you a payment receipt, similar to Stripe.
+                  </p>
                 </div>
               </>
             )}
@@ -194,10 +207,12 @@ const PaymentModal = ({
                 type="text"
                 inputMode="numeric"
                 autoComplete="cc-number"
-                value={cardNumber}
-                onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, "").slice(0, 19))}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
-                placeholder="4111111111111111"
+                value={formatCardNumberDisplay(cardNumber)}
+                onChange={(e) =>
+                  setCardNumber(cardDigitsOnly(e.target.value).slice(0, 19))
+                }
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono tracking-wide"
+                placeholder="1234 5678 9012 3456"
                 disabled={busy}
               />
             </div>
@@ -207,11 +222,14 @@ const PaymentModal = ({
                 <input
                   type="text"
                   inputMode="numeric"
+                  autoComplete="cc-exp-month"
                   maxLength={2}
                   value={expMonth}
-                  onChange={(e) => setExpMonth(e.target.value.replace(/\D/g, ""))}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
-                  placeholder="12"
+                  onChange={(e) =>
+                    setExpMonth(formatExpMonthDisplay(e.target.value))
+                  }
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-center font-mono"
+                  placeholder="MM"
                   disabled={busy}
                 />
               </div>
@@ -220,24 +238,28 @@ const PaymentModal = ({
                 <input
                   type="text"
                   inputMode="numeric"
-                  maxLength={4}
+                  autoComplete="cc-exp-year"
+                  maxLength={2}
                   value={expYear}
-                  onChange={(e) => setExpYear(e.target.value.replace(/\D/g, ""))}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
-                  placeholder="30"
+                  onChange={(e) =>
+                    setExpYear(formatExpYearDisplay(e.target.value))
+                  }
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-center font-mono"
+                  placeholder="YY"
                   disabled={busy}
                 />
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">CVV</label>
                 <input
-                  type="text"
+                  type="password"
                   inputMode="numeric"
+                  autoComplete="cc-csc"
                   maxLength={4}
                   value={cvv}
-                  onChange={(e) => setCvv(e.target.value.replace(/\D/g, ""))}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
-                  placeholder="123"
+                  onChange={(e) => setCvv(formatCvvDisplay(e.target.value))}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-center font-mono tracking-widest"
+                  placeholder="•••"
                   disabled={busy}
                 />
               </div>

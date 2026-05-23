@@ -46,7 +46,9 @@ const DonateButton = () => {
     ).unwrap();
     setPaymentOpen(false);
     setOpen(false);
-    alert("Thank you for your donation!");
+    alert(
+      "Thank you for your donation! A receipt has been sent to your email."
+    );
   };
 
   return (
