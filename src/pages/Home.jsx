@@ -566,7 +566,7 @@ const HomePage = () => {
             {/* State Searchable Dropdown */}
             <div className="flex flex-col gap-2" ref={stateDropdownRef}>
               <label className="text-sm md:text-base font-medium text-gray-900">
-                State
+                State of Hospital
               </label>
               <div className="relative">
                 <button
@@ -642,7 +642,7 @@ const HomePage = () => {
             {/* City Searchable Dropdown */}
             <div className="flex flex-col gap-2" ref={cityDropdownRef}>
               <label className="text-sm md:text-base font-medium text-gray-900">
-                City
+                City of Hospital
               </label>
               <div className="relative">
                 <button
@@ -798,22 +798,22 @@ const HomePage = () => {
                 )}
               </div>
 
-              <label className="mt-1 flex cursor-pointer items-start gap-2.5">
+              <label className="mt-1 flex cursor-pointer items-center gap-2.5">
                 <input
                   type="checkbox"
-                  className="mt-1 h-4 w-4 shrink-0 rounded border-purple-300 text-purple-700 focus:ring-purple-400"
+                  className="h-4 w-4 shrink-0 rounded border-purple-300 text-purple-700 focus:ring-purple-400"
                   checked={hospitalNotListed}
                   onChange={(e) => handleHospitalNotListedChange(e.target.checked)}
                 />
-                <span className="text-sm text-gray-800">
+                <span className="text-sm md:text-base font-medium text-gray-900">
                   My Hospital Isn&apos;t Listed
                 </span>
               </label>
 
               {hospitalNotListed && (
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-medium text-gray-900">
-                    Hospital name <span className="text-red-500">*</span>
+                  <label className="text-sm md:text-base font-medium text-gray-900">
+                    Hospital Name <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
