@@ -23,6 +23,7 @@ const HomePage = () => {
   const location = useLocation();
 
   const [openIndex, setOpenIndex] = useState(0);
+  const [trialBannerVisible, setTrialBannerVisible] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedHospital, setSelectedHospital] = useState("");
   const [selectedHospitalId, setSelectedHospitalId] = useState("");
@@ -423,11 +424,20 @@ const HomePage = () => {
           }
         `}
       </style>
-      <FreeTrialBanner className="fixed top-0 left-0 right-0 z-[60]" />
-      <Navbar showTrialBanner />
+      {trialBannerVisible && (
+        <FreeTrialBanner
+          className="fixed top-0 left-0 right-0 z-[60]"
+          onClose={() => setTrialBannerVisible(false)}
+        />
+      )}
+      <Navbar showTrialBanner={trialBannerVisible} />
 
       {/* Hero Section */}
-      <section className="relative flex min-h-[92vh] items-center justify-center overflow-hidden px-4 pb-16 pt-36 text-center md:px-6 md:pt-40">
+      <section
+        className={`relative flex min-h-[92vh] items-center justify-center overflow-hidden px-4 pb-16 text-center md:px-6 ${
+          trialBannerVisible ? "pt-36 md:pt-40" : "pt-28 md:pt-32"
+        }`}
+      >
         <div className="absolute inset-0 bg-gradient-to-br from-[#1a0533] via-[#2d0a6e] to-[#1e0550]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,rgba(124,58,237,0.45),transparent_55%)]" />
         <div className="absolute -right-24 -top-24 h-[420px] w-[420px] rounded-full bg-[#7c3aed]/40 blur-3xl" />
