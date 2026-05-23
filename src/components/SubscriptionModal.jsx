@@ -60,17 +60,6 @@ const SubscriptionModal = ({
     setError("");
     dispatch(clearPaymentError());
 
-    if (freeTrialActive) {
-      try {
-        await dispatch(subscribe({ planId })).unwrap();
-        if (onStartSubscription) onStartSubscription();
-        if (onClose) onClose();
-      } catch (err) {
-        setError(typeof err === "string" ? err : "Failed to start membership.");
-      }
-      return;
-    }
-
     setPaymentOpen(true);
   };
 
@@ -208,9 +197,17 @@ const SubscriptionModal = ({
     <PaymentModal
       isOpen={paymentOpen}
       onClose={() => setPaymentOpen(false)}
-      title="Start membership"
-      description="Enter your card details for the monthly membership."
-      amountLabel={`$${subscriptionInfo?.price}/month`}
+      title={freeTrialActive ? "Start free trial" : "Start membership"}
+      description={
+        freeTrialActive
+          ? `Your card secures your membership. $0 today — ${subscriptionInfo?.price ? `$${subscriptionInfo.price}/month` : "regular rate"} after your ${billingStatus?.freeTrialDays || 90}-day trial.`
+          : "Enter your card details for the monthly membership."
+      }
+      amountLabel={
+        freeTrialActive
+          ? "$0 today (card on file for after trial)"
+          : `$${subscriptionInfo?.price}/month`
+      }
       loading={paymentLoading}
       error={paymentError}
       onSubmit={handlePayment}
