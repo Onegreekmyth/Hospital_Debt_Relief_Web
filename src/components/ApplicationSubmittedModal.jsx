@@ -49,6 +49,11 @@ const ApplicationSubmittedModal = ({
   } = useSelector((state) => state.payments);
   const [paymentOpen, setPaymentOpen] = useState(false);
   const freeTrialActive = billingStatus?.freeTrialActive === true;
+  const firstBillFlatFeeFree =
+    billingStatus?.firstBillFlatFeeFreeAvailable === true;
+  const flatFeeRequiresPayment =
+    billingStatus?.flatFeeRequiresPayment === true ||
+    billingStatus?.flatFeeAmount === 299;
 
   const [uploadError, setUploadError] = useState("");
   const [uploadedFileName, setUploadedFileName] = useState("");
@@ -109,7 +114,7 @@ const ApplicationSubmittedModal = ({
 
   const handlePayFlatFeeClick = async () => {
     dispatch(clearPaymentError());
-    if (freeTrialActive) {
+    if (firstBillFlatFeeFree) {
       try {
         await dispatch(
           chargeFlatFee({
@@ -678,10 +683,16 @@ const ApplicationSubmittedModal = ({
         {/* Single Submit My Bill button - hidden when bill is pending or approved */}
         {showSubmitMyBillButton && (
           <>
-            {showFlatFeeButton && freeTrialActive && (
+            {showFlatFeeButton && firstBillFlatFeeFree && (
               <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg p-3 mb-2">
-                Introductory offer: $0 flat fee (normally $299) for your first{" "}
-                {billingStatus?.freeTrialDays || 90} days. No credit card required.
+                Introductory offer: your <strong>first bill</strong> has a $0 flat fee
+                (normally $299) during your first {billingStatus?.freeTrialDays || 90}{" "}
+                days. No credit card required.
+              </p>
+            )}
+            {showFlatFeeButton && freeTrialActive && !firstBillFlatFeeFree && (
+              <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-3 mb-2">
+                A $299 one-time flat fee applies for this bill. Payment is required.
               </p>
             )}
             {(submitValidationError || flatFeeError || completeError) && (
@@ -696,9 +707,11 @@ const ApplicationSubmittedModal = ({
               {showFlatFeeButton
                 ? (flatFeeLoading
                     ? "Processing..."
-                    : freeTrialActive
+                    : firstBillFlatFeeFree
                       ? "Submit My Bill ($0)"
-                      : "Submit My Bill")
+                      : flatFeeRequiresPayment
+                        ? "Submit My Bill ($299)"
+                        : "Submit My Bill")
                 : (completeLoading ? "Submitting..." : "Submit My Bill")}
             </button>
           </>

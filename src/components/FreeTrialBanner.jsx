@@ -58,7 +58,7 @@ const FreeTrialBanner = ({ className = "", onClose }) => {
           >
             FREE for 90 days
           </a>
-          {" – "}No credit card needed!
+          {" – "}First bill $0 (no card). Membership from $7/mo.
         </p>
         {onClose && (
           <button

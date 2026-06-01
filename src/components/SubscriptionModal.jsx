@@ -26,9 +26,7 @@ const SubscriptionModal = ({
   );
 
   const freeTrialActive = billingStatus?.freeTrialActive === true;
-  const displayPrice = freeTrialActive
-    ? "0.00"
-    : subscriptionInfo?.price;
+  const displayPrice = subscriptionInfo?.price;
 
   useEffect(() => {
     if (paymentError) setError(paymentError);
@@ -119,7 +117,8 @@ const SubscriptionModal = ({
           {freeTrialActive && (
             <div className="p-3 rounded-lg bg-green-50 border border-green-200 mb-2">
               <p className="text-sm text-green-800 font-medium">
-                $0/month for your first {billingStatus?.freeTrialDays || 90} days — no credit card required.
+                During your first {billingStatus?.freeTrialDays || 90} days: unlimited
+                bill submissions with membership. Monthly rate applies; card required.
               </p>
             </div>
           )}
@@ -129,11 +128,6 @@ const SubscriptionModal = ({
             <div className="rounded-full border border-gray-200 px-5 py-3 bg-white">
               <p className="text-base text-[#2e1570] pl-4 md:pl-12">
                 ${displayPrice}
-                {freeTrialActive && subscriptionInfo?.price ? (
-                  <span className="text-sm text-gray-500 line-through ml-2">
-                    ${subscriptionInfo.price}
-                  </span>
-                ) : null}
               </p>
             </div>
           </div>
@@ -176,11 +170,7 @@ const SubscriptionModal = ({
             onClick={handleStartClick}
             disabled={paymentLoading || householdCount < 1 || !agreementChecked}
           >
-            {paymentLoading
-              ? "Processing..."
-              : freeTrialActive
-                ? "Start My Membership Plan (Free)"
-                : "Start My Membership Plan"}
+            {paymentLoading ? "Processing..." : "Start My Membership Plan"}
           </button>
 
           <button
@@ -197,17 +187,9 @@ const SubscriptionModal = ({
     <PaymentModal
       isOpen={paymentOpen}
       onClose={() => setPaymentOpen(false)}
-      title={freeTrialActive ? "Start free trial" : "Start membership"}
-      description={
-        freeTrialActive
-          ? `Your card secures your membership. $0 today — ${subscriptionInfo?.price ? `$${subscriptionInfo.price}/month` : "regular rate"} after your ${billingStatus?.freeTrialDays || 90}-day trial.`
-          : "Enter your card details for the monthly membership."
-      }
-      amountLabel={
-        freeTrialActive
-          ? "$0 today (card on file for after trial)"
-          : `$${subscriptionInfo?.price}/month`
-      }
+      title="Start membership"
+      description="Enter your card details for the monthly membership. You can submit unlimited bills while your membership is active."
+      amountLabel={`$${subscriptionInfo?.price}/month`}
       loading={paymentLoading}
       error={paymentError}
       onSubmit={handlePayment}
