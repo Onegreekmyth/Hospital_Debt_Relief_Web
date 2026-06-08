@@ -685,9 +685,8 @@ const ApplicationSubmittedModal = ({
           <>
             {showFlatFeeButton && firstBillFlatFeeFree && (
               <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg p-3 mb-2">
-                Introductory offer: your <strong>first bill</strong> has a $0 flat fee
-                (normally $299) during your first {billingStatus?.freeTrialDays || 90}{" "}
-                days. No credit card required.
+                Introductory Offer: Your first hospital bill submission is completely free
+                during your 90-day trial — a $299 value. No credit card required.
               </p>
             )}
             {showFlatFeeButton && freeTrialActive && !firstBillFlatFeeFree && (
@@ -758,7 +757,7 @@ const ApplicationSubmittedModal = ({
       <PaymentModal
         isOpen={paymentOpen}
         onClose={() => setPaymentOpen(false)}
-        title="Pay $299 flat fee"
+        title="Pay $299 Flat Fee"
         description="One-time fee to submit this bill for processing."
         amountLabel="$299.00"
         loading={flatFeeLoading}

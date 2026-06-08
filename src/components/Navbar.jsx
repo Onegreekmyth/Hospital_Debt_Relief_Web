@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import primaryLogo from "../assets/primary-logo.png";
-import uploadImg from "../assets/upload-img.png";
 
 const Navbar = ({ onOpenAddFamilyMembers, showTrialBanner = false }) => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -106,16 +105,9 @@ const Navbar = ({ onOpenAddFamilyMembers, showTrialBanner = false }) => {
                 {isBillHistory ? (
                   <Link
                     to="/dashboard"
-                    className="hidden md:inline-flex items-center justify-center gap-2 text-[#4720b1] border border-[#4720b1] px-4 py-2 rounded-full text-sm font-bold hover:bg-purple-50"
+                    className="hidden md:inline-flex items-center justify-center text-[#4720b1] border border-[#4720b1] px-4 py-2 rounded-full text-sm font-bold hover:bg-purple-50"
                   >
-                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full">
-                      <img
-                        src={uploadImg}
-                        alt="Upload"
-                        className="w-5 h-5 object-contain"
-                      />
-                    </span>
-                    <span>Upload New Bill</span>
+                    Dashboard
                   </Link>
                 ) : (
                   <Link
@@ -357,17 +349,10 @@ const Navbar = ({ onOpenAddFamilyMembers, showTrialBanner = false }) => {
             {isBillHistory ? (
               <Link
                 to="/dashboard"
-                className="mt-4 inline-flex items-center justify-center gap-2 text-[#4720b1] border border-[#4720b1] px-4 py-2 rounded-full text-sm font-bold"
+                className="mt-4 inline-flex items-center justify-center text-[#4720b1] border border-[#4720b1] px-4 py-2 rounded-full text-sm font-bold"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                <span>Upload New Bill</span>
-                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#f3ecff]">
-                  <img
-                    src={uploadImg}
-                    alt="Upload"
-                    className="w-3.5 h-3.5 object-contain"
-                  />
-                </span>
+                Dashboard
               </Link>
             ) : (
               <Link

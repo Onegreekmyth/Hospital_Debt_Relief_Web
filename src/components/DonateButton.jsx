@@ -129,7 +129,7 @@ const DonateButton = () => {
       <PaymentModal
         isOpen={paymentOpen}
         onClose={() => setPaymentOpen(false)}
-        title="Complete your donation"
+        title="Complete Your Donation"
         amountLabel={`$${amountDollars}`}
         loading={donationLoading}
         error={donationError}

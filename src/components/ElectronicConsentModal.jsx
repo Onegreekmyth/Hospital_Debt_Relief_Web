@@ -50,11 +50,7 @@ function buildElectronicConsentPdf(form, patientSigDataUrl, guardianSigDataUrl) 
   addText("I have read and understood the risks associated with email communication.", { gap: 4 });
   addText("Select One:", { bold: true, gap: 3 });
   addText(
-    `${form.hipaaEmailConsent === "unencrypted_consent" ? "[X]" : "[ ]"} I CONSENT to receiving unencrypted emails containing my PHI. I understand the risks and choose to communicate this way for my convenience.`,
-    { gap: 3 }
-  );
-  addText(
-    `${form.hipaaEmailConsent === "encrypted_required" ? "[X]" : "[ ]"} I REQUIRE all emails containing PHI to be sent via a secure, encrypted portal or encrypted email service.`,
+    `${form.hipaaEmailConsent === "encrypted_required" ? "[X]" : "[ ]"} I CONSENT to receiving encrypted emails containing my PHI from hospitaldebtrelief.com. I understand that all emails are automatically secured using HIPAA-compliant end-to-end TLS encryption and no portal or password is required to access them.`,
     { gap: 7 }
   );
 
@@ -195,7 +191,6 @@ export default function ElectronicConsentModal({
     patientClientName: "",
     guardianPrintName: "",
     hipaaEmailConsent: "",
-    acknowledged: false,
     date: "",
   });
   const [errors, setErrors] = useState({});
@@ -213,7 +208,6 @@ export default function ElectronicConsentModal({
       patientClientName: billData?.patientName || profileName || "",
       guardianPrintName: "",
       hipaaEmailConsent: billData?.hipaaEmailConsent || "",
-      acknowledged: false,
       date,
     });
     setPatientSigDataUrl("");
@@ -227,8 +221,9 @@ export default function ElectronicConsentModal({
   const validate = () => {
     const next = {};
     if (!form.patientClientName.trim()) next.patientClientName = "Patient/Client name is required.";
-    if (!form.hipaaEmailConsent) next.hipaaEmailConsent = "Select one communication option.";
-    if (!form.acknowledged) next.acknowledged = "Please confirm risk acknowledgement.";
+    if (form.hipaaEmailConsent !== "encrypted_required") {
+      next.hipaaEmailConsent = "Please select the communication consent option.";
+    }
     if (!patientSigDataUrl && !guardianSigDataUrl) next.signature = "Provide patient or guardian signature.";
     if (guardianSigDataUrl && !form.guardianPrintName.trim()) {
       next.guardianPrintName = "Guardian print name is required when guardian signs.";
@@ -348,45 +343,26 @@ export default function ElectronicConsentModal({
             <p className="font-semibold mb-2">4. PATIENT AUTHORIZATION &amp; E-SIGNATURE</p>
             <p className="mb-2">I have read and understood the risks associated with email communication.</p>
             <p className="font-medium mb-2">Select One:</p>
-            <label className="flex items-start gap-2 text-sm text-gray-700 mb-2">
-              <input
-                type="checkbox"
-                checked={form.hipaaEmailConsent === "unencrypted_consent"}
-                onChange={() =>
-                  setForm((prev) => ({ ...prev, hipaaEmailConsent: "unencrypted_consent" }))
-                }
-                className="mt-1 h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-              />
-              <span>
-                I CONSENT to receiving unencrypted emails containing my PHI. I understand
-                the risks and choose to communicate this way for my convenience.
-              </span>
-            </label>
             <label className="flex items-start gap-2 text-sm text-gray-700">
               <input
                 type="checkbox"
                 checked={form.hipaaEmailConsent === "encrypted_required"}
-                onChange={() =>
-                  setForm((prev) => ({ ...prev, hipaaEmailConsent: "encrypted_required" }))
+                onChange={(e) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    hipaaEmailConsent: e.target.checked ? "encrypted_required" : "",
+                  }))
                 }
                 className="mt-1 h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
               />
               <span>
-                I REQUIRE all emails containing PHI to be sent via a secure, encrypted portal or encrypted email service.
+                I <strong>CONSENT</strong> to receiving encrypted emails containing my PHI
+                from hospitaldebtrelief.com. I understand that all emails are automatically
+                secured using HIPAA-compliant end-to-end TLS encryption and no portal or
+                password is required to access them.
               </span>
             </label>
             {errors.hipaaEmailConsent && <p className="text-xs text-red-600 mt-1">{errors.hipaaEmailConsent}</p>}
-
-            <label className="flex items-start gap-2 text-sm text-gray-700 mt-3">
-              <input
-                type="checkbox"
-                checked={form.acknowledged}
-                onChange={(e) => setForm((prev) => ({ ...prev, acknowledged: e.target.checked }))}
-                className="mt-1 h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-              />
-              <span>I have read and understood the risks associated with email communication.</span>
-            </label>
-            {errors.acknowledged && <p className="text-xs text-red-600 mt-1">{errors.acknowledged}</p>}
           </div>
 
           <div>

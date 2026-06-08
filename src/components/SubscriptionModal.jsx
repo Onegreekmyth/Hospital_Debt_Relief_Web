@@ -26,7 +26,9 @@ const SubscriptionModal = ({
   );
 
   const freeTrialActive = billingStatus?.freeTrialActive === true;
-  const displayPrice = subscriptionInfo?.price;
+  const displayPrice = freeTrialActive ? "0.00" : subscriptionInfo?.price;
+  const membershipDescription =
+    "Members with an active monthly membership receive unlimited hospital bill submissions for processing.";
 
   useEffect(() => {
     if (paymentError) setError(paymentError);
@@ -117,8 +119,10 @@ const SubscriptionModal = ({
           {freeTrialActive && (
             <div className="p-3 rounded-lg bg-green-50 border border-green-200 mb-2">
               <p className="text-sm text-green-800 font-medium">
-                During your first {billingStatus?.freeTrialDays || 90} days: unlimited
-                bill submissions with membership. Monthly rate applies; card required.
+                Monthly rate waived during your 90-day trial. Unlimited bill submissions
+                included. Billing begins after trial ends only if you keep it. Hospital
+                bills submitted must be dated on or after your membership start date.
+                Credit card required.
               </p>
             </div>
           )}
@@ -128,6 +132,11 @@ const SubscriptionModal = ({
             <div className="rounded-full border border-gray-200 px-5 py-3 bg-white">
               <p className="text-base text-[#2e1570] pl-4 md:pl-12">
                 ${displayPrice}
+                {freeTrialActive && subscriptionInfo?.price ? (
+                  <span className="text-sm text-gray-500 line-through ml-2">
+                    ${subscriptionInfo.price}
+                  </span>
+                ) : null}
               </p>
             </div>
           </div>
@@ -187,9 +196,13 @@ const SubscriptionModal = ({
     <PaymentModal
       isOpen={paymentOpen}
       onClose={() => setPaymentOpen(false)}
-      title="Start membership"
-      description="Enter your card details for the monthly membership. You can submit unlimited bills while your membership is active."
-      amountLabel={`$${subscriptionInfo?.price}/month`}
+      title="Start Membership"
+      description={membershipDescription}
+      amountLabel={
+        freeTrialActive
+          ? "$0 today (monthly billing starts after your 90-day trial)"
+          : `$${subscriptionInfo?.price}/month`
+      }
       loading={paymentLoading}
       error={paymentError}
       onSubmit={handlePayment}

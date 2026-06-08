@@ -195,9 +195,6 @@ const PaymentModal = ({
                     placeholder="you@example.com"
                     disabled={busy}
                   />
-                  <p className="mt-1 text-xs text-gray-500">
-                    We&apos;ll email you a payment receipt, similar to Stripe.
-                  </p>
                 </div>
               </>
             )}
