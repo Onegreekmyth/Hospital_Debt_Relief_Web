@@ -48,7 +48,7 @@ function buildElectronicConsentPdf(form, patientSigDataUrl, guardianSigDataUrl) 
 
   addText("4. PATIENT AUTHORIZATION & E-SIGNATURE", { bold: true, gap: 4 });
   addText("I have read and understood the risks associated with email communication.", { gap: 4 });
-  addText("Select One:", { bold: true, gap: 3 });
+  addText("Select:", { bold: true, gap: 3 });
   addText(
     `${form.hipaaEmailConsent === "encrypted_required" ? "[X]" : "[ ]"} I CONSENT to receiving encrypted emails containing my PHI from hospitaldebtrelief.com. I understand that all emails are automatically secured using HIPAA-compliant end-to-end TLS encryption and no portal or password is required to access them.`,
     { gap: 7 }
