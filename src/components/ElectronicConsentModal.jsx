@@ -342,7 +342,7 @@ export default function ElectronicConsentModal({
           <div className="rounded-xl border border-purple-200 bg-purple-50/40 p-3">
             <p className="font-semibold mb-2">4. PATIENT AUTHORIZATION &amp; E-SIGNATURE</p>
             <p className="mb-2">I have read and understood the risks associated with email communication.</p>
-            <p className="font-medium mb-2">Select One:</p>
+            <p className="font-medium mb-2">Select:</p>
             <label className="flex items-start gap-2 text-sm text-gray-700">
               <input
                 type="checkbox"

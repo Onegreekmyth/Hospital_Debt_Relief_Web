@@ -120,7 +120,7 @@ const SubscriptionModal = ({
             <div className="p-3 rounded-lg bg-green-50 border border-green-200 mb-2">
               <p className="text-sm text-green-800 font-medium">
                 Monthly rate waived during your 90-day trial. Unlimited bill submissions
-                included. Billing begins after trial ends only if you keep it. Hospital
+                included. Billing begins after trial ends, only if you keep it. Hospital
                 bills submitted must be dated on or after your membership start date.
                 Credit card required.
               </p>
