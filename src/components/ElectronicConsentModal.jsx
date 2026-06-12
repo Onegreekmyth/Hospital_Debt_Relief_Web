@@ -29,28 +29,28 @@ function buildElectronicConsentPdf(form, patientSigDataUrl, guardianSigDataUrl) 
 
   addText("1. PURPOSE", { bold: true, gap: 4 });
   addText(
-    "This form authorizes Uncovered Solutions LLC (hospitaldebtrelief.com) to communicate with you via email regarding your account, health information, or financial records. This may include the electronic transmission of Protected Health Information (PHI) such as billing statements, treatment summaries, or other sensitive documents.",
+    "This form authorizes Uncovered Solutions LLC (hospitaldebtrelief.com) to communicate with you via email regarding your account, health information, or financial records. This may include the electronic transmission of Protected Health Information (PHI) such as billing statements, treatment summaries, or other sensitive documents. All emails sent by hospitaldebtrelief.com are transmitted using HIPAA-compliant end-to-end TLS encryption to ensure the protection of your PHI at all times.",
     { gap: 7 }
   );
 
-  addText("2. RISK ACKNOWLEDGEMENT", { bold: true, gap: 4 });
-  addText("Email is a convenient but inherently unsecure communication method. By signing this form, you acknowledge and accept the following risks:", { gap: 4 });
-  addText("- Interception: Emails can be intercepted, altered, or forwarded without authorization.", { gap: 3 });
+  addText("2. ENCRYPTION & SECURITY", { bold: true, gap: 4 });
+  addText(
+    "All outgoing emails from hospitaldebtrelief.com are secured using HIPAA-compliant end-to-end TLS encryption. No passwords, logins, or portal access are required to receive or read our emails. Your Protected Health Information (PHI) is encrypted automatically at the time of transmission, ensuring your information is protected every step of the way. While we take every measure to protect your information on our end, you acknowledge the following residual risks:",
+    { gap: 4 }
+  );
   addText("- Storage: Copies of emails may exist on servers, computers, or mobile devices even after they are deleted by the sender or recipient.", { gap: 3 });
-  addText("- Account Access: Anyone with access to your email account (including family members or employers) may be able to read these communications.", { gap: 3 });
+  addText("- Account Access: Anyone with access to your email account including family members or employers may be able to read these communications.", { gap: 3 });
   addText("- Misdirection: Emails can be sent to the wrong recipient due to clerical errors.", { gap: 7 });
 
   addText("3. TEXAS-SPECIFIC DISCLOSURES", { bold: true, gap: 4 });
   addText("Electronic Disclosure Notice (HB 300): Pursuant to Texas Health & Safety Code § 181.154, you are hereby notified that your protected health information is subject to electronic disclosure. The Company will obtain a separate authorization for disclosures outside of treatment, payment, or healthcare operations as required by law.", { gap: 4 });
   addText("Data Localization (SB 1188): All electronic health records containing your information are physically maintained and stored on servers located within the United States or its territories.", { gap: 3 });
   addText("Access Rights: Under Texas law, you have the right to receive an electronic copy of your records within 15 business days of a written request.", { gap: 3 });
-  addText("AI Disclosure: [Optional/Delete if not applicable] The Company may use Artificial Intelligence (AI) tools to assist in the processing or analysis of your records. All AI-generated outputs are reviewed by a qualified professional.", { gap: 7 });
+  addText("AI Disclosure: The Company may use Artificial Intelligence (AI) tools to assist in the processing or analysis of your records. All AI-generated outputs are reviewed by a qualified professional.", { gap: 7 });
 
   addText("4. PATIENT AUTHORIZATION & E-SIGNATURE", { bold: true, gap: 4 });
-  addText("I have read and understood the risks associated with email communication.", { gap: 4 });
-  addText("Select:", { bold: true, gap: 3 });
   addText(
-    `${form.hipaaEmailConsent === "encrypted_required" ? "[X]" : "[ ]"} I CONSENT to receiving encrypted emails containing my PHI from hospitaldebtrelief.com. I understand that all emails are automatically secured using HIPAA-compliant end-to-end TLS encryption and no portal or password is required to access them.`,
+    `${form.hipaaEmailConsent === "encrypted_required" ? "[X]" : "[ ]"} I have read and understood that all emails sent by hospitaldebtrelief.com are transmitted using HIPAA-compliant end-to-end TLS encryption to protect my Protected Health Information (PHI).`,
     { gap: 7 }
   );
 
@@ -292,20 +292,26 @@ export default function ElectronicConsentModal({
               communicate with you via email regarding your account, health information,
               or financial records. This may include the electronic transmission of
               Protected Health Information (PHI) such as billing statements, treatment
-              summaries, or other sensitive documents.
+              summaries, or other sensitive documents. All emails sent by
+              hospitaldebtrelief.com are transmitted using HIPAA-compliant end-to-end
+              TLS encryption to ensure the protection of your PHI at all times.
             </p>
           </div>
 
           <div>
-            <p className="font-semibold mb-1">2. RISK ACKNOWLEDGEMENT</p>
+            <p className="font-semibold mb-1">2. ENCRYPTION &amp; SECURITY</p>
             <p className="mb-2">
-              Email is a convenient but inherently unsecure communication method. By
-              signing this form, you acknowledge and accept the following risks:
+              All outgoing emails from hospitaldebtrelief.com are secured using
+              HIPAA-compliant end-to-end TLS encryption. No passwords, logins, or portal
+              access are required to receive or read our emails. Your Protected Health
+              Information (PHI) is encrypted automatically at the time of transmission,
+              ensuring your information is protected every step of the way. While we take
+              every measure to protect your information on our end, you acknowledge the
+              following residual risks:
             </p>
             <ul className="list-disc pl-5 space-y-1">
-              <li><strong>Interception:</strong> Emails can be intercepted, altered, or forwarded without authorization.</li>
               <li><strong>Storage:</strong> Copies of emails may exist on servers, computers, or mobile devices even after they are deleted by the sender or recipient.</li>
-              <li><strong>Account Access:</strong> Anyone with access to your email account (including family members or employers) may be able to read these communications.</li>
+              <li><strong>Account Access:</strong> Anyone with access to your email account including family members or employers may be able to read these communications.</li>
               <li><strong>Misdirection:</strong> Emails can be sent to the wrong recipient due to clerical errors.</li>
             </ul>
           </div>
@@ -331,18 +337,15 @@ export default function ElectronicConsentModal({
                 written request.
               </p>
               <p>
-                <strong>AI Disclosure:</strong> [Optional/Delete if not applicable] The
-                Company may use Artificial Intelligence (AI) tools to assist in the
-                processing or analysis of your records. All AI-generated outputs are
-                reviewed by a qualified professional.
+                <strong>AI Disclosure:</strong> The Company may use Artificial Intelligence
+                (AI) tools to assist in the processing or analysis of your records. All
+                AI-generated outputs are reviewed by a qualified professional.
               </p>
             </div>
           </div>
 
           <div className="rounded-xl border border-purple-200 bg-purple-50/40 p-3">
             <p className="font-semibold mb-2">4. PATIENT AUTHORIZATION &amp; E-SIGNATURE</p>
-            <p className="mb-2">I have read and understood the risks associated with email communication.</p>
-            <p className="font-medium mb-2">Select:</p>
             <label className="flex items-start gap-2 text-sm text-gray-700">
               <input
                 type="checkbox"
@@ -356,10 +359,9 @@ export default function ElectronicConsentModal({
                 className="mt-1 h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
               />
               <span>
-                I <strong>CONSENT</strong> to receiving encrypted emails containing my PHI
-                from hospitaldebtrelief.com. I understand that all emails are automatically
-                secured using HIPAA-compliant end-to-end TLS encryption and no portal or
-                password is required to access them.
+                I have read and understood that all emails sent by hospitaldebtrelief.com
+                are transmitted using HIPAA-compliant end-to-end TLS encryption to protect
+                my Protected Health Information (PHI).
               </span>
             </label>
             {errors.hipaaEmailConsent && <p className="text-xs text-red-600 mt-1">{errors.hipaaEmailConsent}</p>}
