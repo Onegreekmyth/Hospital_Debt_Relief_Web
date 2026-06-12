@@ -16,6 +16,8 @@ import CommittedSolutionPage from "./pages/CommittedSolution";
 import StateLawsPage from "./pages/StateLaws";
 import PrivacyPolicyPage from "./pages/PrivacyPolicy";
 import TermsAndConditionsPage from "./pages/TermsAndConditions";
+import BlogPage from "./pages/Blog";
+import BlogPostPage from "./pages/BlogPost";
 import DonateButton from "./components/DonateButton";
 
 const ProtectedRoute = () => {
@@ -34,6 +36,8 @@ function App() {
       <Route path="/about" element={<AboutPage />} />
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/faq" element={<FAQPage />} />
+      <Route path="/blog" element={<BlogPage />} />
+      <Route path="/blog/:slug" element={<BlogPostPage />} />
       <Route path="/resources/charity-care" element={<CharityCarePage />} />
       <Route path="/resources/committed-solution" element={<CommittedSolutionPage />} />
       <Route path="/resources/state-laws" element={<StateLawsPage />} />

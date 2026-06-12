@@ -145,7 +145,13 @@ const Navbar = ({ onOpenAddFamilyMembers, showTrialBanner = false }) => {
                   >
                     FAQ
                   </Link>
-                  <div 
+                  <Link
+                    to="/blog"
+                    className={navLinkClasses(pathname.startsWith("/blog"))}
+                  >
+                    Blog
+                  </Link>
+                  <div
                     className="relative"
                     onMouseEnter={handleResourcesMouseEnter}
                     onMouseLeave={handleResourcesMouseLeave}
@@ -256,6 +262,15 @@ const Navbar = ({ onOpenAddFamilyMembers, showTrialBanner = false }) => {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               FAQ
+            </Link>
+            <Link
+              to="/blog"
+              className={`text-sm font-medium py-2 ${navLinkClasses(
+                pathname.startsWith("/blog")
+              )}`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Blog
             </Link>
             <div className="py-2">
               <button

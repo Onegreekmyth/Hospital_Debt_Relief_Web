@@ -16,6 +16,109 @@
 }
 
 @layer utilities {
+  /* Blog animations */
+  @keyframes blogFadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes blogFadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes blogFloat {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  .animate-blog-fade-up {
+    animation: blogFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .animate-blog-fade-in {
+    animation: blogFadeIn 0.8s ease both;
+  }
+  .animate-blog-float {
+    animation: blogFloat 6s ease-in-out infinite;
+  }
+
+  /* Rich-text article content (rendered from admin editor HTML) */
+  .blog-content {
+    color: #1f2937;
+    line-height: 1.85;
+    font-size: 17px;
+  }
+  .blog-content > * + * {
+    margin-top: 1.1em;
+  }
+  .blog-content h2 {
+    font-size: 1.7rem;
+    font-weight: 800;
+    line-height: 1.25;
+    margin-top: 2rem;
+    color: #1e1b4b;
+  }
+  .blog-content h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-top: 1.6rem;
+    color: #312e81;
+  }
+  .blog-content p {
+    margin: 1em 0;
+  }
+  .blog-content a {
+    color: #6d28d9;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .blog-content ul,
+  .blog-content ol {
+    padding-left: 1.5rem;
+    margin: 1em 0;
+  }
+  .blog-content ul {
+    list-style: disc;
+  }
+  .blog-content ol {
+    list-style: decimal;
+  }
+  .blog-content li {
+    margin: 0.4em 0;
+  }
+  .blog-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 1rem;
+    margin: 1.5rem 0;
+  }
+  .blog-content blockquote {
+    border-left: 4px solid #7c3aed;
+    padding: 0.25rem 0 0.25rem 1.25rem;
+    margin: 1.5rem 0;
+    color: #4b5563;
+    font-style: italic;
+    background: rgba(124, 58, 237, 0.04);
+    border-radius: 0 0.5rem 0.5rem 0;
+  }
+  .blog-content strong {
+    font-weight: 700;
+    color: #111827;
+  }
+
   .thin-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: rgba(120, 99, 178, 0.45) transparent;
