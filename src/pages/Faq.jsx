@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import {
+  trialFaqAnswer,
+  moneyBackGuaranteeFaqAnswer,
+  pricingFaqAnswer,
+} from "../data/faqAnswers";
 
 const faqs = [
   {
@@ -13,18 +18,12 @@ const faqs = [
   },
   
   {
-    question: "How does the 90-Day Free Trial work?",
-    answer: [
-      "The 90-day free trial gives you the opportunity to experience Hospital Debt Relief at no cost. Once you create a free account at hospitaldebtrelief.com, your trial begins immediately. Here is exactly how it works:",
-      "During Your 90-Day Trial: Your first hospital bill submission is completely free — no credit card required. A flat fee of $299 applies to each additional bill submitted during the trial (payment method required). If you enroll in monthly membership during your trial, your subscription rate of $7, $14, or $21 per month — based on household family size — is waived for the remainder of your 90 days. Billing only begins after your trial ends if you choose to keep it. Monthly members enjoy unlimited bill submissions with no cap. Only bills dated on or after your membership start date are eligible.",
-      "After Your 90-Day Trial: Without a membership, a flat fee of $299 applies to every bill submitted. With a membership, your monthly rate of $7, $14, or $21 continues with unlimited bill submissions. Only bills dated on or after your membership start date are eligible.",
-      "No hidden fees. No contracts. Cancel anytime.",
-    ],
+    question: "How Does the 90-Day Free Trial Work?",
+    answer: trialFaqAnswer,
   },
   {
     question: "How does the Money Back Guarantee work?",
-    answer: [
-"If your bill hasn’t been reduced by more than the cost of our service within 60 days of submitting your completed application and documents, you are eligible for a refund. To request one, go to your “Bill History” tab, select the original bill, and upload a copy of your most recent revised statement. Enter the new balance and submit your request for processing."    ],
+    answer: moneyBackGuaranteeFaqAnswer,
   },
   {
     question: "How does all of this work?",
@@ -44,10 +43,7 @@ const faqs = [
   },
   {
     question: "What do I have to pay?",
-    answer: [
-      "The Non-Member Rate: A Flat $299 Per Bill. We keep it simple, non-members pay a one-time fee of $299 to help lower an existing bill. Whether we save you $1,000 or $10,000, your cost stays exactly the same.",
-      "Want to avoid future fees and save even more money? Become a member to protect your family from future hospital bills at no extra cost. On a yearly average, members pay 56% less than non-members and that’s based on just one member bill submission vs the non-member rate. Memberships start at $7/Month.",
-    ],
+    answer: pricingFaqAnswer,
   },
   {
     question: "Why do you charge for your services?", 

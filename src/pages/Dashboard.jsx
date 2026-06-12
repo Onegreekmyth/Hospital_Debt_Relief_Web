@@ -13,7 +13,10 @@ import SubscriptionDetailsModal from "../components/SubscriptionDetailsModal";
 import HospitalMap from "../components/HospitalMap";
 import uploadImg from "../assets/upload-img.png";
 import rightArrow from "../assets/right-arrow.png";
-import { cancelSubscription, clearCancelError } from "../store/payments/paymentsSlice";
+import {
+  cancelSubscription,
+  clearCancelError,
+} from "../store/payments/paymentsSlice";
 import {
   createFamilyMember,
   updateFamilyMember,
@@ -43,19 +46,25 @@ const Dashboard = () => {
   const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
   const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
   const [isAddFamilyModalOpen, setIsAddFamilyModalOpen] = useState(false);
-  const [isApplicationSubmittedModalOpen, setIsApplicationSubmittedModalOpen] = useState(false);
+  const [isApplicationSubmittedModalOpen, setIsApplicationSubmittedModalOpen] =
+    useState(false);
   const [submittedBillId, setSubmittedBillId] = useState(null);
   const [submittedBillData, setSubmittedBillData] = useState(null);
-  const [isCancelSubscriptionOpen, setIsCancelSubscriptionOpen] = useState(false);
-  const [isSubscriptionDetailsOpen, setIsSubscriptionDetailsOpen] = useState(false);
-  const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] = useState(false);
+  const [isCancelSubscriptionOpen, setIsCancelSubscriptionOpen] =
+    useState(false);
+  const [isSubscriptionDetailsOpen, setIsSubscriptionDetailsOpen] =
+    useState(false);
+  const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] =
+    useState(false);
   const [memberToDelete, setMemberToDelete] = useState(null);
   const [billReceivedModalBillId, setBillReceivedModalBillId] = useState(null);
 
   const [householdSize, setHouseholdSize] = useState(1);
   const [editingMember, setEditingMember] = useState(null);
-  const [accountHolderRemoveFromPlan, setAccountHolderRemoveFromPlan] = useState(false);
-  const [familyMembersRemoveFromPlan, setFamilyMembersRemoveFromPlan] = useState([]);
+  const [accountHolderRemoveFromPlan, setAccountHolderRemoveFromPlan] =
+    useState(false);
+  const [familyMembersRemoveFromPlan, setFamilyMembersRemoveFromPlan] =
+    useState([]);
   const [isProfileEditing, setIsProfileEditing] = useState(false);
 
   // Redux state for user profile
@@ -78,11 +87,12 @@ const Dashboard = () => {
     operationStatus,
     operationError,
   } = useSelector((state) => state.familyMembers);
-  const familyMembersLoading = familyMembersStatus === 'loading';
+  const familyMembersLoading = familyMembersStatus === "loading";
 
-  const { cancelLoading: cancelSubscriptionLoading, cancelError: cancelSubscriptionError } = useSelector(
-    (state) => state.payments
-  );
+  const {
+    cancelLoading: cancelSubscriptionLoading,
+    cancelError: cancelSubscriptionError,
+  } = useSelector((state) => state.payments);
 
   // High-level onboarding and eligibility state (placeholder for backend data)
   const [subscriptionStatus, setSubscriptionStatus] = useState("inactive"); // "inactive" | "active" | "cancelled"
@@ -90,7 +100,8 @@ const Dashboard = () => {
   const [subscriptionDate, setSubscriptionDate] = useState("");
   const [subscriptionEndDate, setSubscriptionEndDate] = useState("");
   const [subscriptionWillCancel, setSubscriptionWillCancel] = useState(false);
-  const [subscriptionStartDateISO, setSubscriptionStartDateISO] = useState(null);
+  const [subscriptionStartDateISO, setSubscriptionStartDateISO] =
+    useState(null);
 
   const applySubscriptionFromData = (sub) => {
     if (!sub) {
@@ -111,26 +122,28 @@ const Dashboard = () => {
     setSubscriptionWillCancel(!!sub.cancelAtPeriodEnd);
     setSubscriptionStartDateISO(sub.currentPeriodStart || null);
 
-    const start = sub.currentPeriodStart ? new Date(sub.currentPeriodStart) : null;
+    const start = sub.currentPeriodStart
+      ? new Date(sub.currentPeriodStart)
+      : null;
     const end = sub.currentPeriodEnd ? new Date(sub.currentPeriodEnd) : null;
 
     setSubscriptionDate(
       start
         ? start.toLocaleDateString("en-US", {
-          month: "2-digit",
-          day: "2-digit",
-          year: "numeric",
-        })
-        : ""
+            month: "2-digit",
+            day: "2-digit",
+            year: "numeric",
+          })
+        : "",
     );
     setSubscriptionEndDate(
       end
         ? end.toLocaleDateString("en-US", {
-          month: "2-digit",
-          day: "2-digit",
-          year: "numeric",
-        })
-        : ""
+            month: "2-digit",
+            day: "2-digit",
+            year: "numeric",
+          })
+        : "",
     );
   };
   const [eligibilityStatus, setEligibilityStatus] = useState("eligible"); // "eligible" | "ineligible"
@@ -155,7 +168,7 @@ const Dashboard = () => {
         setHouseholdSize(
           Number(userData?.eligibilityData?.householdSize) > 0
             ? Number(userData.eligibilityData.householdSize)
-            : 1
+            : 1,
         );
         if (userData?.subscription) {
           applySubscriptionFromData(userData.subscription);
@@ -167,31 +180,34 @@ const Dashboard = () => {
       });
   }, [dispatch, navigate]);
 
-    const effectiveStatus =
+  const effectiveStatus =
     subscriptionStatus === "active" && subscriptionWillCancel
       ? "cancelled"
       : subscriptionStatus;
 
-useEffect(() => {
-  setFamilyMembersRemoveFromPlan((prev) => {
-    return familyMembers.map((m, index) => {
-      // keep existing value if already present
-      if (prev[index] !== undefined) {
-        return prev[index];
-      }
+  useEffect(() => {
+    setFamilyMembersRemoveFromPlan((prev) => {
+      return familyMembers.map((m, index) => {
+        // keep existing value if already present
+        if (prev[index] !== undefined) {
+          return prev[index];
+        }
 
-      // default for new member
-      if (effectiveStatus !== "active") {
-        return false; // unchecked when account inactive
-      }
+        // default for new member
+        if (effectiveStatus !== "active") {
+          return false; // unchecked when account inactive
+        }
 
-      return m.withActiveSubscription === false;
+        return m.withActiveSubscription === false;
+      });
     });
-  });
-}, [familyMembers, effectiveStatus]);
+  }, [familyMembers, effectiveStatus]);
 
   useEffect(() => {
-    if (profile && Object.prototype.hasOwnProperty.call(profile, "withActiveSubscription")) {
+    if (
+      profile &&
+      Object.prototype.hasOwnProperty.call(profile, "withActiveSubscription")
+    ) {
       setAccountHolderRemoveFromPlan(profile.withActiveSubscription === false);
     }
   }, [profile?.withActiveSubscription]);
@@ -272,7 +288,7 @@ useEffect(() => {
         city: profile.city?.trim() || undefined,
         state: profile.state?.trim() || undefined,
         zipcode: profile.zipcode?.toString().trim() || undefined,
-      })
+      }),
     );
   };
 
@@ -321,8 +337,10 @@ useEffect(() => {
     .trim();
   // Subscription plan count: account holder + family members that are not removed
   const selectedMemberCount =
-    familyMembers.length - familyMembersRemoveFromPlan.filter((r) => r === true).length;
-  const effectivePlanCount = (accountHolderRemoveFromPlan ? 0 : 1) + selectedMemberCount;
+    familyMembers.length -
+    familyMembersRemoveFromPlan.filter((r) => r === true).length;
+  const effectivePlanCount =
+    (accountHolderRemoveFromPlan ? 0 : 1) + selectedMemberCount;
   // allow zero when everyone is excluded; the subscription modal already
   // shows a warning and disables the start button when householdCount < 1
   const householdCount = effectivePlanCount;
@@ -354,10 +372,12 @@ useEffect(() => {
 
   const subscriptionInfo = getSubscriptionInfoForHousehold(householdCount);
 
-
-
-  const hasMemberActiveSubscription = memberToDelete?.withActiveSubscription === true && effectiveStatus === "active";
-  const message = hasMemberActiveSubscription ? "Have an active subscription? Please cancel the subscription to make Changes." : "Are you sure you want to delete this family member? This action cannot be undone.";
+  const hasMemberActiveSubscription =
+    memberToDelete?.withActiveSubscription === true &&
+    effectiveStatus === "active";
+  const message = hasMemberActiveSubscription
+    ? "Have an active subscription? Please cancel the subscription to make Changes."
+    : "Are you sure you want to delete this family member? This action cannot be undone.";
   const isSubscriptionLocked = subscriptionStatus === "active";
   return (
     <div className="min-h-screen bg-gray-50">
@@ -381,17 +401,32 @@ useEffect(() => {
                 }}
                 className="w-full flex items-center justify-between px-4 md:px-6 py-4 md:py-5 text-left cursor-pointer"
               >
-                <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900">Account Profile</h2>
+                <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900">
+                  Account Profile
+                </h2>
                 <div className="flex items-center gap-1">
                   {isContactInfoOpen && !isProfileEditing && (
                     <button
                       type="button"
-                      onClick={(e) => { e.stopPropagation(); setIsProfileEditing(true); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsProfileEditing(true);
+                      }}
                       className="p-1.5 rounded-full text-purple-800 hover:text-[#5B2BE4] hover:bg-purple-50 transition"
                       aria-label="Edit profile"
                     >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                        />
                       </svg>
                     </button>
                   )}
@@ -399,35 +434,66 @@ useEffect(() => {
                     <>
                       <button
                         type="button"
-                        onClick={(e) => { e.stopPropagation(); handleUpdateProfile(); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleUpdateProfile();
+                        }}
                         disabled={profileUpdateLoading || profileLoading}
                         className="p-1.5 rounded-full text-green-600 hover:bg-green-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
                         aria-label="Save"
                       >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
                         </svg>
                       </button>
                       <button
                         type="button"
-                        onClick={(e) => { e.stopPropagation(); setIsProfileEditing(false); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsProfileEditing(false);
+                        }}
                         disabled={profileUpdateLoading}
                         className="p-1.5 rounded-full text-red-500 hover:text-red-600 hover:bg-red-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
                         aria-label="Cancel"
                       >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
                         </svg>
                       </button>
                     </>
                   )}
                   <svg
-                    className={`w-5 h-5 text-gray-600 transition-transform ${isContactInfoOpen ? '' : 'rotate-180'}`}
+                    className={`w-5 h-5 text-gray-600 transition-transform ${isContactInfoOpen ? "" : "rotate-180"}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 15l7-7 7 7"
+                    />
                   </svg>
                 </div>
               </div>
@@ -442,12 +508,16 @@ useEffect(() => {
                   )}
                   {profileUpdateError && (
                     <div className="p-3 rounded-lg bg-red-50 border border-red-200">
-                      <p className="text-sm text-red-600">{profileUpdateError}</p>
+                      <p className="text-sm text-red-600">
+                        {profileUpdateError}
+                      </p>
                     </div>
                   )}
                   {profileUpdateSuccess && (
                     <div className="p-3 rounded-lg bg-green-50 border border-green-200">
-                      <p className="text-sm text-green-700">Profile updated successfully.</p>
+                      <p className="text-sm text-green-700">
+                        Profile updated successfully.
+                      </p>
                     </div>
                   )}
                   {/* First Name and Second Name in a row */}
@@ -464,13 +534,25 @@ useEffect(() => {
                           stroke="currentColor"
                           viewBox="0 0 24 24"
                         >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                          />
                         </svg>
                         <input
                           type="text"
                           value={profile.firstName}
                           disabled={!isProfileEditing}
-                          onChange={(e) => dispatch(setProfileField({ field: "firstName", value: e.target.value }))}
+                          onChange={(e) =>
+                            dispatch(
+                              setProfileField({
+                                field: "firstName",
+                                value: e.target.value,
+                              }),
+                            )
+                          }
                           className={`w-full h-12 rounded-full border border-gray-300 pl-12 pr-4 text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${isProfileEditing ? "bg-white" : "bg-gray-100 cursor-not-allowed"}`}
                           placeholder={profileLoading ? "Loading..." : "john"}
                         />
@@ -489,13 +571,25 @@ useEffect(() => {
                           stroke="currentColor"
                           viewBox="0 0 24 24"
                         >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                          />
                         </svg>
                         <input
                           type="text"
                           value={profile.lastName}
                           disabled={!isProfileEditing}
-                          onChange={(e) => dispatch(setProfileField({ field: "lastName", value: e.target.value }))}
+                          onChange={(e) =>
+                            dispatch(
+                              setProfileField({
+                                field: "lastName",
+                                value: e.target.value,
+                              }),
+                            )
+                          }
                           className={`w-full h-11 md:h-12 rounded-full border border-gray-300 pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${isProfileEditing ? "bg-white" : "bg-gray-100 cursor-not-allowed"}`}
                           placeholder={profileLoading ? "Loading..." : "Thomas"}
                         />
@@ -514,13 +608,25 @@ useEffect(() => {
                         stroke="currentColor"
                         viewBox="0 0 24 24"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                        />
                       </svg>
                       <input
                         type="text"
                         value={profile.mailingAddress}
                         disabled={!isProfileEditing}
-                        onChange={(e) => dispatch(setProfileField({ field: "mailingAddress", value: e.target.value }))}
+                        onChange={(e) =>
+                          dispatch(
+                            setProfileField({
+                              field: "mailingAddress",
+                              value: e.target.value,
+                            }),
+                          )
+                        }
                         className={`w-full h-11 md:h-12 rounded-full border border-gray-300 pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${isProfileEditing ? "bg-white" : "bg-gray-100 cursor-not-allowed"}`}
                         placeholder={profileLoading ? "Loading..." : "address"}
                       />
@@ -544,11 +650,14 @@ useEffect(() => {
                               setProfileField({
                                 field: "city",
                                 value: e.target.value,
-                              })
+                              }),
                             )
                           }
-                          className={`w-full h-11 md:h-12 rounded-full border border-gray-300 px-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${isProfileEditing ? "bg-white" : "bg-gray-100 cursor-not-allowed"
-                            }`}
+                          className={`w-full h-11 md:h-12 rounded-full border border-gray-300 px-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${
+                            isProfileEditing
+                              ? "bg-white"
+                              : "bg-gray-100 cursor-not-allowed"
+                          }`}
                           placeholder={profileLoading ? "Loading..." : ""}
                         />
                       </div>
@@ -569,11 +678,14 @@ useEffect(() => {
                               setProfileField({
                                 field: "state",
                                 value: e.target.value,
-                              })
+                              }),
                             )
                           }
-                          className={`w-full h-11 md:h-12 rounded-full border border-gray-300 px-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${isProfileEditing ? "bg-white" : "bg-gray-100 cursor-not-allowed"
-                            }`}
+                          className={`w-full h-11 md:h-12 rounded-full border border-gray-300 px-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${
+                            isProfileEditing
+                              ? "bg-white"
+                              : "bg-gray-100 cursor-not-allowed"
+                          }`}
                           placeholder={profileLoading ? "Loading..." : ""}
                         />
                       </div>
@@ -594,11 +706,14 @@ useEffect(() => {
                               setProfileField({
                                 field: "zipcode",
                                 value: e.target.value,
-                              })
+                              }),
                             )
                           }
-                          className={`w-full h-11 md:h-12 rounded-full border border-gray-300 px-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${isProfileEditing ? "bg-white" : "bg-gray-100 cursor-not-allowed"
-                            }`}
+                          className={`w-full h-11 md:h-12 rounded-full border border-gray-300 px-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${
+                            isProfileEditing
+                              ? "bg-white"
+                              : "bg-gray-100 cursor-not-allowed"
+                          }`}
                           placeholder={profileLoading ? "Loading..." : ""}
                         />
                       </div>
@@ -617,14 +732,21 @@ useEffect(() => {
                         stroke="currentColor"
                         viewBox="0 0 24 24"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                        />
                       </svg>
                       <input
                         type="email"
                         value={profile.email}
                         readOnly
                         className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-gray-100 pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
-                        placeholder={profileLoading ? "Loading..." : "email@gmail.com"}
+                        placeholder={
+                          profileLoading ? "Loading..." : "email@gmail.com"
+                        }
                       />
                     </div>
                   </div>
@@ -641,15 +763,29 @@ useEffect(() => {
                         stroke="currentColor"
                         viewBox="0 0 24 24"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                        />
                       </svg>
                       <input
                         type="tel"
                         value={profile.phone}
                         disabled={!isProfileEditing}
-                        onChange={(e) => dispatch(setProfileField({ field: "phone", value: e.target.value }))}
+                        onChange={(e) =>
+                          dispatch(
+                            setProfileField({
+                              field: "phone",
+                              value: e.target.value,
+                            }),
+                          )
+                        }
                         className={`w-full h-11 md:h-12 rounded-full border border-gray-300 pl-10 md:pl-12 pr-3 md:pr-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300 ${isProfileEditing ? "bg-white" : "bg-gray-100 cursor-not-allowed"}`}
-                        placeholder={profileLoading ? "Loading..." : "+92************"}
+                        placeholder={
+                          profileLoading ? "Loading..." : "+92************"
+                        }
                       />
                     </div>
                   </div>
@@ -660,13 +796,17 @@ useEffect(() => {
                       Annual Household Income
                     </label>
                     <div className="relative">
-                      <span className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm md:text-base">$</span>
+                      <span className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm md:text-base">
+                        $
+                      </span>
                       <input
                         type="text"
                         value={profile.annualHouseholdIncome}
                         readOnly
                         className="w-full h-11 md:h-12 rounded-full border border-gray-300 bg-gray-100 pl-8 md:pl-10 pr-3 md:pr-4 text-sm md:text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-300"
-                        placeholder={profileLoading ? "Loading..." : "Enter amount"}
+                        placeholder={
+                          profileLoading ? "Loading..." : "Enter amount"
+                        }
                       />
                     </div>
                   </div>
@@ -689,7 +829,12 @@ useEffect(() => {
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 15l7-7 7 7"
+                  />
                 </svg>
               </button>
 
@@ -698,26 +843,43 @@ useEffect(() => {
                   {/* Error Messages */}
                   {(familyMembersError || operationError) && (
                     <div className="p-3 rounded-lg bg-red-50 border border-red-200">
-                      <p className="text-sm text-red-600">{familyMembersError || operationError}</p>
+                      <p className="text-sm text-red-600">
+                        {familyMembersError || operationError}
+                      </p>
                     </div>
                   )}
 
                   {/* Account Holder */}
                   <div className="space-y-2 relative pt-2">
                     <div className="absolute -top-3 left-6 bg-white px-2 py-0.5 rounded-b-md z-10">
-                      <span className="text-xs md:text-[13px] font-medium text-gray-900">Account Holder</span>
+                      <span className="text-xs md:text-[13px] font-medium text-gray-900">
+                        Account Holder
+                      </span>
                     </div>
                     <div className="flex items-center gap-3 rounded-full border border-purple-200 bg-[#F7F5FF]/60 px-4 md:px-5 py-2.5 md:py-3">
                       <div className="flex items-center justify-center text-[#4B24C7] shrink-0">
-                        <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        <svg
+                          className="w-5 h-5 md:w-6 md:h-6"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                          />
                         </svg>
                       </div>
                       <span className="text-sm md:text-base font-medium text-[#4B24C7]">
-                        {accountHolderName || (profileLoading ? "Loading..." : "—")}
+                        {accountHolderName ||
+                          (profileLoading ? "Loading..." : "—")}
                       </span>
                     </div>
-                    <label className={`flex items-center gap-2 ${isSubscriptionLocked ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}>
+                    <label
+                      className={`flex items-center gap-2 ${isSubscriptionLocked ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
+                    >
                       <input
                         type="checkbox"
                         checked={accountHolderRemoveFromPlan}
@@ -728,48 +890,71 @@ useEffect(() => {
                           dispatch(
                             updateAccountHolderSubscription({
                               withActiveSubscription: !checked,
-                            })
+                            }),
                           );
                         }}
                         disabled={isSubscriptionLocked}
                         className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 disabled:cursor-not-allowed"
                       />
-                      <span className="text-xs font-sm text-gray-500">Remove from Membership Plan</span>
+                      <span className="text-xs font-sm text-gray-500">
+                        Remove from Membership Plan
+                      </span>
                     </label>
                   </div>
 
                   {/* Family Members from API */}
                   {familyMembersLoading ? (
                     <div className="text-center py-4">
-                      <p className="text-sm text-gray-500">Loading family members...</p>
+                      <p className="text-sm text-gray-500">
+                        Loading family members...
+                      </p>
                     </div>
                   ) : familyMembers.length === 0 ? (
                     <div className="text-center py-4">
-                      <p className="text-sm text-gray-500">No family members added yet.</p>
+                      <p className="text-sm text-gray-500">
+                        No family members added yet.
+                      </p>
                     </div>
                   ) : (
                     familyMembers.map((member, index) => {
-                      const fullName = `${member.firstName || ""} ${member.lastName || ""}`.trim();
+                      const fullName =
+                        `${member.firstName || ""} ${member.lastName || ""}`.trim();
                       const relationshipLabel = member.relationship
-                        ? member.relationship.charAt(0).toUpperCase() + member.relationship.slice(1).replace(/-/g, " ")
+                        ? member.relationship.charAt(0).toUpperCase() +
+                          member.relationship.slice(1).replace(/-/g, " ")
                         : "Family Member";
-                      const removed = familyMembersRemoveFromPlan[index] === true;
+                      const removed =
+                        familyMembersRemoveFromPlan[index] === true;
                       return (
-                        <div key={member._id || index} className="space-y-2 relative pt-2">
+                        <div
+                          key={member._id || index}
+                          className="space-y-2 relative pt-2"
+                        >
                           <div className="absolute -top-3 left-6 bg-white px-2 py-0.5 rounded-b-md z-10">
-                            <span className="text-xs md:text-[13px] font-medium text-gray-900">{relationshipLabel}</span>
+                            <span className="text-xs md:text-[13px] font-medium text-gray-900">
+                              {relationshipLabel}
+                            </span>
                           </div>
                           <div className="flex items-center gap-3 rounded-full border border-purple-200 bg-[#F7F5FF]/60 px-4 md:px-5 py-2.5 md:py-3">
                             <div className="flex items-center justify-center text-[#4B24C7] shrink-0">
-                              <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                              <svg
+                                className="w-5 h-5 md:w-6 md:h-6"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                />
                               </svg>
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="text-sm md:text-base font-medium text-gray-900">
                                 {fullName || "Unnamed"}
                               </div>
-
                             </div>
                             <div className="flex items-center gap-1 shrink-0">
                               <button
@@ -778,8 +963,18 @@ useEffect(() => {
                                 className="p-1.5 rounded-full text-[#4B24C7] hover:bg-purple-100 transition"
                                 aria-label="Edit"
                               >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                <svg
+                                  className="w-4 h-4"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                                  />
                                 </svg>
                               </button>
                               <button
@@ -788,13 +983,25 @@ useEffect(() => {
                                 className="p-1.5 rounded-full text-[#4B24C7] hover:bg-red-50 hover:text-red-600 transition"
                                 aria-label="Delete"
                               >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                <svg
+                                  className="w-4 h-4"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                  />
                                 </svg>
                               </button>
                             </div>
                           </div>
-                          <label className={`flex items-center gap-2 ${isSubscriptionLocked ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}>
+                          <label
+                            className={`flex items-center gap-2 ${isSubscriptionLocked ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
+                          >
                             <input
                               type="checkbox"
                               checked={removed}
@@ -814,11 +1021,13 @@ useEffect(() => {
                                   updateFamilyMemberSubscription({
                                     id: member._id,
                                     withActiveSubscription: !newRemoved,
-                                  })
+                                  }),
                                 );
                               }}
                             />
-                            <span className="text-xs font-sm text-gray-500">Remove from Membership Plan</span>
+                            <span className="text-xs font-sm text-gray-500">
+                              Remove from Membership Plan
+                            </span>
                           </label>
                         </div>
                       );
@@ -839,7 +1048,6 @@ useEffect(() => {
                 </div>
               )}
             </div>
-
           </div>
 
           {/* Right Column */}
@@ -903,7 +1111,8 @@ useEffect(() => {
                 <div className="flex flex-col items-center gap-1.5 md:gap-2 mb-6 mt-5">
                   <div className="flex items-center gap-3">
                     <h3 className="text-lg md:text-xl font-semibold text-black">
-                      {profile.hospitalInfo?.name || (profileLoading ? "Loading..." : "Hospital Name")}
+                      {profile.hospitalInfo?.name ||
+                        (profileLoading ? "Loading..." : "Hospital Name")}
                     </h3>
                     <span className="px-4 py-1 rounded-full bg-[#c9f4b8] text-[#1a8c3a] text-[11px] md:text-xs font-medium">
                       Eligible
@@ -912,15 +1121,17 @@ useEffect(() => {
                   <span className="text-xs md:text-sm text-[#c0bde9]">
                     {profile.hospitalInfo?.city && profile.hospitalInfo?.state
                       ? `${profile.hospitalInfo.city}, ${profile.hospitalInfo.state}`
-                      : profile.hospitalInfo?.city || profile.hospitalInfo?.state || "1 mile away"}
+                      : profile.hospitalInfo?.city ||
+                        profile.hospitalInfo?.state ||
+                        "1 mile away"}
                   </span>
                 </div>
 
                 {/* Nearby Hospitals Heading */}
                 <div className="mb-5 md:mb-6">
-                  
                   <p className="mt-1 text-xs md:text-sm text-gray-600">
-                    Based on the specific Hospital Selected and household details Provided.
+                    Based on the specific hospital selected and household
+                    details provided.
                   </p>
                 </div>
 
@@ -936,10 +1147,10 @@ useEffect(() => {
                           Estimated up to {profile.estimatedDiscount}%
                         </p>
                         <p className="mt-1 text-[11px] md:text-xs text-gray-500">
-                          Based on your eligibility. Final discount is determined by the hospital.
+                          Based on your eligibility. Final discount is
+                          determined by the hospital.
                         </p>
                       </div>
-
                     </div>
                   </div>
                 )}
@@ -976,7 +1187,10 @@ useEffect(() => {
                     role="button"
                     tabIndex={0}
                     onClick={() => {
-                      if (effectiveStatus === "active" || effectiveStatus === "cancelled") {
+                      if (
+                        effectiveStatus === "active" ||
+                        effectiveStatus === "cancelled"
+                      ) {
                         // simply show details modal when user already has a membership (active or cancelled)
                         setIsSubscriptionDetailsOpen(true);
                       } else {
@@ -987,18 +1201,23 @@ useEffect(() => {
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
                         e.preventDefault();
-                        if (effectiveStatus === "active" || effectiveStatus === "cancelled") {
+                        if (
+                          effectiveStatus === "active" ||
+                          effectiveStatus === "cancelled"
+                        ) {
                           setIsSubscriptionDetailsOpen(true);
                         } else {
                           setIsSubscriptionModalOpen(true);
                         }
                       }
                     }}
-                    className={`group w-full h-32 md:h-36 rounded-[26px] border-2 border-[#5225cc] bg-white px-6 py-5 flex flex-col items-center justify-between hover:bg-[#e2dfec] hover:shadow-md transition ${subscriptionWillCancel ? "min-h-[9.5rem] md:min-h-[9.5rem]" : "min-h-[8rem] md:min-h-[9rem]"
-                      }`}
+                    className={`group w-full h-32 md:h-36 rounded-[26px] border-2 border-[#5225cc] bg-white px-6 py-5 flex flex-col items-center justify-between hover:bg-[#e2dfec] hover:shadow-md transition ${
+                      subscriptionWillCancel
+                        ? "min-h-[9.5rem] md:min-h-[9.5rem]"
+                        : "min-h-[8rem] md:min-h-[9rem]"
+                    }`}
                   >
                     {effectiveStatus === "inactive" && (
-
                       <div className="text-center">
                         <p className="text-base md:text-lg font-semibold text-[#5225cc]">
                           Sign Up
@@ -1015,12 +1234,13 @@ useEffect(() => {
                           Membership Status
                         </span>
                         <span
-                          className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] md:text-xs font-medium ${effectiveStatus === "active"
-                            ? "bg-green-100 text-green-700"
-                            : effectiveStatus === "cancelled"
-                              ? "bg-amber-100 text-amber-800"
-                              : "bg-[#ffd7da] text-[#d45360]"
-                            }`}
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] md:text-xs font-medium ${
+                            effectiveStatus === "active"
+                              ? "bg-green-100 text-green-700"
+                              : effectiveStatus === "cancelled"
+                                ? "bg-amber-100 text-amber-800"
+                                : "bg-[#ffd7da] text-[#d45360]"
+                          }`}
                         >
                           {effectiveStatus === "active"
                             ? "Active"
@@ -1052,7 +1272,8 @@ useEffect(() => {
                         <span className="text-[11px] md:text-xs text-amber-600 text-center font-medium">
                           Your membership is cancelled and will end on{" "}
                           <span className="font-semibold">
-                            {subscriptionEndDate || "the end of the current billing period"}
+                            {subscriptionEndDate ||
+                              "the end of the current billing period"}
                           </span>
                           . You can start a new membership after this date.
                         </span>
@@ -1072,7 +1293,6 @@ useEffect(() => {
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </div>
@@ -1086,7 +1306,10 @@ useEffect(() => {
         // show service date field anytime there is a subscription (active or cancelled)
         hasSubscription={effectiveStatus !== "inactive"}
         subscriptionStartDate={subscriptionStartDateISO}
-        accountHolderName={[profile?.firstName, profile?.lastName].filter(Boolean).join(" ").trim()}
+        accountHolderName={[profile?.firstName, profile?.lastName]
+          .filter(Boolean)
+          .join(" ")
+          .trim()}
         accountHolderRemoveFromPlan={accountHolderRemoveFromPlan}
         familyMembers={familyMembers}
         familyMembersRemoveFromPlan={familyMembersRemoveFromPlan}
@@ -1195,12 +1418,24 @@ useEffect(() => {
           <div className="relative w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
             <button
               type="button"
-              onClick={() => !cancelSubscriptionLoading && setIsCancelSubscriptionOpen(false)}
+              onClick={() =>
+                !cancelSubscriptionLoading && setIsCancelSubscriptionOpen(false)
+              }
               className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 text-gray-500"
               aria-label="Close"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
             <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 pr-10">
@@ -1211,7 +1446,9 @@ useEffect(() => {
               re-subscribe anytime.
             </p>
             {cancelSubscriptionError && (
-              <p className="text-sm text-red-600 mb-3">{cancelSubscriptionError}</p>
+              <p className="text-sm text-red-600 mb-3">
+                {cancelSubscriptionError}
+              </p>
             )}
             <div className="flex flex-col md:flex-row gap-3">
               <button
@@ -1228,7 +1465,8 @@ useEffect(() => {
                 onClick={async () => {
                   try {
                     await dispatch(cancelSubscription()).unwrap();
-                    const { userData } = await dispatch(fetchProfile()).unwrap();
+                    const { userData } =
+                      await dispatch(fetchProfile()).unwrap();
                     // Apply full subscription data to local state so UI (including cancel text)
                     // updates immediately without needing a page refresh.
                     applySubscriptionFromData(userData?.subscription || null);
@@ -1268,12 +1506,14 @@ useEffect(() => {
         hasMemberActiveSubscription={hasMemberActiveSubscription}
         title="Delete Family Member"
         message={message}
-        memberName={memberToDelete ? `${memberToDelete.firstName || ""} ${memberToDelete.lastName || ""}`.trim() : ""}
+        memberName={
+          memberToDelete
+            ? `${memberToDelete.firstName || ""} ${memberToDelete.lastName || ""}`.trim()
+            : ""
+        }
       />
-
     </div>
   );
 };
 
 export default Dashboard;
-
